@@ -1,0 +1,47 @@
+<div class="dialog-backdrop" (click)="cancel()">
+  <!-- stopPropagation عشان الضغط جوه الصندوق ما يقفلوش -->
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="retireTitle"
+       (click)="$event.stopPropagation()">
+
+    <h2 id="retireTitle">Retire asset</h2>
+
+    <p class="dialog-lead">
+      <strong class="mono">{{ assetCode() }}</strong> — {{ assetName() }}
+    </p>
+
+    <p class="hint">
+      A retired asset stays in the register for history, but it can no longer be
+      edited or transferred.
+    </p>
+
+    <label class="field">
+      <span>Reason <span class="req">*</span></span>
+      <textarea class="input" rows="3" maxlength="500"
+                [value]="reason()"
+                (input)="reason.set($any($event.target).value)"
+                [disabled]="submitting() || staleRecord()"></textarea>
+      <span class="hint">{{ reason().length }} / 500</span>
+    </label>
+
+    @if (errorMessage()) {
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
+    }
+
+    <div class="row" style="justify-content:flex-end;gap:8px;margin-top:16px">
+      <button type="button" class="btn btn-ghost" (click)="cancel()" [disabled]="submitting()">
+        {{ staleRecord() ? 'Close' : 'Cancel' }}
+      </button>
+
+      @if (!staleRecord()) {
+        <button type="button" class="btn btn-danger" (click)="confirm()"
+                [disabled]="submitting() || !reason().trim()">
+          @if (submitting()) {
+            <span class="spinner"></span> Retiring…
+          } @else {
+            Retire asset
+          }
+        </button>
+      }
+    </div>
+  </div>
+</div>

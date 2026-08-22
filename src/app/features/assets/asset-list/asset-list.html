@@ -1,0 +1,188 @@
+<!-- src/app/features/assets/asset-list/asset-list.html -->
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1>Assets</h1>
+      <p>{{ totalCount() }} record{{ totalCount() === 1 ? '' : 's' }} in the register.</p>
+    </div>
+    @if (isAdmin()) {
+      <a class="btn btn-primary" routerLink="/assets/new">+ New asset</a>
+    }
+  </div>
+
+  <!-- Filters -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-body">
+      <div class="filters">
+        <input class="input" placeholder="Search code, name or serial…"
+               [value]="filters().search" (input)="onSearch($any($event.target).value)">
+
+        <select class="select" [value]="filters().categoryId"
+                (change)="patchFilters({ categoryId: $any($event.target).value })">
+          <option value="">All categories</option>
+          @for (item of lookups()?.categories ?? []; track item.id) {
+            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+          }
+        </select>
+
+        <select class="select" [value]="filters().assetTypeId"
+                (change)="patchFilters({ assetTypeId: $any($event.target).value })">
+          <option value="">All types</option>
+          @for (item of lookups()?.assetTypes ?? []; track item.id) {
+            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+          }
+        </select>
+
+        <select class="select" [value]="filters().statusId"
+                (change)="patchFilters({ statusId: $any($event.target).value })">
+          <option value="">All statuses</option>
+          @for (status of statuses; track status.id) {
+            <option [value]="status.id">{{ status.name }}</option>
+          }
+        </select>
+
+        <select class="select" [value]="filters().departmentId"
+                (change)="patchFilters({ departmentId: $any($event.target).value })">
+          <option value="">All departments</option>
+          @for (item of lookups()?.departments ?? []; track item.id) {
+            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+          }
+        </select>
+
+        <select class="select" [value]="filters().locationId"
+                (change)="patchFilters({ locationId: $any($event.target).value })">
+          <option value="">All locations</option>
+          @for (item of lookups()?.locations ?? []; track item.id) {
+            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+          }
+        </select>
+
+        <select class="select" [value]="filters().employeeId"
+                (change)="patchFilters({ employeeId: $any($event.target).value })">
+          <option value="">Anyone</option>
+          @for (item of lookups()?.employees ?? []; track item.id) {
+            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <label class="row" style="gap:7px;cursor:pointer;font-size:13px">
+          <input type="checkbox" [checked]="filters().includeRetired"
+                 (change)="patchFilters({ includeRetired: $any($event.target).checked })">
+          Include retired
+        </label>
+        <span class="spacer"></span>
+        @if (hasActiveFilters()) {
+          <button type="button" class="btn btn-sm btn-ghost" (click)="resetFilters()">Clear filters</button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables -->
+  <div class="card">
+    @if (loading()) {
+      <div class="state">
+        <span class="spinner lg"></span>
+        <p style="margin-top:14px">Loading assets…</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="card-body">
+        <div class="alert alert-danger">{{ errorMessage() }}</div>
+        <button type="button" class="btn" style="margin-top:12px" (click)="load()">Try again</button>
+      </div>
+    } @else if (items().length === 0) {
+      <div class="state">
+        <div class="icon">∅</div>
+        <h3>No assets match</h3>
+        <p>Try clearing a filter or widening the search term.</p>
+        @if (hasActiveFilters()) {
+          <button type="button" class="btn" style="margin-top:12px" (click)="resetFilters()">Clear filters</button>
+        }
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th class="sortable" (click)="sortBy('assetCode')">Code{{ sortArrow('assetCode') }}</th>
+              <th class="sortable" (click)="sortBy('assetName')">Name{{ sortArrow('assetName') }}</th>
+              <th>Category / Type</th>
+              <th>Status</th>
+              <th>Department</th>
+              <th>Assigned to</th>
+              <th>Location</th>
+              @if (isAdmin()) {
+                <th class="sortable" style="text-align:right" (click)="sortBy('purchaseDate')">
+                  Cost (EGP){{ sortArrow('purchaseDate') }}
+                </th>
+              }
+              <th style="width:1%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (asset of items(); track asset.id) {
+              <tr [class.dim]="isRetired(asset)">
+                <td class="mono"><a [routerLink]="['/assets', asset.id]">{{ asset.assetCode }}</a></td>
+                <td>{{ asset.assetName }}</td>
+                <td class="hint">{{ asset.categoryName }} · {{ asset.assetTypeName }}</td>
+                <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName }}</span></td>
+                <td>{{ asset.departmentName || '—' }}</td>
+                <td>{{ asset.employeeName || '—' }}</td>
+                <td>{{ asset.locationName || '—' }}</td>
+                @if (isAdmin()) {
+                  <td class="mono" style="text-align:right">
+                    {{ asset.purchaseCost != null ? (asset.purchaseCost | number:'1.0-0') : '—' }}
+                  </td>
+                }
+                <td>
+                  <div class="row" style="gap:4px;flex-wrap:nowrap">
+                    <a class="btn btn-sm btn-ghost" [routerLink]="['/assets', asset.id]">View</a>
+                    @if (isAdmin() && !isRetired(asset)) {
+                      <a class="btn btn-sm btn-ghost" [routerLink]="['/assets', asset.id, 'edit']">Edit</a>
+                      <a class="btn btn-sm btn-ghost" [routerLink]="['/assets', asset.id, 'transfer']">Transfer</a>
+                      <button type="button" class="btn btn-sm btn-ghost btn-danger-ghost"
+                              (click)="openRetire(asset)">Retire</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginated -->
+      <div class="row" style="padding:12px 16px;border-top:1px solid var(--border)">
+        <span class="hint mono">{{ firstRowNumber() }}–{{ lastRowNumber() }} of {{ totalCount() }}</span>
+        <span class="spacer"></span>
+
+        <select class="select" style="width:auto" [value]="filters().pageSize"
+                (change)="changePageSize($any($event.target).value)">
+          @for (size of [5, 10, 25, 50]; track size) {
+            <option [value]="size">{{ size }} / page</option>
+          }
+        </select>
+
+        <button type="button" class="btn btn-sm" [disabled]="filters().pageNumber <= 1"
+                (click)="goToPage(filters().pageNumber - 1)">Prev</button>
+        <span class="hint mono">Page {{ filters().pageNumber }} of {{ lastPage() }}</span>
+        <button type="button" class="btn btn-sm" [disabled]="filters().pageNumber >= lastPage()"
+                (click)="goToPage(filters().pageNumber + 1)">Next</button>
+      </div>
+    }
+  </div>
+
+  @if (retiringAsset(); as asset) {
+    <app-retire-asset
+      [assetId]="asset.id"
+      [assetCode]="asset.assetCode"
+      [assetName]="asset.assetName"
+      [rowVersion]="asset.rowVersion"
+      (retired)="onRetired()"
+      (cancelled)="closeRetire()" />
+  }
+
+</div>

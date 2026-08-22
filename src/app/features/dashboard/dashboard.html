@@ -1,0 +1,116 @@
+<!-- src/app/features/dashboard/dashboard.html -->
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1>{{ isAdmin() ? 'Admin dashboard' : 'Dashboard' }}</h1>
+      <p>Welcome back, {{ displayName() }}.</p>
+    </div>
+    <div class="row">
+      <a class="btn" routerLink="/assets">Browse assets</a>
+      @if (isAdmin()) {
+        <a class="btn btn-primary" routerLink="/assets/new">+ New asset</a>
+      }
+    </div>
+  </div>
+
+  <!-- 3 حالات: بتحمّل / خطأ / الداتا جاهزة -->
+  @if (loading()) {
+    <div class="card state">
+      <span class="spinner lg"></span>
+      <p>Loading your dashboard…</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="card card-body">
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
+      <button type="button" class="btn" style="margin-top:12px" (click)="load()">Try again</button>
+    </div>
+  } @else if (summary(); as data) {
+
+    <div class="grid grid-4">
+      <div class="card stat">
+        <div class="label">Active assets</div>
+        <div class="value mono">{{ data.activeAssets }}</div>
+        <div class="hint">{{ data.retiredAssets }} retired</div>
+      </div>
+
+      <div class="card stat">
+        <div class="label">Assigned</div>
+        <div class="value mono">{{ data.assignedAssets }}</div>
+        <div class="hint">{{ data.availableAssets }} available</div>
+      </div>
+
+      <div class="card stat">
+        <div class="label">Under maintenance</div>
+        <div class="value mono">{{ data.underMaintenanceAssets }}</div>
+        <div class="hint">needs attention</div>
+      </div>
+
+      <div class="card stat">
+        <div class="label">Portfolio value</div>
+        <!-- المفتاح نفسه بيبقى غايب من الـ JSON لليوزر، فـ != null بتغطي null و undefined -->
+        @if (data.portfolioValue != null) {
+          <div class="value mono">{{ data.portfolioValue | number:'1.0-0' }}</div>
+          <div class="hint">EGP · Admin only</div>
+        } @else {
+          <div class="value locked" style="font-size:17px">Restricted</div>
+          <div class="hint">Cost data is not sent to your role</div>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px;align-items:start">
+
+      <div class="card">
+        <div class="card-head"><h2>By category</h2></div>
+        <div class="card-body">
+          @for (row of data.assetsByCategory; track row.categoryName) {
+            <div style="margin-bottom:12px">
+              <div class="row" style="justify-content:space-between;margin-bottom:5px">
+                <span style="font-size:13px">{{ row.categoryName }}</span>
+                <span class="hint mono">{{ row.count }}</span>
+              </div>
+              <div class="bar"><div class="fill" [style.width]="barWidth(row.count)"></div></div>
+            </div>
+          } @empty {
+            <p class="hint" style="margin:0">No assets yet.</p>
+          }
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Warranties expiring soon</h2>
+          <span class="spacer"></span>
+          <span class="hint">next 180 days</span>
+        </div>
+
+        @if (data.expiringWarranties.length) {
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr><th>Asset</th><th>Status</th><th>Expires</th></tr>
+              </thead>
+              <tbody>
+                @for (asset of data.expiringWarranties; track asset.assetId) {
+                  <tr>
+                    <td>
+                      <a [routerLink]="['/assets', asset.assetId]">{{ asset.assetCode }}</a>
+                      — {{ asset.assetName }}
+                    </td>
+                    <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName }}</span></td>
+                    <td class="mono">{{ asset.warrantyExpiryDate }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="card-body"><p class="hint" style="margin:0">Nothing expiring soon.</p></div>
+        }
+      </div>
+
+    </div>
+  }
+
+</div>

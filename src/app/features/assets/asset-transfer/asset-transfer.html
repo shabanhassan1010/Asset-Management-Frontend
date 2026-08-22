@@ -1,0 +1,100 @@
+<!-- src/app/features/assets/asset-transfer/asset-transfer.html -->
+<div class="page" style="max-width:760px">
+
+  @if (loading()) {
+    <div class="card state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+  } @else if (asset(); as a) {
+
+    <div class="page-head">
+      <div>
+        <a class="hint" [routerLink]="['/assets', a.id]">← Back to asset</a>
+        <h1 style="margin-top:6px">Transfer asset</h1>
+        <p><span class="mono">{{ a.assetCode }}</span> — {{ a.assetName }}</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Current placement</h2></div>
+      <div class="card-body">
+        <dl class="dl">
+          <dt>Department</dt><dd>{{ a.departmentName || '—' }}</dd>
+          <dt>Assigned to</dt><dd>{{ a.employeeName || '—' }}</dd>
+          <dt>Location</dt><dd>{{ a.locationName || '—' }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <form class="card" style="margin-top:16px" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="card-head"><h2>Move to</h2></div>
+      <div class="card-body">
+
+        @if (successMessage()) {
+          <div class="alert alert-info" style="margin-bottom:16px">✓ {{ successMessage() }}</div>
+        }
+        @if (errorMessage()) {
+          <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+        }
+
+        <div class="field">
+          <label for="dept">Department</label>
+          <select id="dept" class="select" formControlName="toDepartmentId">
+            <option value="">Unassigned</option>
+            @for (item of lookups()?.departments ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="emp">Assigned to</label>
+          <select id="emp" class="select" formControlName="toEmployeeId">
+            @for (item of availableEmployees(); track item.id) {
+              <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+          @if (!form.controls.toDepartmentId.value) {
+            <span class="hint">Pick a department first to see its employees.</span>
+          } @else if (availableEmployees().length === 0) {
+            <span class="field-error">This department has no employees.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="loc">Location</label>
+          <select id="loc" class="select" formControlName="toLocationId">
+            <option value="">Unassigned</option>
+            @for (item of lookups()?.locations ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="reason">Reason <span class="req">*</span></label>
+          <textarea id="reason" class="textarea" formControlName="reason"
+                    placeholder="Why is this asset moving?"
+                    [class.invalid]="form.controls.reason.touched && form.controls.reason.invalid"></textarea>
+          @if (form.controls.reason.touched && form.controls.reason.hasError('required')) {
+            <span class="field-error">A reason is required for every transfer.</span>
+          }
+          @if (form.controls.reason.hasError('maxlength')) {
+            <span class="field-error">The reason cannot be longer than 500 characters.</span>
+          }
+        </div>
+
+        @if (!hasChanges()) {
+          <p class="hint" style="margin:0 0 12px">Change at least one field to record a transfer.</p>
+        }
+
+        <div class="row">
+          <button class="btn btn-primary" type="submit"
+                  [disabled]="submitting() || !!successMessage() || !hasChanges() || form.invalid">
+            @if (submitting()) { <span class="spinner"></span> Saving… } @else { Record transfer }
+          </button>
+          <a class="btn" [routerLink]="['/assets', a.id]">Cancel</a>
+        </div>
+      </div>
+    </form>
+
+  }
+</div>

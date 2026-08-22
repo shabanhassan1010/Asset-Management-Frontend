@@ -1,0 +1,124 @@
+<!-- src/app/features/assets/asset-detail/asset-detail.html -->
+<div class="page">
+
+  @if (loading()) {
+    <div class="card state">
+      <span class="spinner lg"></span>
+      <p style="margin-top:14px">Loading asset…</p>
+    </div>
+  } @else if (!asset()) {
+    <div class="card state">
+      <div class="icon">∅</div>
+      <h3>Asset not found</h3>
+      <p>{{ errorMessage() }}</p>
+      <a class="btn" style="margin-top:12px" routerLink="/assets">Back to assets</a>
+    </div>
+  } @else if (asset(); as a) {
+
+    <div class="page-head">
+      <div>
+        <a class="hint" routerLink="/assets">← Back to assets</a>
+        <h1 style="margin-top:6px">{{ a.assetName }}</h1>
+        <p class="row" style="gap:8px">
+          <span class="mono">{{ a.assetCode }}</span>
+          <span [class]="statusBadgeClass(a.statusId)">{{ a.statusName }}</span>
+        </p>
+      </div>
+
+      <!-- R6.5 — أزرار الأدمن بتختفي لليوزر. الحماية الحقيقية في الـ API. -->
+      @if (isAdmin() && !isRetired()) {
+        <div class="row">
+          <a class="btn" [routerLink]="['/assets', a.id, 'edit']">Edit</a>
+          <a class="btn btn-primary" [routerLink]="['/assets', a.id, 'transfer']">Transfer</a>
+          <button type="button" class="btn btn-danger" [disabled]="retiring()" (click)="retire()">
+            @if (retiring()) { <span class="spinner"></span> Retiring… } @else { Retire }
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (isRetired()) {
+      <div class="alert alert-warn" style="margin-bottom:16px">
+        This asset is retired. It stays in the register for history but can no longer be edited or transferred.
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+    }
+
+    <div class="grid grid-2" style="align-items:start">
+
+      <div class="card">
+        <div class="card-head"><h2>Details</h2></div>
+        <div class="card-body">
+          <dl class="dl">
+            <dt>Category / Type</dt><dd>{{ a.categoryName }} · {{ a.assetTypeName }}</dd>
+            <dt>Manufacturer</dt><dd>{{ a.manufacturer || '—' }}</dd>
+            <dt>Model</dt><dd>{{ a.model || '—' }}</dd>
+            <dt>Serial number</dt><dd class="mono">{{ a.serialNumber || '—' }}</dd>
+            <dt>Description</dt><dd>{{ a.description || '—' }}</dd>
+            <dt>Purchase date</dt><dd class="mono">{{ a.purchaseDate || '—' }}</dd>
+            <dt>Warranty expires</dt><dd class="mono">{{ a.warrantyExpiryDate || '—' }}</dd>
+
+            <dt>Purchase cost</dt>
+            <!-- المفتاح غايب من الـ JSON لليوزر (R2.6) -->
+            @if (a.purchaseCost != null) {
+              <dd class="mono">{{ a.purchaseCost | number:'1.2-2' }} EGP</dd>
+            } @else {
+              <dd class="locked">Not available for your role</dd>
+            }
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Current placement</h2></div>
+        <div class="card-body">
+          <dl class="dl">
+            <dt>Department</dt><dd>{{ a.departmentName || '—' }}</dd>
+            <dt>Assigned to</dt><dd>{{ a.employeeName || '—' }}</dd>
+            <dt>Location</dt><dd>{{ a.locationName || '—' }}</dd>
+          </dl>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- R3.2 — تاريخ التحويلات، متاح للدورين -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <h2>Transfer history</h2>
+        <span class="spacer"></span>
+        <span class="hint">{{ transfers().length }} record{{ transfers().length === 1 ? '' : 's' }}</span>
+      </div>
+
+      @if (transfers().length === 0) {
+        <div class="card-body">
+          <p class="hint" style="margin:0">This asset has never been transferred.</p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr><th>Date</th><th>Department</th><th>Assigned to</th><th>Location</th><th>Reason</th></tr>
+            </thead>
+            <tbody>
+              @for (row of transfers(); track row.id) {
+                <tr>
+                  <td class="mono">{{ row.transferDate }}</td>
+                  <td class="hint">{{ row.fromDepartmentName || '—' }} → <strong>{{ row.toDepartmentName || '—' }}</strong></td>
+                  <td class="hint">{{ row.fromEmployeeName || '—' }} → <strong>{{ row.toEmployeeName || '—' }}</strong></td>
+                  <td class="hint">{{ row.fromLocationName || '—' }} → <strong>{{ row.toLocationName || '—' }}</strong></td>
+                  <td>{{ row.reason || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+  }
+
+</div>

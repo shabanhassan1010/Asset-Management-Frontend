@@ -1,0 +1,41 @@
+<!-- src/app/features/profile/profile.html -->
+<div class="page" style="max-width:640px">
+
+  <div class="page-head">
+    <div>
+      <h1>My profile</h1>
+      <p>Your account as the server sees it right now.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="card state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+  } @else if (errorMessage()) {
+    <div class="card card-body"><div class="alert alert-danger">{{ errorMessage() }}</div></div>
+  } @else if (profile(); as me) {
+
+    <div class="card">
+      <div class="card-head">
+        <h2>{{ me.userName }}</h2>
+        <span class="spacer"></span>
+        <span class="badge" [class.badge-admin]="isAdmin()" [class.badge-user]="!isAdmin()">
+          {{ isAdmin() ? 'Admin' : 'User' }}
+        </span>
+      </div>
+      <div class="card-body">
+        <dl class="dl">
+          <dt>Username</dt><dd>{{ me.userName }}</dd>
+          <dt>Email</dt><dd>{{ me.email || '—' }}</dd>
+          <dt>Role</dt><dd>{{ isAdmin() ? 'Admin' : 'User' }}</dd>
+          <dt>Linked employee</dt>
+          <dd>{{ me.employeeId ? ('#' + me.employeeId) : 'No employee record linked' }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="alert alert-info" style="margin-top:16px">
+      Roles and account status are managed by an administrator. If something here looks wrong, ask one of them to change it.
+    </div>
+
+  }
+</div>

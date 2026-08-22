@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.angular/
+out-tsc/
+
+# environment / secrets
+.env
+.env.local
+src/environments/environment.prod.ts   (لو فيه API keys حقيقية جواه)
+
+# logs
+*.log
+npm-debug.log*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# misc
+*.tsbuildinfo
+.cache/

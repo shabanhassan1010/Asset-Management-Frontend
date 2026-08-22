@@ -1,0 +1,142 @@
+<!-- src/app/features/lookups/lookups.html -->
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1>Lookup data</h1>
+      <p>Categories, departments, locations and employees used across the asset register. Admin only.</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="startNew()">
+      + New {{ employeesTab() ? 'employee' : activeKind().singular }}
+    </button>
+  </div>
+
+  <!-- تبويبات الأنواع -->
+  <div class="row" style="gap:6px;margin-bottom:16px">
+    @for (kind of kinds; track kind.kind) {
+      <button type="button"
+              class="btn btn-sm"
+              [class.btn-primary]="!employeesTab() && activeKind().kind === kind.kind"
+              (click)="selectKind(kind)">
+        {{ kind.title }}
+      </button>
+    }
+    <button type="button"
+            class="btn btn-sm"
+            [class.btn-primary]="employeesTab()"
+            (click)="selectEmployees()">
+      Employees
+    </button>
+  </div>
+
+  @if (employeesTab()) {
+    <app-employees-tab />
+  } @else {
+
+    @if (errorMessage()) {
+      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+    }
+
+    <!-- فورم الإضافة/التعديل — بيظهر فوق الجدول -->
+    @if (editingId() !== null) {
+      <form class="card" style="margin-bottom:16px" [formGroup]="form" (ngSubmit)="save()">
+        <div class="card-head">
+          <h2>{{ editingId() === 0 ? 'New' : 'Edit' }} {{ activeKind().singular }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="name">{{ activeKind().nameLabel }} <span class="req">*</span></label>
+              <input id="name" class="input" formControlName="name"
+                     [class.invalid]="form.controls.name.touched && form.controls.name.invalid">
+              @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+                <span class="field-error">{{ activeKind().nameLabel }} is required.</span>
+              }
+            </div>
+
+            <div class="field">
+              <label for="secondary">
+                {{ activeKind().secondaryLabel }}
+                @if (activeKind().secondaryRequired) { <span class="req">*</span> }
+              </label>
+              <input id="secondary" class="input" formControlName="secondary"
+                     [class.invalid]="form.controls.secondary.touched && form.controls.secondary.invalid">
+              @if (form.controls.secondary.touched && form.controls.secondary.hasError('required')) {
+                <span class="field-error">{{ activeKind().secondaryLabel }} is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="row">
+            <button class="btn btn-primary" type="submit" [disabled]="saving() || form.invalid">
+              @if (saving()) { <span class="spinner"></span> Saving… } @else { Save }
+            </button>
+            <button class="btn" type="button" (click)="closeForm()">Cancel</button>
+          </div>
+        </div>
+      </form>
+    }
+
+    <div class="card">
+      <div class="card-head">
+        <h2>{{ activeKind().title }}</h2>
+        <span class="spacer"></span>
+        <span class="hint">{{ rows().length }} record{{ rows().length === 1 ? '' : 's' }}</span>
+      </div>
+
+      @if (loading()) {
+        <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+      } @else if (rows().length === 0) {
+        <div class="state">
+          <div class="icon">∅</div>
+          <h3>Nothing here yet</h3>
+          <p>Add the first {{ activeKind().singular }} to start using it on assets.</p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>{{ activeKind().secondaryLabel }}</th>
+                <th>In use by</th>
+                <th>Status</th>
+                <th style="width:1%"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track row.id) {
+                <tr [class.dim]="!row.isActive">
+                  <td><strong>{{ row.name }}</strong></td>
+                  <td class="hint">{{ row.secondary || '—' }}</td>
+                  <td class="hint">{{ usageLabel(row) }}</td>
+                  <td>
+                    <span class="badge" [class.badge-available]="row.isActive" [class.badge-retired]="!row.isActive">
+                      {{ row.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="row" style="gap:4px;flex-wrap:nowrap">
+                      <button type="button" class="btn btn-sm btn-ghost" (click)="startEdit(row)">Edit</button>
+                      @if (row.isActive) {
+                        <button type="button" class="btn btn-sm btn-ghost" (click)="deactivate(row)">Deactivate</button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <div class="alert alert-info" style="margin-top:16px">
+      <strong>How deactivation works.</strong> A row that is still referenced by assets is never deleted —
+      it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the
+      assets that already use it.
+    </div>
+
+  }
+
+</div>

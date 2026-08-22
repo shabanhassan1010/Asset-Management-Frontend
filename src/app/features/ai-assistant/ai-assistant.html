@@ -1,0 +1,166 @@
+<div class="page">
+  <header class="page__header">
+    <span class="spark" aria-hidden="true">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+        <path d="M10 1.5c.3 0 .55.2.62.5l1.2 4.9 4.9 1.2c.3.07.5.32.5.62s-.2.55-.5.62l-4.9 1.2-1.2 4.9c-.07.3-.32.5-.62.5s-.55-.2-.62-.5l-1.2-4.9-4.9-1.2c-.3-.07-.5-.32-.5-.62s.2-.55.5-.62l4.9-1.2 1.2-4.9c.07-.3.32-.5.62-.5Z"/>
+      </svg>
+    </span>
+
+    <div>
+      <h1>Asset assistant</h1>
+      <p>Ask questions about your assets.</p>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel__scroll" #scrollBox>
+      @if (messages().length === 0) {
+        <div class="welcome">
+          <h2>How can I help you?</h2>
+          <p>
+            Ask me about your assets, employees, departments, availability,
+            assignments, or asset statistics.
+          </p>
+
+          <div class="welcome__suggestions">
+            @for (suggestion of suggestions; track suggestion) {
+              <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">
+                {{ suggestion }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @for (message of messages(); track $index) {
+        <div
+          class="row"
+          [class.row--user]="message.role === 'user'"
+        >
+          @if (message.role === 'assistant') {
+            <span class="avatar" aria-hidden="true">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13">
+                <path d="M10 1.5c.3 0 .55.2.62.5l1.2 4.9 4.9 1.2c.3.07.5.32.5.62s-.2.55-.5.62l-4.9 1.2-1.2 4.9c-.07.3-.32.5-.62.5s-.55-.2-.62-.5l-1.2-4.9-4.9-1.2c-.3-.07-.5-.32-.5-.62s.2-.55.5-.62l4.9-1.2 1.2-4.9c.07-.3.32-.5.62-.5Z"/>
+              </svg>
+            </span>
+          }
+
+          <div
+            class="bubble"
+            [class.bubble--user]="message.role === 'user'"
+            [class.bubble--error]="message.isError"
+            [class.bubble--wide]="!!message.assets?.length"
+          >
+            <!--
+              Interpolation, never [innerHTML]. Asset names and notes come from
+              the database and render here as plain text; Angular escapes
+              them, so stored markup or script can never execute (R4.7).
+            -->
+            <p class="bubble__text">{{ message.content }}</p>
+
+            @if (message.suggestions?.length) {
+              <div class="bubble__chips">
+                @for (suggestion of message.suggestions; track suggestion) {
+                  <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">
+                    {{ suggestion }}
+                  </button>
+                }
+              </div>
+            }
+
+            @if (message.assets?.length) {
+              <div class="table-wrap">
+                <table class="results">
+                  <thead>
+                    <tr>
+                      <th scope="col">Code</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Manufacturer</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Assigned to</th>
+                      <th scope="col">Department</th>
+                      @if (showsCost(message.assets!)) {
+                        <th scope="col" class="numeric">Purchase cost</th>
+                      }
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (asset of message.assets; track asset.id) {
+                      <tr>
+                        <td class="asset-code">{{ asset.assetCode }}</td>
+                        <td>{{ asset.assetName }}</td>
+                        <td>{{ asset.assetType || '—' }}</td>
+                        <td>{{ asset.manufacturer || '—' }}</td>
+                        <td>
+                          <span class="status" [attr.data-status]="asset.status">
+                            {{ asset.status }}
+                          </span>
+                        </td>
+                        <td>{{ asset.employeeName || '—' }}</td>
+                        <td>{{ asset.departmentName || '—' }}</td>
+                        @if (showsCost(message.assets!)) {
+                          <td class="numeric">{{ asset.purchaseCost | number: '1.2-2' }}</td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (message.totalCount && message.totalCount > message.assets!.length) {
+                <p class="table-note">
+                  Showing {{ message.assets!.length }} of {{ message.totalCount }}.
+                  Narrow your question to see fewer.
+                </p>
+              }
+            }
+          </div>
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="row">
+          <span class="avatar" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13">
+              <path d="M10 1.5c.3 0 .55.2.62.5l1.2 4.9 4.9 1.2c.3.07.5.32.5.62s-.2.55-.5.62l-4.9 1.2-1.2 4.9c-.07.3-.32.5-.62.5s-.55-.2-.62-.5l-1.2-4.9-4.9-1.2c-.3-.07-.5-.32-.5-.62s.2-.55.5-.62l4.9-1.2 1.2-4.9c.07-.3.32-.5.62-.5Z"/>
+            </svg>
+          </span>
+
+          <div class="bubble" aria-live="polite">
+            <span class="typing">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="composer">
+      <input
+        type="text"
+        class="composer__input"
+        placeholder="Ask about your assets…"
+        maxlength="500"
+        aria-label="Ask about your assets"
+        [ngModel]="question()"
+        (ngModelChange)="question.set($event)"
+        (keyup.enter)="ask()"
+        [disabled]="loading()"
+      />
+
+      <button
+        type="button"
+        class="composer__send"
+        (click)="ask()"
+        [disabled]="loading() || !question().trim()"
+        aria-label="Send question"
+      >
+        <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+          <path d="M17 3 3 9.5l5.8 1.9L11 17l2-6.5L17 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+</div>

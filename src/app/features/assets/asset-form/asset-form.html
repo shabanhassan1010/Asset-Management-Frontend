@@ -1,0 +1,183 @@
+<!-- src/app/features/assets/asset-create/asset-create.html -->
+<div class="page" style="max-width:820px">
+
+  <div class="page-head">
+    <div>
+      <a class="hint" routerLink="/assets">← Back to assets</a>
+      <h1 style="margin-top:6px">New asset</h1>
+      <p>Fields marked <span class="req">*</span> are required.</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    @if (successMessage()) {
+      <div class="alert alert-info" style="margin-bottom:16px">✓ {{ successMessage() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+    }
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head"><h2>Identity</h2></div>
+      <div class="card-body">
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="assetCode">Asset code <span class="req">*</span></label>
+            <input id="assetCode" class="input" formControlName="assetCode" placeholder="IT-LAP-0001"
+                   [class.invalid]="form.controls.assetCode.touched && form.controls.assetCode.invalid">
+            @if (form.controls.assetCode.touched && form.controls.assetCode.hasError('required')) {
+              <span class="field-error">Asset code is required.</span>
+            }
+            <span class="hint">Must be unique across the register.</span>
+          </div>
+
+          <div class="field">
+            <label for="assetName">Asset name <span class="req">*</span></label>
+            <input id="assetName" class="input" formControlName="assetName"
+                   [class.invalid]="form.controls.assetName.touched && form.controls.assetName.invalid">
+            @if (form.controls.assetName.touched && form.controls.assetName.hasError('required')) {
+              <span class="field-error">Asset name is required.</span>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" class="textarea" formControlName="description"></textarea>
+        </div>
+
+        <div class="grid grid-3" style="margin-bottom:0">
+          <div class="field" style="margin-bottom:0">
+            <label for="categoryId">Category <span class="req">*</span></label>
+            <select id="categoryId" class="select" formControlName="categoryId"
+                    [class.invalid]="form.controls.categoryId.touched && form.controls.categoryId.invalid">
+              <option value="">Select…</option>
+              @for (item of lookups()?.categories ?? []; track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+            @if (form.controls.categoryId.touched && form.controls.categoryId.hasError('required')) {
+              <span class="field-error">Category is required.</span>
+            }
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <label for="assetTypeId">Type <span class="req">*</span></label>
+            <select id="assetTypeId" class="select" formControlName="assetTypeId"
+                    [class.invalid]="form.controls.assetTypeId.touched && form.controls.assetTypeId.invalid">
+              <option value="">Select…</option>
+              @for (item of lookups()?.assetTypes ?? []; track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+            @if (form.controls.assetTypeId.touched && form.controls.assetTypeId.hasError('required')) {
+              <span class="field-error">Type is required.</span>
+            }
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <label for="status">Status <span class="req">*</span></label>
+            <select id="status" class="select" formControlName="status">
+              @for (item of statuses; track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+            <span class="hint">Retired is set by the Retire action, not here.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head"><h2>Hardware &amp; purchase</h2></div>
+      <div class="card-body">
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="manufacturer">Manufacturer</label>
+            <input id="manufacturer" class="input" formControlName="manufacturer">
+          </div>
+          <div class="field">
+            <label for="model">Model</label>
+            <input id="model" class="input" formControlName="model">
+          </div>
+          <div class="field">
+            <label for="serialNumber">Serial number</label>
+            <input id="serialNumber" class="input" formControlName="serialNumber">
+            <span class="hint">Must be unique when supplied.</span>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-bottom:0">
+          <div class="field" style="margin-bottom:0">
+            <label for="purchaseDate">Purchase date</label>
+            <input id="purchaseDate" class="input" type="date" formControlName="purchaseDate">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label for="purchaseCost">Purchase cost (EGP)</label>
+            <input id="purchaseCost" class="input" type="number" min="0" step="0.01" formControlName="purchaseCost">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label for="warrantyExpiryDate">Warranty expiry</label>
+            <input id="warrantyExpiryDate" class="input" type="date" formControlName="warrantyExpiryDate">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head">
+        <h2>Assignment</h2>
+        <span class="spacer"></span>
+        <span class="hint">Leave empty for an unassigned asset</span>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-3" style="margin-bottom:0">
+          <div class="field" style="margin-bottom:0">
+            <label for="departmentId">Department</label>
+            <select id="departmentId" class="select" formControlName="departmentId">
+              <option value="">Unassigned</option>
+              @for (item of lookups()?.departments ?? []; track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <label for="assignedEmployeeId">Employee</label>
+            <select id="assignedEmployeeId" class="select" formControlName="assignedEmployeeId">
+              <option value="">Unassigned</option>
+              @for (item of availableEmployees(); track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+            @if (!form.controls.departmentId.value) {
+              <span class="hint">Pick a department first.</span>
+            } @else if (availableEmployees().length === 0) {
+              <span class="hint">No employees in this department.</span>
+            }
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <label for="locationId">Location</label>
+            <select id="locationId" class="select" formControlName="locationId">
+              <option value="">Unassigned</option>
+              @for (item of lookups()?.locations ?? []; track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-primary" type="submit"
+              [disabled]="submitting() || !!successMessage() || form.invalid">
+        @if (submitting()) { <span class="spinner"></span> Creating… } @else { Create asset }
+      </button>
+      <a class="btn" routerLink="/assets">Cancel</a>
+    </div>
+  </form>
+
+</div>

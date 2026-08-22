@@ -1,0 +1,185 @@
+<!-- src/app/features/employees-tab/employees-tab.html -->
+
+@if (errorMessage()) {
+  <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+}
+
+<!-- فورم الإضافة/التعديل — بيظهر فوق الجدول زي باقي الشاشة -->
+@if (editingId() !== null) {
+  <form class="card" style="margin-bottom:16px" [formGroup]="form" (ngSubmit)="save()">
+    <div class="card-head">
+      <h2>{{ editingId() === 0 ? 'New' : 'Edit' }} employee</h2>
+    </div>
+
+    <div class="card-body">
+      @if (loadingForm()) {
+        <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">Loading employee…</p></div>
+      } @else {
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="employeeCode">Employee code <span class="req">*</span></label>
+            <input id="employeeCode" class="input" formControlName="employeeCode" placeholder="EMP-0014"
+                   [class.invalid]="form.controls.employeeCode.touched && form.controls.employeeCode.invalid">
+            @if (editingId() !== 0) {
+              <span class="hint">The code stays with the employee and cannot be changed.</span>
+            }
+            @if (form.controls.employeeCode.touched && form.controls.employeeCode.invalid) {
+              <span class="field-error">Employee code is required, 30 characters or fewer.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="fullName">Full name <span class="req">*</span></label>
+            <input id="fullName" class="input" formControlName="fullName" placeholder="Hassan Ali"
+                   [class.invalid]="form.controls.fullName.touched && form.controls.fullName.invalid">
+            @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+              <span class="field-error">Full name is required, 200 characters or fewer.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input id="email" type="email" class="input" formControlName="email" placeholder="hassan.ali@example.com"
+                   [class.invalid]="form.controls.email.touched && form.controls.email.invalid">
+            @if (form.controls.email.touched && form.controls.email.invalid) {
+              <span class="field-error">Enter a valid email. Each employee needs their own.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input id="phone" class="input" formControlName="phone" placeholder="01212121212">
+          </div>
+
+          <div class="field">
+            <label for="departmentId">Department <span class="req">*</span></label>
+            <select id="departmentId" class="input" formControlName="departmentId"
+                    [class.invalid]="form.controls.departmentId.touched && form.controls.departmentId.invalid">
+              <option [value]="0" disabled>Select a department</option>
+              @for (department of activeDepartments(); track department.id) {
+                <option [value]="department.id">{{ department.name }}</option>
+              }
+            </select>
+            @if (form.controls.departmentId.touched && form.controls.departmentId.invalid) {
+              <span class="field-error">Pick the department this employee sits in.</span>
+            }
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn btn-primary" type="submit" [disabled]="saving() || form.invalid">
+            @if (saving()) { <span class="spinner"></span> Saving… } @else { Save }
+          </button>
+          <button class="btn" type="button" (click)="closeForm()">Cancel</button>
+        </div>
+      }
+    </div>
+  </form>
+}
+
+<div class="card">
+  <div class="card-head">
+    <h2>Employees</h2>
+    <span class="spacer"></span>
+    <span class="hint">{{ totalCount() }} record{{ totalCount() === 1 ? '' : 's' }}</span>
+  </div>
+
+  <!-- بحث وفلاتر — الموظفين مش قايمة كاملة زي باقي الـ lookups -->
+  <div class="card-body" style="padding-bottom:0">
+    <div class="row" style="gap:8px;flex-wrap:wrap">
+      <input class="input" type="search" [formControl]="searchControl"
+             placeholder="Search by name or code" style="flex:1;min-width:200px">
+
+      <select class="input" style="width:auto"
+              [value]="departmentFilter() ?? ''"
+              (change)="onDepartmentFilter($any($event.target).value)">
+        <option value="">All departments</option>
+        @for (department of departments(); track department.id) {
+          <option [value]="department.id">{{ department.name }}</option>
+        }
+      </select>
+
+      <select class="input" style="width:auto"
+              [value]="statusFilter() === null ? '' : statusFilter()"
+              (change)="onStatusFilter($any($event.target).value)">
+        <option value="">All statuses</option>
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
+      </select>
+
+      @if (hasFilters()) {
+        <button type="button" class="btn btn-sm btn-ghost" (click)="clearFilters()">Clear filters</button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+  } @else if (rows().length === 0) {
+    <div class="state">
+      <div class="icon">∅</div>
+      @if (hasFilters()) {
+        <h3>No matches</h3>
+        <p>No employees match these filters.</p>
+      } @else {
+        <h3>Nothing here yet</h3>
+        <p>Add the first employee to start assigning assets.</p>
+      }
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th style="width:1%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.id) {
+            <tr [class.dim]="!row.isActive">
+              <td><strong>{{ row.employeeName }}</strong></td>
+              <td class="hint">{{ row.employeeCode }}</td>
+              <td class="hint">{{ row.departmentName }}</td>
+              <td>
+                <span class="badge" [class.badge-available]="row.isActive" [class.badge-retired]="!row.isActive">
+                  {{ row.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="row" style="gap:4px;flex-wrap:nowrap">
+                  <button type="button" class="btn btn-sm btn-ghost" (click)="startEdit(row)">Edit</button>
+                  <button type="button" class="btn btn-sm btn-ghost" (click)="toggleStatus(row)">
+                    {{ row.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="card-body">
+        <div class="row" style="gap:8px">
+          <span class="hint">Page {{ pageNumber() }} of {{ totalPages() }}</span>
+          <span class="spacer"></span>
+          <button type="button" class="btn btn-sm" [disabled]="pageNumber() === 1"
+                  (click)="goToPage(pageNumber() - 1)">Previous</button>
+          <button type="button" class="btn btn-sm" [disabled]="pageNumber() >= totalPages()"
+                  (click)="goToPage(pageNumber() + 1)">Next</button>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<div class="alert alert-info" style="margin-top:16px">
+  <strong>How employee status works.</strong> Employees are never deleted — deactivating flips a flag, so they
+  drop out of the pickers on new assignments while the assets they already hold stay readable. The server
+  refuses to deactivate anyone who still has assets assigned to them.
+</div>

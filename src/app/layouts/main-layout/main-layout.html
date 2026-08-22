@@ -1,0 +1,48 @@
+<!-- src/app/layouts/main-layout/main-layout.html -->
+<div class="shell" [class.nav-open]="navOpen()">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">AM</div>
+      <div>
+        <div class="brand-name">Asset Manager</div>
+        <div class="brand-sub">KINANA</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      @for (item of navItems(); track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" (click)="closeNav()">
+          <span class="ico">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+          @if (item.adminOnly) {
+            <span class="badge badge-admin" style="margin-left:auto">Admin</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="who">
+      <div class="avatar">{{ initials() }}</div>
+      <div style="min-width:0">
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">{{ displayName() }}</div>
+        <span class="badge" [class.badge-admin]="isAdmin()" [class.badge-user]="!isAdmin()">
+          {{ roleLabel() }}
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="btn btn-ghost menu-btn" (click)="toggleNav()" aria-label="Open menu">☰</button>
+      <span class="spacer"></span>
+      <a class="btn btn-ghost btn-sm" routerLink="/profile">Profile</a>
+      <button type="button" class="btn btn-sm" (click)="signOut()">Sign out</button>
+    </header>
+
+    <router-outlet />
+  </div>
+
+  <div class="scrim" (click)="closeNav()"></div>
+</div>
