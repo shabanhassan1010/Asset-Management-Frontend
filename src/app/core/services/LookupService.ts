@@ -7,13 +7,15 @@ import { API } from '../api/api-endpoints';
 import { ApiResponse } from '../models/Api.Model';
 
 @Injectable({ providedIn: 'root' })
-export class LookupService {
+export class LookupService 
+{
   private http = inject(HttpClient);
  
   failedLookups = signal<string[]>([]);
   private cache$?: Observable<AssetLookups>;
  
-  getAll(): Observable<AssetLookups> {
+  getAll(): Observable<AssetLookups> 
+  {
     if (!this.cache$) {
       
       this.cache$ = forkJoin({
@@ -27,11 +29,13 @@ export class LookupService {
     return this.cache$;
   }
  
-  clearCache(): void {
+  clearCache(): void 
+  {
     this.cache$ = undefined;
   }
  
-  private list(url: string, nameField: string): Observable<LookupItem[]> {
+  private list(url: string, nameField: string): Observable<LookupItem[]> 
+  {
     return this.http.get<unknown>(url).pipe(
       map(response => {
         const body = response as Record<string, unknown>;

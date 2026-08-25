@@ -8,10 +8,12 @@ import { API } from '../api/api-endpoints';
 @Injectable({
   providedIn: 'root',
 })
-export class AIService {
+export class AIService 
+{
     private readonly http = inject(HttpClient);
 
-  ask(question: string): Observable<ApiResponse<AssetQuestionResponse>> {
+  ask(question: string): Observable<ApiResponse<AssetQuestionResponse>> 
+  {
     return this.http.post<ApiResponse<AssetQuestionResponse>>(API.ai.ask, { question });
   }
 }
