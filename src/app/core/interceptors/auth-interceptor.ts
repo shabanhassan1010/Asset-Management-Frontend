@@ -12,7 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // req: The current HTTP request.
   // next: Sends the request to the next interceptor or to the backend.
 
-  const auth = inject(Auth); // Gets an instance of the Auth service using Angular Dependency Injection.
+  const auth = inject(Auth); // Gets an instance of the Auth service using Angular Dependency Injection......
   const router = inject(Router); // Gets an instance of Angular Router using Dependency Injection.
 
   // Checks whether the current request is a Login or Refresh request. We do not add the access token to these requests.
