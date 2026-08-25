@@ -7,11 +7,14 @@ import { API } from '../api/api-endpoints';
 @Injectable({
   providedIn: 'root',
 })
-export class DashboardService {
+export class DashboardService 
+{
   private http = inject(HttpClient);
 
 
-  getSummary(): Observable<DashboardSummary> {
+  getSummary(): Observable<DashboardSummary> 
+  {
     return this.http.get<DashboardSummary>(API.dashboard.summary);
   }
+  
 }
