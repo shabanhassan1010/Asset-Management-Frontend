@@ -16,7 +16,6 @@ export interface LoginRequest {
   password: string;
 }
 
-// نفس الشكل بيرجع من /auth/login ومن /auth/refresh
 export interface AuthResponse {
   accessToken: string;
   accessTokenExpiresAtUtc: string;

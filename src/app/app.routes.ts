@@ -13,10 +13,11 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
+     // loadComponent: work using Lazy Loading which mean Angular does not need reload Fully [Login Compoent] in startup
         loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
-    ],
+    ], 
   },
 
   {

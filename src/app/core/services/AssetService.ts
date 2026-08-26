@@ -48,15 +48,15 @@ export class AssetService {
   }
  
  
-retire(id: number, request: RetireAssetRequest): Observable<ApiResponse<RetireAssetResponse>>
-{
-  return this.http.post<ApiResponse<RetireAssetResponse>>(API.assets.retire(id), request);
-}
+  retire(id: number, request: RetireAssetRequest): Observable<ApiResponse<RetireAssetResponse>>
+  {
+    return this.http.post<ApiResponse<RetireAssetResponse>>(API.assets.retire(id), request);
+  }
 
 
  
-private toParams(filters: AssetFilters): HttpParams 
-{
+ private toParams(filters: AssetFilters): HttpParams 
+ {
     let params = new HttpParams().set('pageNumber', filters.pageNumber)
                                  .set('pageSize', filters.pageSize)
                                  .set('sortBy', filters.sortBy)

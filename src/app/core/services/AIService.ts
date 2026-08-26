@@ -10,7 +10,7 @@ import { API } from '../api/api-endpoints';
 })
 export class AIService 
 {
-    private readonly http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   ask(question: string): Observable<ApiResponse<AssetQuestionResponse>> 
   {
