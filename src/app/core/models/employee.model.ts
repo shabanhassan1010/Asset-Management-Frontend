@@ -1,4 +1,3 @@
-// src/app/core/models/employee.model.ts
 export interface EmployeePagedResult<T> {
   items: T[];
   totalCount: number;

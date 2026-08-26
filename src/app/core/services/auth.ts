@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthResponse, CurrentUser, LoginRequest, UserRole } from '../models/auth.model';
+// shareReplay : Use it in refresh token when more then Subscriber comman in the same HTTP request instead of sent many requests
 import { finalize, Observable, shareReplay, tap } from 'rxjs';
 import { API } from '../api/api-endpoints';
 
@@ -10,18 +11,16 @@ const ACCESS_TOKEN_KEY = 'ams.accessToken';
 const REFRESH_TOKEN_KEY = 'ams.refreshToken';
 const USER_KEY = 'ams.user';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({providedIn: 'root'})
 export class Auth 
 {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  currentUser = signal<CurrentUser | null>(this.readStoredUser());
+  currentUser = signal<CurrentUser | null>(this.readStoredUser());  // store the currentUser
 
-  isLoggedIn = computed(() => this.currentUser() !== null);
-  isAdmin = computed(() => this.currentUser()?.role === UserRole.Admin);
+  isLoggedIn  = computed(() => this.currentUser() !== null);
+  isAdmin     = computed(() => this.currentUser()?.role === UserRole.Admin);
   displayName = computed(() => this.currentUser()?.userName ?? '');
 
 
@@ -56,12 +55,14 @@ export class Auth
 
   logout(): void 
   {
+    // Get refreshToken
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-
 
     if (refreshToken) 
     {
-      this.http.post(API.auth.logout, { refreshToken }).subscribe({ error: () => {}, });
+      // I will sent request into logout Endpoint
+      this.http.post(API.auth.logout, { refreshToken })
+               .subscribe({ error: () => {}, });  // I Use subscribe Here because [Http Observable] will not exceute if subscription no Found
     }
 
     this.clearSession();
@@ -105,3 +106,28 @@ export class Auth
     }
   }
 }
+
+
+/*
+                                                                  Auth Service
+                                                                      |
+                                                    ┌─────────────────┼─────────────────┐
+                                                    ↓                 ↓                 ↓
+                                                  Login             Logout            Refresh
+                                                    |                 |                 |
+                                                    ↓                 ↓                 ↓
+                                               storeSession()    clearSession()    storeSession()
+                                                    |                 |                 |
+                                                    └─────────────────┼─────────────────┘
+                                                                      ↓
+                                                                  localStorage
+                                                                      +
+                                                                  currentUser
+                                                                      |
+                                                            ┌──────────┼──────────┐
+                                                            ↓          ↓          ↓
+                                                        isLoggedIn   isAdmin   displayName
+                                                            |          |
+                                                            ↓          ↓
+                                                        authGuard   adminGuard
+*/

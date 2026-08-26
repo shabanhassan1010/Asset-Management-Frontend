@@ -1,4 +1,3 @@
-// src/app/core/models/user.model.ts
 import { UserRole } from './auth.model';
 
 export interface UserListItem {
@@ -11,8 +10,7 @@ export interface UserListItem {
   createdAt: string;
 }
 
-// شكل PagedResult<T> بتاع اليوزرز — لاحظ إنه مختلف عن بتاع الأصول
-// (items/totalCount هنا مقابل data/totalItems هناك).
+
 export interface PagedUsers {
   items: UserListItem[];
   totalCount: number;

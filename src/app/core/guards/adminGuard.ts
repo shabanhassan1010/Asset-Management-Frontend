@@ -4,9 +4,26 @@ import { inject } from '@angular/core';
 import { Auth } from '../services/auth';
 
 
-export const adminGuard: CanMatchFn = () => {
+export const adminGuard: CanMatchFn = () => 
+{
   const auth = inject(Auth);
   const router = inject(Router);
 
-  return auth.isAdmin() ? true : router.createUrlTree(['/forbidden']);
+  
+  if(auth.isAdmin()){
+    return true;
+  }
+  return router.createUrlTree(['/forbidden']);   // UrlTree == Navigate but use UrlTree because router work fine with it 
 };
+
+
+/*
+                                                                Logged In User
+                                                                      ↓
+                                                                  adminGuard
+                                                                       ↓
+                                                                  ┌────┴────┐
+                                                                  Admin     User
+                                                                  ↓          ↓
+                                                                Allow     Forbidden
+*/
