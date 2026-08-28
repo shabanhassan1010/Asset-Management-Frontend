@@ -25,8 +25,6 @@ export class AssetList implements OnInit {
   isAdmin = this.auth.isAdmin;
   statuses = ASSET_STATUSES;
 
-  // نسخة من القيم الافتراضية — مش نفس الكائن، عشان resetFilters()
-  // ما يبوّظش الثابت الأصلي.
   filters = signal<AssetFilters>({ ...DEFAULT_FILTERS });
 
   items = signal<AssetListItem[]>([]);
@@ -36,10 +34,8 @@ export class AssetList implements OnInit {
 
   lookups = signal<AssetLookups | null>(null);
 
-  // الأصل اللي الديالوج مفتوح عليه — null معناها الديالوج مقفول
   retiringAsset = signal<AssetListItem | null>(null);
 
-  // البحث بيتأخر 350ms عشان ما نبعتش نداء مع كل حرف.
   private searchInput = new Subject<string>();
 
   lastPage = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.filters().pageSize)));
@@ -52,36 +48,20 @@ export class AssetList implements OnInit {
     Math.min(this.filters().pageNumber * this.filters().pageSize, this.totalCount()),
   );
 
-  // بيتحدد إذا كان فيه أي فلتر شغال — عشان نظهر زرار "Clear filters".
   hasActiveFilters = computed(() => {
     const f = this.filters();
-    return !!(
-      f.search ||
-      f.categoryId ||
-      f.assetTypeId ||
-      f.statusId ||
-      f.departmentId ||
-      f.locationId ||
-      f.employeeId ||
-      f.includeRetired
-    );
+    return !!( f.search ||  f.categoryId ||f.assetTypeId || f.statusId ||
+               f.departmentId ||f.locationId || f.employeeId || f.includeRetired);
   });
 
   constructor() {
-    this.searchInput
-      .pipe(
-        debounceTime(350),
-        distinctUntilChanged(),
-        takeUntilDestroyed(), // بيلغي الاشتراك لوحده لما الكومبوننت يتقفل
-      )
-      .subscribe((value) => this.patchFilters({ search: value }));
+    this.searchInput.pipe(debounceTime(350),distinctUntilChanged(),takeUntilDestroyed(),)
+                    .subscribe((value) => this.patchFilters({ search: value }));
   }
 
   ngOnInit(): void {
     this.lookupService.getAll().subscribe({
       next: (data) => this.lookups.set(data),
-      // فشل الـ lookups بيقلل الفلاتر بس، مش بيمنع عرض الجدول —
-      // بس بنطبع الغلطة عشان ما تتبلعش من غير ما نعرف.
       error: (err) => console.error('lookups failed', err),
     });
     this.load();
@@ -109,7 +89,6 @@ export class AssetList implements OnInit {
     this.searchInput.next(value);
   }
 
-  /** أي تغيير في فلتر بيرجّعنا لأول صفحة — وإلا ممكن تقف على صفحة مش موجودة. */
   patchFilters(changes: Partial<AssetFilters>): void {
     this.filters.update((current) => ({ ...current, ...changes, pageNumber: 1 }));
     this.load();
@@ -124,7 +103,6 @@ export class AssetList implements OnInit {
     this.patchFilters({ pageSize: +size });
   }
 
-  /** أول ضغطة على العمود = تصاعدي، والتانية على نفس العمود بتعكس الاتجاه. */
   sortBy(column: string): void {
     const current = this.filters();
     this.patchFilters({
@@ -135,7 +113,8 @@ export class AssetList implements OnInit {
 
   sortArrow(column: string): string {
     const f = this.filters();
-    if (f.sortBy !== column) return '';
+    if (f.sortBy !== column) 
+      return '';
     return f.sortDesc ? ' ↓' : ' ↑';
   }
 
@@ -171,8 +150,6 @@ export class AssetList implements OnInit {
 
   onRetired(): void {
     this.retiringAsset.set(null);
-    // إعادة التحميل عشان الحالة والـ rowVersion يتحدثوا — الصف
-    // اللي في الذاكرة بقى قديم بعد الحفظ.
     this.load();
   }
 }
