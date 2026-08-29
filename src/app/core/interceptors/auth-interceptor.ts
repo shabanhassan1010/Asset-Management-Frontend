@@ -4,7 +4,7 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';                    // inject(): Allows us to get Angular services using Dependency Injection.
 import { Router } from '@angular/router';                  // Router: Used to navigate between Angular application routes.
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { Auth } from '../services/auth';                   // Auth: Our authentication service that manages tokens, refresh, logout, etc.
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -17,11 +17,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Checks whether the current request is a Login or Refresh request. We do not add the access token to these requests.
   const isAuthCall = req.url.includes('/auth/login') || req.url.includes('/auth/refresh');
+  
+const prepare$: Observable<unknown> = (!isAuthCall && auth.isAccessTokenExpiring()) ? auth.refresh() : of(null);
 
-  // If this is a Login/Refresh request, use the original request. Otherwise, add the current access token to the request.
-  const request = isAuthCall ? req : withToken(req, auth.accessToken);
+  return prepare$.pipe(
+    // The token is read HERE, after any refresh has finished. Reading it before
+    // the pipe would attach the old, expired one.
+    switchMap(() => next(isAuthCall ? req : withToken(req, auth.accessToken))),
 
-  return next(request).pipe(
     catchError((error: HttpErrorResponse) => 
     {   // Sends the request to the backend and starts processing the response.
       if (error.status === 403) 
