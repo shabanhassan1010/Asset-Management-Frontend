@@ -3,7 +3,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AssetListItem } from '../../../core/models/Asset.model';
+import { AssetListItem,ASSET_STATUSES,RETIRED_STATUS_ID } from '../../../core/models/Asset.model';
 import { AssetLookups } from '../../../core/models/Lookup.model';
 import { AssetService } from '../../../core/services/AssetService';
 import { LookupService } from '../../../core/services/LookupService';
@@ -33,11 +33,17 @@ export class AssetEdit {
  
   private selectedDepartmentId = signal<number | null>(null);
  
+  editableStatuses = ASSET_STATUSES.filter(s => s.id !== RETIRED_STATUS_ID);
+
+  isRetired = computed(() => this.asset()?.statusId === RETIRED_STATUS_ID);
+
   form = this.fb.nonNullable.group({
     assetCode: ['', [Validators.required, Validators.maxLength(50)]],
     assetName: ['', [Validators.required, Validators.maxLength(200)]],
     description: ['', Validators.maxLength(1000)],
     categoryId: ['', Validators.required],
+    assetTypeId: ['', Validators.required],        
+    status: ['', Validators.required],             
     manufacturer: ['', Validators.maxLength(100)],
     model: ['', Validators.maxLength(100)],
     serialNumber: ['', Validators.maxLength(100)],
@@ -80,6 +86,8 @@ export class AssetEdit {
           assetName: data.assetName,
           description: data.description ?? '',
           categoryId: data.categoryId.toString(),
+          assetTypeId: data.assetTypeId.toString(),      
+          status: data.statusId.toString(),
           manufacturer: data.manufacturer ?? '',
           model: data.model ?? '',
           serialNumber: data.serialNumber ?? '',
@@ -90,6 +98,10 @@ export class AssetEdit {
           assignedEmployeeId: data.employeeId?.toString() ?? '',
           locationId: data.locationId?.toString() ?? '',
         });
+
+        if (data.statusId === RETIRED_STATUS_ID) {
+          this.form.disable();
+        }
         this.loading.set(false);
       },
       error: () => {
@@ -130,8 +142,8 @@ export class AssetEdit {
       assetName: v.assetName.trim(),
       description: v.description.trim() || null,
       categoryId: +v.categoryId,
-      assetTypeId: current.assetTypeId,
-      status: current.statusId,
+      assetTypeId: +v.assetTypeId,
+      status: +v.status,
       manufacturer: v.manufacturer.trim() || null,
       model: v.model.trim() || null,
       serialNumber: v.serialNumber.trim() || null,
