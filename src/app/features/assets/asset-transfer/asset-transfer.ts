@@ -31,7 +31,6 @@ private fb = inject(FormBuilder);
   errorMessage = signal('');
   successMessage = signal('');
  
-  // القسم المختار حالياً — signal منفصل عشان الـ cascade يتحدّث لوحده.
   private selectedDepartmentId = signal<number | null>(null);
  
   form = this.fb.nonNullable.group({
@@ -41,10 +40,6 @@ private fb = inject(FormBuilder);
     reason: ['', [Validators.required, Validators.maxLength(500)]],
   });
  
-  /**
-   * الموظفين المتاحين = موظفي القسم المختار بس.
-   * من غير قسم مفيش موظفين — الموظف تابع لقسم، فاختياره قبل القسم ملوش معنى.
-   */
   availableEmployees = computed(() => {
     const departmentId = this.selectedDepartmentId();
     if (!departmentId) return [];
@@ -52,15 +47,11 @@ private fb = inject(FormBuilder);
   });
  
   constructor() {
-    // أول ما القسم يتغيّر، بنفضّي الموظف لو مبقاش تابع للقسم الجديد —
-    // وإلا هيتبعت موظف من قسم تاني خالص.
     this.form.controls.toDepartmentId.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe(value => {
         this.selectedDepartmentId.set(value ? +value : null);
  
-        // بعد تغيير القسم: لو الموظف الحالي مش تابع للقسم الجديد،
-        // بنختار أول موظف في القسم تلقائياً — والقايمة مالهاش خيار "بدون موظف".
         const employees = this.availableEmployees();
         const currentId = this.form.controls.toEmployeeId.value;
         const stillValid = employees.some(e => e.id.toString() === currentId);
@@ -97,7 +88,6 @@ private fb = inject(FormBuilder);
     });
   }
  
-  /** التحويل لازم يغيّر مكان الأصل فعلاً — وإلا هو سطر فاضي في التاريخ. */
   hasChanges(): boolean {
     const a = this.asset();
     const v = this.form.getRawValue();
@@ -132,7 +122,6 @@ private fb = inject(FormBuilder);
     }).subscribe({
       next: response => {
         this.submitting.set(false);
-        // بنعرض رسالة الباك اند نفسها لو موجودة، وبعدين نرجّع لصفحة الأصل.
         this.successMessage.set(response?.message || 'Transfer recorded successfully.');
         setTimeout(() => this.router.navigate(['/assets', current.id]), 1200);
       },

@@ -1,6 +1,6 @@
 // src/app/features/assets/asset-detail/asset-detail.ts
 import { Component, OnInit, inject, input, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { AssetService } from '../../../core/services/AssetService';
@@ -8,16 +8,14 @@ import { AssetListItem, AssetTransfer, RETIRED_STATUS_ID } from '../../../core/m
 
 @Component({
   selector: 'app-asset-detail',
-  imports: [RouterLink, DecimalPipe],
+  standalone: true,                                     
+  imports: [RouterLink, DecimalPipe , DatePipe],
   templateUrl: './asset-detail.html',
 })
 export class AssetDetail implements OnInit {
   private assetService = inject(AssetService);
   private auth = inject(Auth);
   private router = inject(Router);
-
-  // withComponentInputBinding في app.config بيحقن :id من الراوت هنا مباشرة،
-  // فمش محتاجين ActivatedRoute.
   id = input.required<string>();
 
   isAdmin = this.auth.isAdmin;
@@ -47,7 +45,6 @@ export class AssetDetail implements OnInit {
       },
     });
 
-    // التاريخ بيتحمّل بالتوازي — فشله ما يمنعش عرض بيانات الأصل.
     this.assetService.getTransfers(+this.id()).subscribe({
       next: (rows) => this.transfers.set(rows),
       error: () => this.transfers.set([]),
@@ -75,11 +72,10 @@ export class AssetDetail implements OnInit {
       .subscribe({
         next: () => {
           this.retiring.set(false);
-          this.load(); // بنعيد التحميل عشان الحالة والـ rowVersion يتحدّثوا
+          this.load(); 
         },
         error: (error) => {
           this.retiring.set(false);
-          // 409 = حد تاني عدّل الأصل قبلنا (R3.5)
           this.errorMessage.set(
             error.status === 409
               ? 'Someone else changed this asset while you were viewing it. Reload and try again.'

@@ -25,7 +25,6 @@
         </p>
       </div>
 
-      <!-- R6.5 — أزرار الأدمن بتختفي لليوزر. الحماية الحقيقية في الـ API. -->
       @if (isAdmin() && !isRetired()) {
         <div class="row">
           <a class="btn" [routerLink]="['/assets', a.id, 'edit']">Edit</a>
@@ -58,11 +57,10 @@
             <dt>Model</dt><dd>{{ a.model || '—' }}</dd>
             <dt>Serial number</dt><dd class="mono">{{ a.serialNumber || '—' }}</dd>
             <dt>Description</dt><dd>{{ a.description || '—' }}</dd>
-            <dt>Purchase date</dt><dd class="mono">{{ a.purchaseDate || '—' }}</dd>
-            <dt>Warranty expires</dt><dd class="mono">{{ a.warrantyExpiryDate || '—' }}</dd>
+            <dt>Purchase date</dt><dd class="mono">{{ a.purchaseDate ? (a.purchaseDate | date:'dd MMM yyyy') : '—' }}</dd>
+            <dt>Warranty expires</dt><dd class="mono">{{ a.warrantyExpiryDate ? (a.warrantyExpiryDate | date:'dd MMM yyyy') : '—' }}</dd>
 
             <dt>Purchase cost</dt>
-            <!-- المفتاح غايب من الـ JSON لليوزر (R2.6) -->
             @if (a.purchaseCost != null) {
               <dd class="mono">{{ a.purchaseCost | number:'1.2-2' }} EGP</dd>
             } @else {
@@ -85,7 +83,6 @@
 
     </div>
 
-    <!-- R3.2 — تاريخ التحويلات، متاح للدورين -->
     <div class="card" style="margin-top:16px">
       <div class="card-head">
         <h2>Transfer history</h2>
@@ -106,7 +103,7 @@
             <tbody>
               @for (row of transfers(); track row.id) {
                 <tr>
-                  <td class="mono">{{ row.transferDate }}</td>
+                  <td class="mono">{{  row.transferDate | date:'dd MMM yyyy, hh:mm a'}}</td>
                   <td class="hint">{{ row.fromDepartmentName || '—' }} → <strong>{{ row.toDepartmentName || '—' }}</strong></td>
                   <td class="hint">{{ row.fromEmployeeName || '—' }} → <strong>{{ row.toEmployeeName || '—' }}</strong></td>
                   <td class="hint">{{ row.fromLocationName || '—' }} → <strong>{{ row.toLocationName || '—' }}</strong></td>
@@ -118,7 +115,6 @@
         </div>
       }
     </div>
-
   }
 
 </div>
