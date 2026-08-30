@@ -44,7 +44,10 @@ a { color: var(--accent); text-decoration: none; cursor: pointer; }
 small { font-size: 12px; }
 
 /* ---------- layout helpers ---------- */
-.page { padding: 24px 28px 48px; max-width: 1400px; }
+.page { padding: 24px 28px 48px;
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto; }
 .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
 .page-head p { margin: 4px 0 0; color: var(--text-2); }
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -207,6 +210,9 @@ tr.dim td { opacity: .55; }
 .filters{display:grid;gap:10px;grid-template-columns:2fr repeat(3,1fr)}
 
 /* ---------- responsive ---------- */
+@media (min-width: 1800px) {
+  .page { max-width: 1750px; padding-inline: 40px; }
+}
 @media (max-width: 1100px) {
   .filters { grid-template-columns: 1fr 1fr; }
 }
