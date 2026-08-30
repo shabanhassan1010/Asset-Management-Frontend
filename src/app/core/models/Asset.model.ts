@@ -116,7 +116,6 @@ export interface UpdateAssetRequest {
   categoryId: number;
 
 
-  assetType: number;
   assetTypeId: number;
 
   status: number;
@@ -126,8 +125,6 @@ export interface UpdateAssetRequest {
   serialNumber: string | null;
   purchaseDate: string | null;
   purchaseCost: number | null;
-
-  currencyCode: string;
 
   warrantyExpiryDate: string | null;
   departmentId: number | null;

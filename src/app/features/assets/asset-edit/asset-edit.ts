@@ -49,7 +49,7 @@ export class AssetEdit {
     locationId: [''],
   });
  
-  // نفس منطق شاشة الـ Transfer: الموظفين المتاحين = موظفي القسم المختار بس.
+
   availableEmployees = computed(() => {
     const departmentId = this.selectedDepartmentId();
     if (!departmentId) return [];
@@ -104,7 +104,7 @@ export class AssetEdit {
     });
   }
  
-  /** R6.4 — بيتنده من unsavedChangesGuard قبل ما يسيب الصفحة. */
+
   canDeactivate(): boolean {
     if (!this.form.dirty || this.successMessage()) return true;
     return confirm('You have unsaved changes. Leave without saving?');
@@ -130,9 +130,6 @@ export class AssetEdit {
       assetName: v.assetName.trim(),
       description: v.description.trim() || null,
       categoryId: +v.categoryId,
-      // AssetType/AssetTypeId مكرّرين في الـ command — بنبعت نفس القيمة الحالية
-      // في الاتنين لأن مفيش شاشة تعديل نوع الأصل (لا يوجد lookup لها).
-      assetType: current.assetTypeId,
       assetTypeId: current.assetTypeId,
       status: current.statusId,
       manufacturer: v.manufacturer.trim() || null,
@@ -140,7 +137,6 @@ export class AssetEdit {
       serialNumber: v.serialNumber.trim() || null,
       purchaseDate: v.purchaseDate || null,
       purchaseCost: v.purchaseCost ? +v.purchaseCost : null,
-      currencyCode: 'EGP',
       warrantyExpiryDate: v.warrantyExpiryDate || null,
       departmentId: v.departmentId ? +v.departmentId : null,
       locationId: v.locationId ? +v.locationId : null,
@@ -149,7 +145,7 @@ export class AssetEdit {
     }).subscribe({
       next: response => {
         this.submitting.set(false);
-        this.form.markAsPristine();   // canDeactivate يبقى يسمح بالخروج من غير تحذير
+        this.form.markAsPristine();  
         this.successMessage.set(response?.message || 'Asset updated successfully.');
         setTimeout(() => this.router.navigate(['/assets', current.id]), 1200);
       },
