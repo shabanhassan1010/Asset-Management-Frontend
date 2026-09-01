@@ -1,4 +1,4 @@
-export type LookupKind = 'category' | 'department' | 'location';
+export type LookupKind = 'category' | 'assetType' | 'department' | 'location';
 
 export interface LookupRow {
   id: number;
@@ -24,6 +24,11 @@ export const LOOKUP_KINDS: LookupKindConfig[] = [
   {
     kind: 'category', title: 'Categories', singular: 'category',
     nameField: 'categoryName', nameLabel: 'Category name',
+    secondaryField: 'description', secondaryLabel: 'Description', secondaryRequired: false,
+  },
+    {
+    kind: 'assetType', title: 'Asset types', singular: 'asset type',
+    nameField: 'assetTypeName', nameLabel: 'Asset type name',
     secondaryField: 'description', secondaryLabel: 'Description', secondaryRequired: false,
   },
   {

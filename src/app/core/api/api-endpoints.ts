@@ -4,13 +4,6 @@ import { environment } from '../../../environments/environment';
 
 const base = environment.apiUrl; // https://localhost:7266/api
 
-/**
- * كل مسارات الـ API في مكان واحد.
- *
- * الباك اند دلوقتي بيستخدم BaseRouter بـ Rule = "api/v1"، و environment.apiUrl
- * بينتهي عند /api — يعني كل مسار هنا لازم يبدأ بـ `${base}/v1/...`
- * من غير أي تكرار لاسم الكونترولر.
- */
 export const API = {
   auth: {
     login:   `${base}/v1/auth/login`,
@@ -55,6 +48,11 @@ export const API = {
       list:                 `${base}/v1/categories`,
       create:               `${base}/v1/categories`,
       byId: (id: number) => `${base}/v1/categories/${id}`,
+    },
+    assetType: {
+      list:                   `${base}/v1/asset-types`,
+      create:                 `${base}/v1/asset-types`,
+      byId:   (id: number) => `${base}/v1/asset-types/${id}`,
     },
     department: {
       list:                 `${base}/v1/departments`,
