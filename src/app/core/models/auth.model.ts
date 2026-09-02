@@ -9,6 +9,11 @@ export interface CurrentUser {
   email: string;
   role: UserRole;
   employeeId: number | null;
+  employeeName: string | null;
+  employeeCode: string | null;
+  departmentName:string| null;
+  isActive: boolean
+  phone: string| null
 }
 
 export interface LoginRequest {

@@ -1,5 +1,5 @@
 <!-- src/app/features/profile/profile.html -->
-<div class="page" style="max-width:640px">
+<div class="page">
 
   <div class="page-head">
     <div>
@@ -14,26 +14,67 @@
     <div class="card card-body"><div class="alert alert-danger">{{ errorMessage() }}</div></div>
   } @else if (profile(); as me) {
 
-    <div class="card">
-      <div class="card-head">
-        <h2>{{ me.userName }}</h2>
+    <div class="card" >
+
+      <div class="profile-header">
+        <div class="profile-avatar">{{ initials(me.userName) }}</div>
+        <div class="profile-name">
+          <h2>{{ me.userName }}</h2>
+          <span class="sub">{{ me.email || 'No email on file' }}</span>
+        </div>
         <span class="spacer"></span>
         <span class="badge" [class.badge-admin]="isAdmin()" [class.badge-user]="!isAdmin()">
           {{ isAdmin() ? 'Admin' : 'User' }}
         </span>
       </div>
+
       <div class="card-body">
-        <dl class="dl">
-          <dt>Username</dt><dd>{{ me.userName }}</dd>
-          <dt>Email</dt><dd>{{ me.email || '—' }}</dd>
-          <dt>Role</dt><dd>{{ isAdmin() ? 'Admin' : 'User' }}</dd>
-          <dt>Linked employee</dt>
-          <dd>{{ me.employeeId ? ('#' + me.employeeId) : 'No employee record linked' }}</dd>
-        </dl>
+
+        <div class="profile-section">
+          <h3 class="profile-section-title">Account</h3>
+          <dl class="dl dl-divided">
+            <dt>Role</dt><dd>{{ isAdmin() ? 'Admin' : 'User' }}</dd>
+            <dt>Account status</dt>
+            <dd>
+              @if (isAccountActive()) {
+                <span class="badge badge-available">Active</span>
+              } @else {
+                <span class="badge badge-off">Inactive</span>
+              }
+            </dd>
+          </dl>
+        </div>
+
+        <div class="profile-section">
+          <h3 class="profile-section-title">Linked employee</h3>
+          @if (me.employeeName) {
+            <dl class="dl dl-divided">
+              <dt>Name</dt>
+              <dd>
+                {{ me.employeeName }}
+              </dd>
+              <dt>code</dt>
+              <dd>
+                {{ me.employeeCode || '—' }}
+              </dd>
+              <dt>Department</dt>
+              <dd>
+                {{ me.departmentName || '—' }}
+              </dd>
+              <dt>Phone</dt>
+              <dd>
+                {{ me.phone || '—' }}
+              </dd>
+            </dl>
+          } @else {
+            <p class="locked">No employee record linked</p>
+          }
+        </div>
+
       </div>
     </div>
 
-    <div class="alert alert-info" style="margin-top:16px">
+    <div class="alert alert-info">
       Roles and account status are managed by an administrator. If something here looks wrong, ask one of them to change it.
     </div>
 
