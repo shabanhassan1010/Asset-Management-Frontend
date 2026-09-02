@@ -35,4 +35,17 @@ export class Profile implements OnInit {
   isAdmin(): boolean {
     return this.profile()?.role === UserRole.Admin;
   }
+
+  isAccountActive(): boolean {
+    return this.profile()?.isActive === true;
+  }
+  
+  initials(name: string): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
 }

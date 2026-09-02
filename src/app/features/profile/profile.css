@@ -1,0 +1,64 @@
+/* src/app/features/profile/profile.css
+   Scoped to this component only — doesn't touch the shared .card / .card-head /
+   .dl rules in styles.css, so Assets/Users pages that reuse those classes
+   are unaffected. */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.profile-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profile-name .sub {
+  color: var(--text-2);
+  font-size: 12.5px;
+}
+
+.profile-section + .profile-section {
+  margin-top: 22px;
+}
+
+.profile-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  margin: 0 0 10px;
+}
+
+/* Subtle divider under each row, same idea as the border under table rows
+   in styles.css — makes an 8-fact list easier to scan line by line. */
+.dl-divided dt,
+.dl-divided dd {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dl-divided dt:last-of-type,
+.dl-divided dd:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}

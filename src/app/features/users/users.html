@@ -153,7 +153,13 @@
       <div class="table-wrap">
         <table class="tbl">
           <thead>
-            <tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th style="width:1%"></th></tr>
+            <tr><th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+              <th style="width:1%"></th></tr>
           </thead>
           <tbody>
             @for (user of users(); track user.userId) {
@@ -165,7 +171,6 @@
                 <td class="hint">{{ user.email || '—' }}</td>
 
                 <td>
-                  <!-- الأدمن مايقدرش يغيّر دور نفسه — نفس قاعدة الباك اند (R1.7) -->
                   <select class="select" style="width:auto"
                           [value]="user.role"
                           [disabled]="isSelf(user) || busyUserId() === user.userId"
