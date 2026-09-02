@@ -1,0 +1,144 @@
+/* src/app/features/auth/login/login.css */
+
+/* ---------- two-column page layout ---------- */
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+}
+
+.login-brand {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: linear-gradient(160deg, var(--accent) 0%, #1d4fbf 100%);
+  color: #fff;
+}
+
+.login-brand-inner {
+  max-width: 420px;
+}
+
+.login-brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .18);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.login-brand-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.login-brand-org {
+  font-size: 12px;
+  color: rgba(255, 255, 255, .65);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.login-brand-headline {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -.01em;
+  margin-bottom: 32px;
+}
+
+.login-features {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-feature {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, .9);
+}
+
+.login-feature-icon {
+  flex: 0 0 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .14);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+
+.login-panel {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+@media (max-width: 900px) {
+  .login-brand { display: none; }
+  .login-panel { flex: 1; width: 100%;  }
+}
+
+/* ---------- login card ---------- */
+.login-card {
+  box-shadow: 0 12px 40px rgba(16, 20, 28, .10);
+}
+
+.login-accent {
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), #6a9bfa);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field .input {
+  padding-right: 56px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 30px;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.password-toggle:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.hero-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hero-rows .hero-row {
+  flex: 1 1 calc(50% - 4px);
+  margin-bottom: 0;
+}

@@ -16,8 +16,6 @@ export class Login {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  // nonNullable عشان الـ value يرجع string مش string|null،
-  // فمش هنحتاج نتعامل مع null في كل مكان.
   form = this.fb.nonNullable.group({
     userName: ['', Validators.required],
     password: ['', Validators.required],
@@ -25,8 +23,9 @@ export class Login {
 
   submitting = signal(false);
   errorMessage = signal('');
+ 
+  showPassword = signal(false);
 
-  // حسابات التجربة — نفس اللي في السيد بتاع الباك اند.
   demoAccounts = [
     { userName: 'admin', password: 'Admin@123', role: 'Admin', badgeClass: 'badge badge-admin' },
     { userName: 'user', password: 'User@123', role: 'User', badgeClass: 'badge badge-user' },
