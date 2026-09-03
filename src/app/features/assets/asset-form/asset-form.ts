@@ -19,7 +19,7 @@ import { LookupService } from '../../../core/services/LookupService';
 export class AssetForm  implements OnInit, CanComponentDeactivate {
   private fb = inject(FormBuilder);
   private assetService = inject(AssetService);
-  private lookupService = inject(LookupService);
+  protected lookupService = inject(LookupService);
   
   private router = inject(Router);
  
@@ -28,7 +28,6 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
   errorMessage = signal('');
   successMessage = signal('');
  
-  // Retired مش خيار عند الإنشاء — بيتحدد من إجراء الـ Retire بس (R2.5).
   statuses = ASSET_STATUSES.filter(s => s.id !== RETIRED_STATUS_ID);
  
   private selectedDepartmentId = signal<number | null>(null);
@@ -39,7 +38,7 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
     description: ['', Validators.maxLength(1000)],
     categoryId: ['', Validators.required],
     assetTypeId: ['', Validators.required],
-    status: ['1', Validators.required],      // Available افتراضياً
+    status: ['1', Validators.required],      
     manufacturer: ['', Validators.maxLength(100)],
     model: ['', Validators.maxLength(100)],
     serialNumber: ['', Validators.maxLength(100)],
@@ -54,7 +53,7 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
   availableEmployees = computed(() => {
     const departmentId = this.selectedDepartmentId();
     if (!departmentId) return [];
-    return (this.lookups()?.employees ?? []).filter(e => e.departmentId === departmentId);
+    return (this.lookups()?.employees ?? []).filter(e => Number(e.departmentId) === departmentId);
   });
  
   constructor() {
@@ -78,7 +77,6 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
     });
   }
  
-  /** R6.4 — تحذير قبل الخروج من فورم فيه بيانات مش متحفوظة. */
   canDeactivate(): boolean {
     if (!this.form.dirty || this.successMessage()) return true;
     return confirm('You have unsaved changes. Leave without saving?');
@@ -117,7 +115,6 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
         this.form.markAsPristine();
         this.successMessage.set(response?.message || 'Asset created successfully.');
  
-        // بنروح لصفحة الأصل الجديد لو الـ API رجّع الـ id، وإلا للقائمة.
         const newId = response?.data?.id;
         setTimeout(
           () => this.router.navigate(newId ? ['/assets', newId] : ['/assets']),

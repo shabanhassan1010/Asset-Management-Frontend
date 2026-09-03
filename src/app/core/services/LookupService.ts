@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, forkJoin, map, of, shareReplay } from 'rxjs';
 import { AssetLookups, LookupItem } from '../models/Lookup.model';
 import { API } from '../api/api-endpoints';
-import { ApiResponse } from '../models/Api.Model';
 
 @Injectable({ providedIn: 'root' })
 export class LookupService 
@@ -32,6 +31,7 @@ export class LookupService
   clearCache(): void 
   {
     this.cache$ = undefined;
+    this.failedLookups.set([]);
   }
  
   private list(url: string, nameField: string): Observable<LookupItem[]> 
@@ -52,6 +52,7 @@ export class LookupService
       }),
       catchError(error => {
         console.error(`[LookupService] failed: ${url}`, error.status, error.message);
+        this.failedLookups.update(list => list.includes(url) ? list : [...list, url]);
         return of([] as LookupItem[]);
       })
     );
