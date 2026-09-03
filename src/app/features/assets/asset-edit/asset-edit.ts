@@ -19,9 +19,8 @@ export class AssetEdit {
 
   private fb = inject(FormBuilder);
   private assetService = inject(AssetService);
-  private lookupService = inject(LookupService);
+  protected lookupService = inject(LookupService);
   private router = inject(Router);
- 
   id = input.required<string>();
  
   asset = signal<AssetListItem | null>(null);
@@ -59,7 +58,7 @@ export class AssetEdit {
   availableEmployees = computed(() => {
     const departmentId = this.selectedDepartmentId();
     if (!departmentId) return [];
-    return (this.lookups()?.employees ?? []).filter(e => e.departmentId === departmentId);
+    return (this.lookups()?.employees ?? []).filter(e => Number(e.departmentId) === departmentId);
   });
  
   constructor() {

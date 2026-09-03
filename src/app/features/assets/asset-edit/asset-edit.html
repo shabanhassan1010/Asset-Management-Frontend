@@ -34,6 +34,12 @@
         <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
       }
 
+      @if (lookupService.failedLookups().length > 0) {
+        <div class="alert alert-danger" style="margin-bottom:16px">
+          Some dropdown lists could not be loaded. Please refresh the page.
+        </div>
+      }
+      
       <!-- ============ Identity ============ -->
       <div class="card" style="margin-bottom:16px">
         <div class="card-head"><h2>Identity</h2></div>
@@ -208,7 +214,7 @@
                 [disabled]="submitting() || isRetired() || !!successMessage() || form.invalid">
           @if (submitting()) { <span class="spinner"></span> Saving… } @else { Save changes }
         </button>
-        <a class="btn" [routerLink]="['/assets', a.id]">Cancel</a>
+        <a class="btn" [routerLink]="['/assets']">Cancel</a>
       </div>
     </form>
 

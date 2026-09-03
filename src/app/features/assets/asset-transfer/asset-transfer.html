@@ -91,7 +91,7 @@
                   [disabled]="submitting() || !!successMessage() || !hasChanges() || form.invalid">
             @if (submitting()) { <span class="spinner"></span> Saving… } @else { Record transfer }
           </button>
-          <a class="btn" [routerLink]="['/assets', a.id]">Cancel</a>
+          <a class="btn" [routerLink]="['/assets']">Cancel</a>
         </div>
       </div>
     </form>

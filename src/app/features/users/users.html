@@ -82,30 +82,39 @@
             }
           </div>
 
+          <!-- ============ الحقل المعدّل ============ -->
           <div class="field" style="margin-bottom:0">
             <label for="employeeId">Employee <span class="req">*</span></label>
-
 
             <select id="employeeId" class="select" formControlName="employeeId"
                     [class.invalid]="form.controls.employeeId.touched && form.controls.employeeId.invalid">
               <option value="">
-                @if (form.controls.departmentId.value && !loadingEmployees() && !employeesLoadFailed() && availableEmployees().length === 0) {
-                  <span class="field-error">Every employee in this department already has an account.</span>
+                @if (loadingEmployees()) {
+                  Loading employees…
+                } @else if (!form.controls.departmentId.value) {
+                  Pick a department first
+                } @else if (employeesLoadFailed()) {
+                  Employees could not be loaded
+                } @else if (availableEmployees().length === 0) {
+                  No employee available
                 } @else {
-                  <span class="hint">Only employees without an account are listed.</span>
+                  Select an employee…
                 }
               </option>
               @for (employee of availableEmployees(); track employee.id) {
-                <option [value]="employee.id">{{ employee.fullName }}</option>
+                <option [value]="employee.id">{{ employee.employeeName }}</option>
               }
             </select>
 
-            @if (form.controls.departmentId.value && !loadingEmployees() && availableEmployees().length === 0) {
+            @if (employeesLoadFailed()) {
+              <span class="field-error">Employees could not be loaded. Pick the department again.</span>
+            } @else if (form.controls.departmentId.value && !loadingEmployees() && availableEmployees().length === 0) {
               <span class="field-error">Every employee in this department already has an account.</span>
             } @else {
               <span class="hint">Only employees without an account are listed.</span>
             }
           </div>
+          <!-- ============ نهاية الحقل المعدّل ============ -->
         </div>
 
         <div class="row" style="margin-top:16px">
