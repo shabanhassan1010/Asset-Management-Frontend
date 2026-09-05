@@ -17,7 +17,6 @@ import { AIService } from '../../core/services/AIService';
 })
 export class AiAssistant {
   private readonly aiService = inject(AIService);
- 
   private readonly scrollBox = viewChild<ElementRef<HTMLDivElement>>('scrollBox');
  
   readonly question = signal('');
@@ -34,6 +33,12 @@ export class AiAssistant {
     'Which assets are assigned to me?',
   ];
  
+  clear(): void {
+    this.messages.set([]);
+    this.question.set('');
+    this.aiService.resetSession();
+  }
+  
   useSuggestion(text: string): void {
     this.question.set(text);
     this.ask();

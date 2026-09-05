@@ -11,9 +11,17 @@ import { API } from '../api/api-endpoints';
 export class AIService 
 {
   private readonly http = inject(HttpClient);
+  private sessionId = crypto.randomUUID();
 
   ask(question: string): Observable<ApiResponse<AssetQuestionResponse>> 
   {
-    return this.http.post<ApiResponse<AssetQuestionResponse>>(API.ai.ask, { question });
+    return this.http.post<ApiResponse<AssetQuestionResponse>>(
+      API.ai.ask, 
+      { question , sessionId: this.sessionId });
   }
+
+  resetSession(): void {
+    this.sessionId = crypto.randomUUID();
+  }
+  
 }
