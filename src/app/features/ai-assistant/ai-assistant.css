@@ -42,6 +42,43 @@
   color: #6b7280;
 }
 
+/* Takes the leftover space so the clear button sits at the far right. */
+.page__title {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Matches the .suggestion chip — same border, radius family and font size,
+   so it reads as part of the set rather than a stray control. */
+.page__clear {
+  flex: none;
+  margin-top: 0.15rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fafbfc;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #4b5563;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.page__clear:hover:not(:disabled) {
+  border-color: #b8c7f2;
+  background: #f4f7fe;
+}
+
+.page__clear:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.page__clear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .spark {
   flex: none;
   display: flex;
@@ -122,6 +159,13 @@
 .suggestion:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
+}
+
+.bubble__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
 }
 
 .row {
@@ -360,10 +404,4 @@
 .composer__send:focus-visible {
   outline: 2px solid #14171a;
   outline-offset: 2px;
-}
-.bubble__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 0.7rem;
 }

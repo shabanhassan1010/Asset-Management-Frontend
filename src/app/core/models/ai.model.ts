@@ -1,5 +1,6 @@
 export interface AskAssetQuestionRequest {
   question: string;
+  sessionId: string;
 }
 
 export interface AssetQuestionResult {

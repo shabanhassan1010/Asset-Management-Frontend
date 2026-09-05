@@ -6,10 +6,26 @@
       </svg>
     </span>
 
-    <div>
+    <div class="page__title">
       <h1>Asset assistant</h1>
       <p>Ask questions about your assets.</p>
     </div>
+
+    <!--
+      Clearing the screen also resets the sessionId, so the server forgets
+      the previous filters. Without this, a follow-up like "show me those"
+      could still pick up a conversation the user thinks they deleted.
+    -->
+    @if (messages().length > 0) {
+      <button
+        type="button"
+        class="page__clear"
+        (click)="clear()"
+        [disabled]="loading()"
+      >
+        New chat
+      </button>
+    }
   </header>
 
   <section class="panel">

@@ -49,6 +49,11 @@ export const API = {
       create:               `${base}/v1/categories`,
       byId: (id: number) => `${base}/v1/categories/${id}`,
     },
+    assetType: {
+      list:                 `${base}/v1/asset-types`,
+      create:               `${base}/v1/asset-types`,
+      byId: (id: number) => `${base}/v1/asset-types/${id}`,
+    },
     department: {
       list:                 `${base}/v1/departments`,
       create:               `${base}/v1/departments`,
