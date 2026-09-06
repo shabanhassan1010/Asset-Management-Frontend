@@ -37,7 +37,7 @@
     <header class="topbar">
       <button type="button" class="btn btn-ghost menu-btn" (click)="toggleNav()" aria-label="Open menu">☰</button>
       <span class="spacer"></span>
-      <a class="btn btn-ghost btn-sm" routerLink="/profile">Profile</a>
+      <a class="btn btn-ghost btn-sm">Welcome back, {{ displayName() }}</a>
       <button type="button" class="btn btn-sm" (click)="signOut()">Sign out</button>
     </header>
 

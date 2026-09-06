@@ -4,7 +4,7 @@
   <div class="page-head">
     <div>
       <h1>{{ isAdmin() ? 'Admin dashboard' : 'Dashboard' }}</h1>
-      <p>Welcome back, {{ displayName() }}.</p>
+      <!-- <p>Welcome back, {{ displayName() }}.</p> -->
     </div>
     <div class="row">
       <a class="btn" routerLink="/assets">Browse assets</a>
@@ -14,7 +14,6 @@
     </div>
   </div>
 
-  <!-- 3 حالات: بتحمّل / خطأ / الداتا جاهزة -->
   @if (loading()) {
     <div class="card state">
       <span class="spinner lg"></span>
@@ -48,7 +47,6 @@
 
       <div class="card stat">
         <div class="label">Portfolio value</div>
-        <!-- المفتاح نفسه بيبقى غايب من الـ JSON لليوزر، فـ != null بتغطي null و undefined -->
         @if (data.portfolioValue != null) {
           <div class="value mono">{{ data.portfolioValue | number:'1.0-0' }}</div>
           <div class="hint">EGP · Admin only</div>
