@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { errorInterceptor } from './core/interceptors/error-interceptor';
 
 // appConfig : Conatain Configuration for my project
 export const appConfig: ApplicationConfig = {
@@ -12,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(), // Record global error listeners related to Browser
 
     // provideHttpClient : mange HttpClient in Angular and without it angular can not give me HttpClient using Dependency Injection
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor ,authInterceptor])),
 
     // routes : choose URl and Components
     // withComponentInputBinding : binding route data/parameters with component inputs

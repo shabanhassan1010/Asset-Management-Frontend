@@ -9,6 +9,7 @@ import { LookupService } from '../../../core/services/LookupService';
 import { AssetListItem } from '../../../core/models/Asset.model';
 import { AssetLookups } from '../../../core/models/Lookup.model';
 import { extractErrorMessage } from '../../../core/http-error';
+import { ToastService } from '../../../core/services/ToastService';
 
 @Component({
   selector: 'app-asset-transfer',
@@ -21,6 +22,7 @@ private fb = inject(FormBuilder);
   private assetService = inject(AssetService);
   private lookupService = inject(LookupService);
   private router = inject(Router);
+  private toast = inject(ToastService);
  
   id = input.required<string>();
  
@@ -122,7 +124,9 @@ private fb = inject(FormBuilder);
     }).subscribe({
       next: response => {
         this.submitting.set(false);
-        this.successMessage.set(response?.message || 'Transfer recorded successfully.');
+        const message = response?.message || 'Transfer recorded successfully.';
+        this.successMessage.set(message);
+        this.toast.success(message);
         setTimeout(() => this.router.navigate(['/assets', current.id]), 1200);
       },
       error: (error: HttpErrorResponse) => {

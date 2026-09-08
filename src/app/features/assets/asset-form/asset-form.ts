@@ -9,6 +9,7 @@ import { ASSET_STATUSES, RETIRED_STATUS_ID } from '../../../core/models/Asset.mo
 import { AssetLookups } from '../../../core/models/Lookup.model';
 import { AssetService } from '../../../core/services/AssetService';
 import { LookupService } from '../../../core/services/LookupService';
+import { ToastService } from '../../../core/services/ToastService';
 
 @Component({
   selector: 'app-asset-form',
@@ -20,7 +21,8 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
   private fb = inject(FormBuilder);
   private assetService = inject(AssetService);
   protected lookupService = inject(LookupService);
-  
+  private toast = inject(ToastService);
+
   private router = inject(Router);
  
   lookups = signal<AssetLookups | null>(null);
@@ -113,8 +115,10 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
       next: response => {
         this.submitting.set(false);
         this.form.markAsPristine();
-        this.successMessage.set(response?.message || 'Asset created successfully.');
- 
+        const message = response?.message || 'Asset created successfully.';
+        this.successMessage.set(message);
+        this.toast.success(message);
+
         const newId = response?.data?.id;
         setTimeout(
           () => this.router.navigate(newId ? ['/assets', newId] : ['/assets']),

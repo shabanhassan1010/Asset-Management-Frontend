@@ -1,0 +1,70 @@
+/* Fixed stack in the bottom-right corner, above everything else. */
+.toast-stack {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  /* The stack itself must not swallow clicks on the page behind it.
+     Each toast turns pointer events back on for itself. */
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 260px;
+  max-width: 380px;
+  padding: 12px 14px;
+
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+
+  font-size: 13px;
+  line-height: 1.45;
+
+  animation: toast-in 0.18s ease-out;
+}
+
+/* The colour of the left bar is the only difference between the three types,
+   and it reuses the variables already defined in styles.css. */
+.toast-success { border-left-color: var(--success); background: var(--success-soft); }
+.toast-error   { border-left-color: var(--danger);  background: var(--danger-soft); }
+.toast-info    { border-left-color: var(--accent);  background: var(--accent-soft); }
+
+.toast-text {
+  flex: 1;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.toast-close {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text-3);
+}
+
+.toast-close:hover {
+  color: var(--text);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

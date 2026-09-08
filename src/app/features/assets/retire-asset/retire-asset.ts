@@ -1,5 +1,6 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { AssetService } from '../../../core/services/AssetService';
+import { ToastService } from '../../../core/services/ToastService';
 
 @Component({
   selector: 'app-retire-asset',
@@ -10,8 +11,7 @@ import { AssetService } from '../../../core/services/AssetService';
 export class RetireAsset {
 
   private assetService = inject(AssetService);
-
-  // بيتمرروا من الأب — الديالوج مش بيقرا الأصل بنفسه
+  private toast = inject(ToastService);
   assetId = input.required<number>();
   assetCode = input.required<string>();
   assetName = input.required<string>();
@@ -24,8 +24,6 @@ export class RetireAsset {
   submitting = signal(false);
   errorMessage = signal('');
 
-  // 409 معناها إن نسخة العميل بقت قديمة، فإعادة المحاولة من نفس
-  // الشاشة مش هتنفع — لازم الأب يعيد التحميل الأول.
   staleRecord = signal(false);
 
 
@@ -40,6 +38,7 @@ export class RetireAsset {
       .subscribe({
         next: () => {
           this.submitting.set(false);
+                    this.toast.success(`"${this.assetCode()}" was retired.`);
           this.retired.emit();
         },
         error: (err) => {
@@ -53,8 +52,7 @@ export class RetireAsset {
             return;
           }
 
-          // R6.6 — رسالة السيرفر زي ما هي. هو اللي عارف ليه العملية
-          // اترفضت، مش الواجهة.
+
           this.errorMessage.set(
             err.error?.detail ?? 'Could not retire the asset. Please try again.',
           );

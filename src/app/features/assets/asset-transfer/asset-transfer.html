@@ -28,9 +28,6 @@
       <div class="card-head"><h2>Move to</h2></div>
       <div class="card-body">
 
-        @if (successMessage()) {
-          <div class="alert alert-info" style="margin-bottom:16px">✓ {{ successMessage() }}</div>
-        }
         @if (errorMessage()) {
           <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
         }
