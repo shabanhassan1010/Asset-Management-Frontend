@@ -15,9 +15,9 @@
         <a [routerLink]="item.path" routerLinkActive="active" (click)="closeNav()">
           <span class="ico">{{ item.icon }}</span>
           <span>{{ item.label }}</span>
-          @if (item.adminOnly) {
+          <!-- @if (item.adminOnly) {
             <span class="badge badge-admin" style="margin-left:auto">Admin</span>
-          }
+          } -->
         </a>
       }
     </nav>
@@ -37,7 +37,7 @@
     <header class="topbar">
       <button type="button" class="btn btn-ghost menu-btn" (click)="toggleNav()" aria-label="Open menu">☰</button>
       <span class="spacer"></span>
-      <a class="btn btn-ghost btn-sm">Welcome back, {{ displayName() }}</a>
+      <a class="btn btn-ghost btn-sm backgroundcolor">Welcome back, {{ displayName() }}</a>
       <button type="button" class="btn btn-sm" (click)="signOut()">Sign out</button>
     </header>
 
