@@ -5,6 +5,7 @@ import { AuthResponse, CurrentUser, LoginRequest, UserRole } from '../models/aut
 // shareReplay : Use it in refresh token when more then Subscriber comman in the same HTTP request instead of sent many requests
 import { finalize, Observable, shareReplay, tap } from 'rxjs';
 import { API } from '../api/api-endpoints';
+import { AIService } from './AIService';
 
 const ACCESS_TOKEN_KEY = 'ams.accessToken';
 const REFRESH_TOKEN_KEY = 'ams.refreshToken';
@@ -15,6 +16,7 @@ const USER_KEY = 'ams.user';
 export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private ai = inject(AIService);
 
   currentUser = signal<CurrentUser | null>(this.readStoredUser()); // store the currentUser
 
@@ -100,6 +102,7 @@ export class Auth {
     localStorage.removeItem(ACCESS_EXPIRES_KEY);
     localStorage.removeItem(USER_KEY);
     this.currentUser.set(null);
+    this.ai.resetSession();
   }
 
   // read Stored User

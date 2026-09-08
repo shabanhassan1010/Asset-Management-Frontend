@@ -25,6 +25,10 @@ function shouldNotify(error: HttpErrorResponse, url: string): boolean {
   if (url.includes('/auth/login') || url.includes('/auth/refresh'))
     return false;
  
+
+  if (url.includes('/ai/ask'))
+    return false;
+  
   // 401 is already handled by authInterceptor (refresh, then sign out).
   // 403 already sends the user to the Forbidden page.
   if (error.status === 401 || error.status === 403)
