@@ -1,5 +1,5 @@
 // src/app/features/ai-assistant/ai-assistant.ts
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -20,8 +20,11 @@ export class AiAssistant {
   private readonly scrollBox = viewChild<ElementRef<HTMLDivElement>>('scrollBox');
  
   readonly question = signal('');
-  readonly loading = signal(false);
-  readonly messages = signal<ChatMessage[]>([]);
+ 
+  // Read straight from the service. Because the service outlives this
+  // component, an old conversation is already here on the first render.
+  readonly messages = this.aiService.messages;
+  readonly loading = this.aiService.loading;
  
   // Shown on the empty screen. An empty state is an invitation to act, and these
   // also teach the shapes the assistant understands - which saves the person
@@ -33,12 +36,23 @@ export class AiAssistant {
     'Which assets are assigned to me?',
   ];
  
-  clear(): void {
-    this.messages.set([]);
-    this.question.set('');
-    this.aiService.resetSession();
+  constructor() {
+    // effect() re-runs whenever a signal it reads changes. Reading messages()
+    // here means: scroll on every new message, AND once on the first render —
+    // which is what puts a restored conversation at the bottom instead of the top.
+    effect(() => {
+      this.messages();
+      this.scrollToBottom();
+    });
   }
-  
+ 
+  // The "New chat" button. This is the only place in the UI that wipes the
+  // conversation, and it also asks the backend for a fresh sessionId.
+  clear(): void {
+    this.aiService.resetSession();
+    this.question.set('');
+  }
+ 
   useSuggestion(text: string): void {
     this.question.set(text);
     this.ask();
@@ -51,42 +65,9 @@ export class AiAssistant {
       return;
     }
  
-    this.append({ role: 'user', content: text });
+    // The service appends the message, calls the API and flips loading.
+    this.aiService.ask(text);
     this.question.set('');
-    this.loading.set(true);
- 
-    this.aiService.ask(text).subscribe({
-      next: (response) => {
-        const data = response.data;
- 
-        if (response.success && data) {
-          this.append({
-            role: 'assistant',
-            content: data.answer,
-            assets: data.assets,
-            totalCount: data.totalCount,
-            suggestions: data.suggestions,
-          });
-        } else {
-          this.append({
-            role: 'assistant',
-            content: response.message ?? 'I could not answer that question.',
-            isError: true,
-          });
-        }
- 
-        this.loading.set(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.append({
-          role: 'assistant',
-          content: this.describe(error),
-          isError: true,
-        });
- 
-        this.loading.set(false);
-      },
-    });
   }
  
   // Whether to show the cost column is decided by the data, not by the role.
@@ -94,30 +75,6 @@ export class AiAssistant {
   // to show and disappears. The client holds no permission logic at all.
   showsCost(assets: AssetQuestionResult[]): boolean {
     return assets.some((asset) => asset.purchaseCost !== undefined);
-  }
- 
-  private append(message: ChatMessage): void {
-    this.messages.update((current) => [...current, message]);
-    this.scrollToBottom();
-  }
- 
-  // An error message should say what happened and what to do next, in the
-  // interface's own voice. It never shows the server's exception text -
-  // the API does not send one, and the browser should not invent one.
-  private describe(error: HttpErrorResponse): string {
-    if (error.status === 429) {
-      return 'You are asking questions faster than I can answer. Wait a few seconds and try again.';
-    }
- 
-    if (error.status === 401 || error.status === 403) {
-      return 'Your session has expired. Sign in again to keep asking questions.';
-    }
- 
-    if (error.status === 0) {
-      return 'I could not reach the server. Check your connection and try again.';
-    }
- 
-    return 'Something went wrong while answering that. Try again in a moment.';
   }
  
   private scrollToBottom(): void {
@@ -130,4 +87,5 @@ export class AiAssistant {
       }
     });
   }
+
 }
