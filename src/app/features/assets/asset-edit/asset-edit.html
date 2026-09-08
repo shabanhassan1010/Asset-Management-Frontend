@@ -27,9 +27,6 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()">
 
-      @if (successMessage()) {
-        <div class="alert alert-info" style="margin-bottom:16px">✓ {{ successMessage() }}</div>
-      }
       @if (errorMessage()) {
         <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
       }

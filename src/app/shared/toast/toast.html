@@ -1,0 +1,16 @@
+<!-- The stack is always in the DOM but empty most of the time.
+     pointer-events are turned off on the stack (see toast.css) so it never
+     blocks clicks on the page behind it. -->
+<div class="toast-stack">
+  <!-- track toast.id : tells Angular which DOM node belongs to which toast,
+       so removing one toast does not re-create the others. -->
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast toast-{{ toast.type }}" role="alert">
+      <span class="toast-text">{{ toast.text }}</span>
+
+      <button type="button" class="toast-close" (click)="dismiss(toast.id)" aria-label="Close">
+        &times;
+      </button>
+    </div>
+  }
+</div>

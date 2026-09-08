@@ -8,6 +8,7 @@ import { AssetLookups } from '../../../core/models/Lookup.model';
 import { AssetService } from '../../../core/services/AssetService';
 import { LookupService } from '../../../core/services/LookupService';
 import { extractErrorMessage } from '../../../core/http-error';
+import { ToastService } from '../../../core/services/ToastService';
 
 @Component({
   selector: 'app-asset-edit',
@@ -20,6 +21,8 @@ export class AssetEdit {
   private fb = inject(FormBuilder);
   private assetService = inject(AssetService);
   protected lookupService = inject(LookupService);
+  private toast = inject(ToastService);
+
   private router = inject(Router);
   id = input.required<string>();
  
@@ -157,7 +160,9 @@ export class AssetEdit {
       next: response => {
         this.submitting.set(false);
         this.form.markAsPristine();  
-        this.successMessage.set(response?.message || 'Asset updated successfully.');
+        const message = response?.message || 'Asset updated successfully.';
+        this.successMessage.set(message);
+        this.toast.success(message);
         setTimeout(() => this.router.navigate(['/assets', current.id]), 1200);
       },
       error: (error: HttpErrorResponse) => {

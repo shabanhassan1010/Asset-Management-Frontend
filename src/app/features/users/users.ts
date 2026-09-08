@@ -15,6 +15,7 @@ import {
   DEFAULT_USER_FILTERS,
 } from '../../core/models/user.model';
 import { LookupService } from '../../core/services/LookupService';
+import { ToastService } from '../../core/services/ToastService';
 
 @Component({
   selector: 'app-users',
@@ -26,6 +27,7 @@ export class Users implements OnInit {
   private userService = inject(UserService);
   private lookupService = inject(LookupService);
   private auth = inject(Auth);
+  private toast = inject(ToastService);
 
   users = signal<UserListItem[]>([]);
   totalCount = signal(0);
@@ -156,7 +158,9 @@ export class Users implements OnInit {
     this.userService.changeStatus(user.userId, next).subscribe({
       next: () => {
         this.busyUserId.set(null);
-        this.successMessage.set(`${user.userName} was ${next ? 'enabled' : 'disabled'}.`);
+        const message = next ? 'enabled' : 'disabled';
+        this.toast.success(`${user.userName} was ${message}.`);
+        this.successMessage.set(`${user.userName} was ${message}.`);
         this.load();
       },
       error: (error: HttpErrorResponse) => {
@@ -240,7 +244,9 @@ export class Users implements OnInit {
         next: (created) => {
           this.creating.set(false);
           this.showCreateForm.set(false);
-          this.successMessage.set(`${created.userName} was created.`);
+          const message = `${created.userName} was created.`;
+          this.toast.success(message);
+          this.successMessage.set(message);
           this.load();
         },
         error: (error: HttpErrorResponse) => {
