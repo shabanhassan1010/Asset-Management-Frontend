@@ -1,31 +1,42 @@
 <!-- src/app/layouts/main-layout/main-layout.html -->
-<div class="shell" [class.nav-open]="navOpen()">
+<div class="shell" [class.nav-open]="navOpen()" [class.collapsed]="collapsed()">
 
   <aside class="sidebar">
     <div class="brand">
       <div class="logo">AM</div>
-      <div>
+      <div class="brand-text">
         <div class="brand-name">Asset Manager</div>
         <div class="brand-sub">KINANA</div>
       </div>
+
+      <button
+        type="button"
+        class="collapse-btn"
+        (click)="toggleCollapsed()"
+        [attr.aria-label]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+        [attr.aria-expanded]="!collapsed()">
+        {{ collapsed() ? '›' : '‹' }}
+      </button>
     </div>
 
     <nav class="side-nav">
       @for (item of navItems(); track item.path) {
-        <a [routerLink]="item.path" routerLinkActive="active" (click)="closeNav()">
+        
+          <a [routerLink]="item.path" routerLinkActive="active" (click)="closeNav()" [attr.data-label]="item.label">
           <span class="ico">{{ item.icon }}</span>
           <span>{{ item.label }}</span>
           <!-- @if (item.adminOnly) {
             <span class="badge badge-admin" style="margin-left:auto">Admin</span>
           } -->
         </a>
+
       }
     </nav>
 
     <div class="who">
       <div class="avatar">{{ initials() }}</div>
-      <div style="min-width:0">
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">{{ displayName() }}</div>
+      <div class="who-text">
+        <div class="who-name">{{ displayName() }}</div>
         <span class="badge" [class.badge-admin]="isAdmin()" [class.badge-user]="!isAdmin()">
           {{ roleLabel() }}
         </span>
@@ -35,9 +46,13 @@
 
   <div class="main">
     <header class="topbar">
-      <button type="button" class="btn btn-ghost menu-btn" (click)="toggleNav()" aria-label="Open menu">☰</button>
+      <button
+        type="button"
+        class="btn btn-ghost menu-btn"
+        (click)="toggleNav()"
+        [attr.aria-label]="navOpen() ? 'Close menu' : 'Open menu'">☰</button>
       <span class="spacer"></span>
-      <a class="btn btn-ghost btn-sm backgroundcolor">Welcome back, {{ displayName() }}</a>
+      <span class="welcome-text">Welcome back, {{ displayName() }}</span>
       <button type="button" class="btn btn-sm" (click)="signOut()">Sign out</button>
     </header>
 

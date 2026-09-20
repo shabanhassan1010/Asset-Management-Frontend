@@ -17,6 +17,7 @@ interface NavItem {
 })
 export class MainLayout {
   private auth = inject(Auth);
+  collapsed = signal(localStorage.getItem('sidebarCollapsed') === '1');
 
   displayName = this.auth.displayName;
   isAdmin = this.auth.isAdmin;
@@ -46,4 +47,11 @@ export class MainLayout {
   signOut() {
     this.auth.logout();
   }
+
+  toggleCollapsed() {
+    this.collapsed.update((v) => !v);
+    localStorage.setItem('sidebarCollapsed', this.collapsed() ? '1' : '0');
+  }
+
+
 }
