@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 import { ApiMessage, AssetFilters, AssetListItem, AssetTransfer, CreateAssetRequest, CreateTransferRequest, PagedResult, RetireAssetRequest, RetireAssetResponse, UpdateAssetRequest } from '../models/Asset.model';
 import { API } from '../api/api-endpoints';
 import { ApiResponse } from '../models/Api.Model';
+import { TransferDetails } from '../models/transfer-details.model';
 
 @Injectable({ providedIn: 'root' })
 export class AssetService {
@@ -80,5 +81,9 @@ export class AssetService {
  
     return params;
   }
-  
+
+  getTransferDetails(assetId: number, transferId: number): Observable<TransferDetails> {
+  return this.http.get<ApiResponse<TransferDetails>>(`${API.assets.transfers(assetId)}/${transferId}`)
+                  .pipe(map(response => response.data));
+  }
 }

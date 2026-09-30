@@ -98,16 +98,35 @@
         <div class="table-wrap">
           <table class="tbl">
             <thead>
-              <tr><th>Date</th><th>Department</th><th>Assigned to</th><th>Location</th><th>Reason</th></tr>
+              <tr>
+                <th>Date</th>
+                <th>Department</th>
+                <th>Assigned to</th>
+                <th>Location</th>
+                <th>Reason</th>
+                @if (isAdmin()) {
+                  <th class="actions">Actions</th>
+                }
+              </tr>
             </thead>
             <tbody>
-              @for (row of transfers(); track row.id) {
-                <tr>
+              @for (row of transfers(); track row.id) 
+              {
+                <tr [class.clickable-row]="isAdmin()"
+                    [attr.tabindex]="isAdmin() ? 0 : null"
+                    (click)="openTransfer(row.id)"
+                    (keydown.enter)="openTransfer(row.id)">
                   <td class="mono">{{  row.transferDate | date:'dd MMM yyyy, hh:mm a'}}</td>
                   <td class="hint">{{ row.fromDepartmentName || '—' }} → <strong>{{ row.toDepartmentName || '—' }}</strong></td>
                   <td class="hint">{{ row.fromEmployeeName || '—' }} → <strong>{{ row.toEmployeeName || '—' }}</strong></td>
                   <td class="hint">{{ row.fromLocationName || '—' }} → <strong>{{ row.toLocationName || '—' }}</strong></td>
                   <td>{{ row.reason || '—' }}</td>
+                  @if (isAdmin()) 
+                  {
+                  <td class="actions">
+                    <button type="button" class="btn btn-sm btn-ghost" (click)="openTransfer(row.id)">View</button>
+                  </td>
+                  }
                 </tr>
               }
             </tbody>
@@ -115,6 +134,12 @@
         </div>
       }
     </div>
+    @if (selectedTransferId(); as transferId) {
+      <app-transfer-details-dialog
+        [assetId]="a.id"
+        [transferId]="transferId"
+        (closed)="closeTransfer()" />
+    }
   }
 
 </div>
