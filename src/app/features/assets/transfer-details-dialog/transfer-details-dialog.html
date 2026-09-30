@@ -1,0 +1,64 @@
+<div class="backdrop" (click)="close()">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="transfer-title"
+       (click)="$event.stopPropagation()">
+
+    <header class="panel-header">
+      <div>
+        <h2 id="transfer-title">Transfer details</h2>
+        @if (transfer(); as t) {
+          <p class="sub">#{{ t.id }} · {{ t.transferDate | date: 'dd MMM yyyy, hh:mm a' }}</p>
+        }
+      </div>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Close">✕</button>
+    </header>
+
+    @if (loading()) {
+      <p class="loading">Loading…</p>
+    } @else if (transfer(); as t) {
+
+      <section>
+        <h3>Asset</h3>
+        <dl class="info">
+          <dt>Name</dt>          <dd>{{ t.assetName }}</dd>
+          <dt>Asset code</dt>    <dd class="mono">{{ t.assetCode }}</dd>
+          <dt>Serial number</dt> <dd class="mono">{{ t.serialNumber ?? '—' }}</dd>
+        </dl>
+      </section>
+
+      <section>
+        <h3>What changed</h3>
+        <table class="compare">
+          <thead>
+            <tr><th></th><th>From</th><th></th><th>To</th></tr>
+          </thead>
+          <tbody>
+            <tr [class.changed]="t.fromDepartmentName !== t.toDepartmentName">
+              <th>Department</th>
+              <td>{{ t.fromDepartmentName ?? '—' }}</td><td class="arrow">→</td>
+              <td class="to">{{ t.toDepartmentName ?? '—' }}</td>
+            </tr>
+            <tr [class.changed]="t.fromEmployeeName !== t.toEmployeeName">
+              <th>Assigned to</th>
+              <td>{{ t.fromEmployeeName ?? '—' }}</td><td class="arrow">→</td>
+              <td class="to">{{ t.toEmployeeName ?? '—' }}</td>
+            </tr>
+            <tr [class.changed]="t.fromLocationName !== t.toLocationName">
+              <th>Location</th>
+              <td>{{ t.fromLocationName ?? '—' }}</td><td class="arrow">→</td>
+              <td class="to">{{ t.toLocationName ?? '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h3>Audit</h3>
+        <dl class="info">
+          <dt>Reason</dt>         <dd>{{ t.reason || '—' }}</dd>
+          <dt>Transferred by</dt> <dd>{{ t.transferredByName ?? '—' }}</dd>
+          <dt>Date</dt>           <dd>{{ t.transferDate | date: 'dd MMM yyyy, hh:mm:ss a' }}</dd>
+        </dl>
+      </section>
+    }
+  </div>
+</div>

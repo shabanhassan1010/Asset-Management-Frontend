@@ -5,11 +5,11 @@ import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { AssetService } from '../../../core/services/AssetService';
 import { AssetListItem, AssetTransfer, RETIRED_STATUS_ID } from '../../../core/models/Asset.model';
-
+import { TransferDetailsDialog } from '../transfer-details-dialog/transfer-details-dialog';
 @Component({
   selector: 'app-asset-detail',
   standalone: true,                                     
-  imports: [RouterLink, DecimalPipe , DatePipe],
+  imports: [RouterLink, DecimalPipe , DatePipe,TransferDetailsDialog],
   templateUrl: './asset-detail.html',
 })
 export class AssetDetail implements OnInit {
@@ -19,7 +19,7 @@ export class AssetDetail implements OnInit {
   id = input.required<string>();
 
   isAdmin = this.auth.isAdmin;
-
+  selectedTransferId = signal<number | null>(null);
   asset = signal<AssetListItem | null>(null);
   transfers = signal<AssetTransfer[]>([]);
   loading = signal(true);
@@ -28,6 +28,15 @@ export class AssetDetail implements OnInit {
 
   ngOnInit(): void {
     this.load();
+  }
+
+  openTransfer(transferId: number): void {
+    if (!this.isAdmin()) return;        
+    this.selectedTransferId.set(transferId);
+  }
+
+  closeTransfer(): void {
+    this.selectedTransferId.set(null);
   }
 
   load(): void {
