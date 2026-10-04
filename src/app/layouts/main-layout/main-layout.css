@@ -186,3 +186,15 @@
     content: none;
   }
 }
+.layout {
+  display: flex;
+}
+
+.sidebar {
+  position: sticky;      /* يفضل لازق في مكانه وإنت بتعمل scroll */
+  top: 0;                /* يلزق في أعلى الشاشة بالظبط */
+  height: 100vh;         /* طوله = طول الشاشة، مش طول الصفحة كلها */
+  align-self: flex-start;/* مهم: من غيره الـ flex بيمطّه لطول الصفحة كلها فالـ sticky مش هيشتغل */
+  flex-shrink: 0;        /* عشان عرضه ميصغرش لما الجدول يكون عريض */
+  overflow-y: auto;      /* لو اللينكات كترت يعمل scroll جواه هو بس */
+}
