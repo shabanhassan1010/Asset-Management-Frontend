@@ -90,7 +90,6 @@ export class EmployeesTab implements OnInit {
       });
   }
 
-  /** أي بحث أو فلتر جديد بيرجّعنا لصفحة 1 — وإلا تفضل على صفحة 5 والنتيجة صفحتين. */
   applyFilters(): void {
     this.pageNumber.set(1);
     this.load();
@@ -146,7 +145,7 @@ export class EmployeesTab implements OnInit {
       error: error => {
         this.loadingForm.set(false);
         this.editingId.set(null);
-        this.errorMessage.set(extractErrorMessage(error, 'Could not open this employee.'));
+        // this.errorMessage.set(extractErrorMessage(error, 'Could not open this employee.'));
       },
     });
   }
@@ -188,7 +187,7 @@ export class EmployeesTab implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.saving.set(false);
-        this.errorMessage.set(extractErrorMessage(error, 'The changes could not be saved.'));
+        // this.errorMessage.set(extractErrorMessage(error, 'The changes could not be saved.'));
       },
     });
   }
@@ -205,7 +204,7 @@ export class EmployeesTab implements OnInit {
 
     this.service.setStatus(row.id, !row.isActive).subscribe({
       next: () => this.load(),
-      error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not change the status.')),
+      // error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not change the status.')),
     });
   }
 }
