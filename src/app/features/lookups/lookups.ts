@@ -153,7 +153,7 @@ export class Lookups implements OnInit {
         this.toast.success(`"${row.name}" was deactivated.`);
         this.load();
       },
-      error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not deactivate this row.')),
+      // error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not deactivate this row.')),
     });
   }
  
