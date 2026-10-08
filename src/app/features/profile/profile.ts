@@ -26,7 +26,7 @@ export class Profile implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Your profile could not be loaded.');
+        // this.errorMessage.set('Your profile could not be loaded.');
         this.loading.set(false);
       },
     });

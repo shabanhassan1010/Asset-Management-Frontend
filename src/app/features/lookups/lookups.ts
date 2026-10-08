@@ -72,7 +72,7 @@ export class Lookups implements OnInit {
         this.loading.set(false);
       },
       error: error => {
-        this.errorMessage.set(extractErrorMessage(error, 'Could not load this list.'));
+        // this.errorMessage.set(extractErrorMessage(error, 'Could not load this list.'));
         this.loading.set(false);
       },
     });

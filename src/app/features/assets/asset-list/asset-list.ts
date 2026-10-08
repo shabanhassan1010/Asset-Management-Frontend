@@ -79,7 +79,7 @@ export class AssetList implements OnInit {
       },
       error: (err) => {
         console.error('assets failed', err);
-        this.errorMessage.set('Could not load assets. Check your connection and try again.');
+        // this.errorMessage.set('Could not load assets. Check your connection and try again.');
         this.loading.set(false);
       },
     });

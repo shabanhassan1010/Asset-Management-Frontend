@@ -36,7 +36,7 @@ export class Dashboard implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Could not load the dashboard. Check your connection and try again.');
+        // this.errorMessage.set('Could not load the dashboard. Check your connection and try again.');
         this.loading.set(false);
       },
     });

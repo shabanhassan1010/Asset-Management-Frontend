@@ -96,7 +96,7 @@ export class Users implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        this.errorMessage.set(extractErrorMessage(error, 'Could not load users.'));
+        // this.errorMessage.set(extractErrorMessage(error, 'Could not load users.'));
         this.loading.set(false);
       },
     });
