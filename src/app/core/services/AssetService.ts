@@ -78,7 +78,9 @@ export class AssetService {
       params = params.set('locationId', filters.locationId);
     if (filters.employeeId) 
       params = params.set('employeeId', filters.employeeId);
- 
+    if (filters.warrantyWithinDays)                                         // ← NEW
+      params = params.set('warrantyWithinDays', filters.warrantyWithinDays);
+
     return params;
   }
 
