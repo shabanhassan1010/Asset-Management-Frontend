@@ -52,6 +52,7 @@ export interface AssetFilters {
   sortBy: string;
   sortDesc: boolean;
   includeRetired: boolean;
+  warrantyWithinDays: string;
 }
 
 export const DEFAULT_FILTERS: AssetFilters = {
@@ -67,6 +68,7 @@ export const DEFAULT_FILTERS: AssetFilters = {
   sortBy: 'assetCode',
   sortDesc: false,
   includeRetired: false,
+  warrantyWithinDays: '',
 };
 
 export const ASSET_STATUSES = [

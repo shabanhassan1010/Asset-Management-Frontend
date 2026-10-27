@@ -4,7 +4,6 @@
   <div class="page-head">
     <div>
       <h1>{{ isAdmin() ? 'Admin dashboard' : 'Dashboard' }}</h1>
-      <!-- <p>Welcome back, {{ displayName() }}.</p> -->
     </div>
     <div class="row">
       <a class="btn" routerLink="/assets">Browse assets</a>
@@ -26,25 +25,27 @@
     </div>
   } @else if (summary(); as data) {
 
+    <!-- ===== Stat cards (clickable) ===== -->
     <div class="grid grid-4">
-      <div class="card stat">
+      <a class="card stat clickable" routerLink="/assets">
         <div class="label">Active assets</div>
         <div class="value mono">{{ data.activeAssets }}</div>
         <div class="hint">{{ data.retiredAssets }} retired</div>
-      </div>
+      </a>
 
-      <div class="card stat">
+      <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.Assigned }">
         <div class="label">Assigned</div>
         <div class="value mono">{{ data.assignedAssets }}</div>
         <div class="hint">{{ data.availableAssets }} available</div>
-      </div>
+      </a>
 
-      <div class="card stat">
+      <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.UnderMaintenance }">
         <div class="label">Under maintenance</div>
         <div class="value mono">{{ data.underMaintenanceAssets }}</div>
         <div class="hint">needs attention</div>
-      </div>
+      </a>
 
+      <!-- Not clickable: a money total has no "list" behind it -->
       <div class="card stat">
         <div class="label">Portfolio value</div>
         @if (data.portfolioValue != null) {
@@ -57,19 +58,20 @@
       </div>
     </div>
 
+    <!-- ===== Charts ===== -->
     <div class="grid grid-2" style="margin-top:16px;align-items:start">
 
       <div class="card">
         <div class="card-head"><h2>By category</h2></div>
         <div class="card-body">
-          @for (row of data.assetsByCategory; track row.categoryName) {
-            <div style="margin-bottom:12px">
-              <div class="row" style="justify-content:space-between;margin-bottom:5px">
-                <span style="font-size:13px">{{ row.categoryName }}</span>
+          @for (row of data.assetsByCategory; track row.categoryId) {
+            <a class="bar-row" routerLink="/assets" [queryParams]="{ categoryId: row.categoryId }">
+              <div class="bar-label">
+                <span>{{ row.categoryName }}</span>
                 <span class="hint mono">{{ row.count }}</span>
               </div>
-              <div class="bar"><div class="fill" [style.width]="barWidth(row.count)"></div></div>
-            </div>
+              <div class="bar"><div class="fill" [style.width]="barWidth(row.count, maxCategoryCount())"></div></div>
+            </a>
           } @empty {
             <p class="hint" style="margin:0">No assets yet.</p>
           }
@@ -77,37 +79,69 @@
       </div>
 
       <div class="card">
-        <div class="card-head">
-          <h2>Warranties expiring soon</h2>
-          <span class="spacer"></span>
-          <span class="hint">next 180 days</span>
+        <div class="card-head"><h2>By department</h2></div>
+        <div class="card-body">
+          @for (row of data.assetsByDepartment; track row.departmentName) {
+            <!-- routerLink = null → Angular removes the href, so "No department" is not clickable -->
+            <a class="bar-row"
+               [routerLink]="row.departmentId != null ? '/assets' : null"
+               [queryParams]="{ departmentId: row.departmentId }">
+              <div class="bar-label">
+                <span>{{ row.departmentName }}</span>
+                <span class="hint mono">{{ row.count }}</span>
+              </div>
+              <div class="bar"><div class="fill" [style.width]="barWidth(row.count, maxDepartmentCount())"></div></div>
+            </a>
+          } @empty {
+            <p class="hint" style="margin:0">No assets yet.</p>
+          }
         </div>
-
-        @if (data.expiringWarranties.length) {
-          <div class="table-wrap">
-            <table class="tbl">
-              <thead>
-                <tr><th>Asset</th><th>Status</th><th>Expires</th></tr>
-              </thead>
-              <tbody>
-                @for (asset of data.expiringWarranties; track asset.assetId) {
-                  <tr>
-                    <td>
-                      <a [routerLink]="['/assets', asset.assetId]">{{ asset.assetCode }}</a>
-                      — {{ asset.assetName }}
-                    </td>
-                    <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName }}</span></td>
-                    <td class="mono">{{ asset.warrantyExpiryDate }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        } @else {
-          <div class="card-body"><p class="hint" style="margin:0">Nothing expiring soon.</p></div>
-        }
       </div>
 
+    </div>
+
+    <!-- ===== Warranties ===== -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <h2>Warranties expiring</h2>
+        <span class="spacer"></span>
+        <span class="hint">Retired assets and assets with no warranty date are not counted</span>
+      </div>
+
+      <div class="card-body">
+        <div class="warranty-windows">
+          @for (w of data.warrantyWindows; track w.days) {
+            <a class="window" routerLink="/assets" [queryParams]="{ warrantyWithinDays: w.days }">
+              <div class="value mono">{{ w.count }}</div>
+              <div class="hint">within {{ w.days }} days</div>
+            </a>
+          }
+        </div>
+      </div>
+
+      @if (data.expiringWarranties.length) {
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr><th>Soonest to expire</th><th>Status</th><th>Expires</th></tr>
+            </thead>
+            <tbody>
+              @for (asset of data.expiringWarranties; track asset.assetId) {
+                <tr>
+                  <td>
+                    <a [routerLink]="['/assets', asset.assetId]">{{ asset.assetCode }}</a>
+                    — {{ asset.assetName }}
+                  </td>
+                  <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName }}</span></td>
+                  <td class="mono">{{ asset.warrantyExpiryDate }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="card-body" style="padding-top:0"><p class="hint" style="margin:0">Nothing expiring in the next 90 days.</p></div>
+      }
     </div>
   }
 

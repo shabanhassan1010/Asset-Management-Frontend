@@ -1,5 +1,17 @@
 export interface CategoryCount {
+  categoryId: number;
   categoryName: string;
+  count: number;
+}
+
+export interface DepartmentCount {   
+  departmentId: number | null;       
+  departmentName: string;
+  count: number;
+}
+
+export interface WarrantyWindow {   
+  days: number;
   count: number;
 }
 
@@ -23,4 +35,6 @@ export interface DashboardSummary {
 
   assetsByCategory: CategoryCount[];
   expiringWarranties: ExpiringWarranty[];
+  assetsByDepartment: DepartmentCount[];   
+  warrantyWindows: WarrantyWindow[];
 }
