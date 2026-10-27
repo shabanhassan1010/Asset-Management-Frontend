@@ -1,8 +1,8 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { AssetService } from '../../../core/services/AssetService';
 import { DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import {ASSET_STATUSES,AssetFilters,AssetListItem,DEFAULT_FILTERS,RETIRED_STATUS_ID,} 
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
+import { ASSET_STATUSES, AssetFilters, AssetListItem, DEFAULT_FILTERS, RETIRED_STATUS_ID } 
 from '../../../core/models/Asset.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -20,6 +20,8 @@ import { RetireAsset } from '../retire-asset/retire-asset';
 export class AssetList implements OnInit {
   private assetService = inject(AssetService);
   private lookupService = inject(LookupService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private auth = inject(Auth);
 
   isAdmin = this.auth.isAdmin;
@@ -50,13 +52,21 @@ export class AssetList implements OnInit {
 
   hasActiveFilters = computed(() => {
     const f = this.filters();
-    return !!( f.search ||  f.categoryId ||f.assetTypeId || f.statusId ||
-               f.departmentId ||f.locationId || f.employeeId || f.includeRetired);
+    return !!(f.search || f.categoryId || f.assetTypeId || f.statusId || f.departmentId ||
+              f.locationId || f.employeeId || f.includeRetired || f.warrantyWithinDays);
   });
 
   constructor() {
-    this.searchInput.pipe(debounceTime(350),distinctUntilChanged(),takeUntilDestroyed(),)
+    this.searchInput.pipe(debounceTime(350), distinctUntilChanged(), takeUntilDestroyed())
                     .subscribe((value) => this.patchFilters({ search: value }));
+
+    // Read filters from the URL (e.g. /assets?departmentId=1 coming from the dashboard).
+    // Runs on first open AND every time the query params change.
+    this.route.queryParamMap.pipe(takeUntilDestroyed())
+                            .subscribe((params) => {
+                              this.filters.set(this.readFiltersFromUrl(params));
+                              this.load();
+                            });
   }
 
   ngOnInit(): void {
@@ -64,7 +74,7 @@ export class AssetList implements OnInit {
       next: (data) => this.lookups.set(data),
       error: (err) => console.error('lookups failed', err),
     });
-    this.load();
+    // No load() here: the queryParamMap subscription in the constructor already loads on first open.
   }
 
   load(): void {
@@ -119,8 +129,16 @@ export class AssetList implements OnInit {
   }
 
   resetFilters(): void {
-    this.filters.set({ ...DEFAULT_FILTERS });
-    this.load();
+    const urlHasFilters = this.route.snapshot.queryParamMap.keys.length > 0;
+
+    if (urlHasFilters) {
+      // Clearing the URL makes the queryParamMap subscription reset the filters and reload
+      this.router.navigate(['/assets']);
+    } else {
+      // Same URL → Angular ignores the navigation, so reset by hand
+      this.filters.set({ ...DEFAULT_FILTERS });
+      this.load();
+    }
   }
 
   isRetired(asset: AssetListItem): boolean {
@@ -151,5 +169,18 @@ export class AssetList implements OnInit {
   onRetired(): void {
     this.retiringAsset.set(null);
     this.load();
+  }
+
+  // Start from the defaults, then take the filters that exist in the URL.
+  // Filters are strings (same as <select> values), so no number conversion is needed.
+  // params.get() returns null when the key is missing → ?? '' keeps the "no filter" value.
+  private readFiltersFromUrl(params: ParamMap): AssetFilters {
+    return {
+      ...DEFAULT_FILTERS,
+      categoryId: params.get('categoryId') ?? '',
+      departmentId: params.get('departmentId') ?? '',
+      statusId: params.get('statusId') ?? '',
+      warrantyWithinDays: params.get('warrantyWithinDays') ?? '',
+    };
   }
 }

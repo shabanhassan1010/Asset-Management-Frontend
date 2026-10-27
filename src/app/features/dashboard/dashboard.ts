@@ -18,9 +18,22 @@ export class Dashboard implements OnInit {
   displayName = this.auth.displayName;
   isAdmin = this.auth.isAdmin;
 
+  // Same numbers the backend AssetStatus enum uses — sent as ?statusId=
+  readonly status = { Available: 1, Assigned: 2, UnderMaintenance: 3 } as const;
+
   summary = signal<DashboardSummary | null>(null);
   loading = signal(true);
   errorMessage = signal('');
+
+
+   // Longest bar = 100%. Math.max(1, ...) avoids dividing by zero when the list is empty.
+  maxCategoryCount = computed(() =>
+    Math.max(1, ...(this.summary()?.assetsByCategory ?? []).map((c) => c.count)),
+  );
+
+  maxDepartmentCount = computed(() =>
+    Math.max(1, ...(this.summary()?.assetsByDepartment ?? []).map((d) => d.count)),
+  );
 
   ngOnInit(): void {
     this.load();
@@ -42,12 +55,9 @@ export class Dashboard implements OnInit {
     });
   }
 
-  private maxCategoryCount = computed(() =>
-    Math.max(1, ...(this.summary()?.assetsByCategory ?? []).map((c) => c.count)),
-  );
 
-  barWidth(count: number): string {
-    return `${(count / this.maxCategoryCount()) * 100}%`;
+  barWidth(count: number, max: number): string {
+    return `${(count / max) * 100}%`;
   }
 
   statusBadgeClass(statusId: number): string {

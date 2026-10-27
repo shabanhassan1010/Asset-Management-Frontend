@@ -127,7 +127,7 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
       },
       error: (error: HttpErrorResponse) => {
         this.submitting.set(false);
-        this.errorMessage.set(extractErrorMessage(error, 'The asset could not be created.'));
+        // this.errorMessage.set(extractErrorMessage(error, 'The asset could not be created.'));
       },
     });
   }
