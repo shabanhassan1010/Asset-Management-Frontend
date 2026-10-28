@@ -28,6 +28,10 @@ a.card.clickable:hover {
   font-size: 13px;
 }
 
+.hint-warning{
+  color: #d97706;
+}
+
 /* Warranty 30 / 60 / 90 tiles */
 .warranty-windows {
   display: grid;
@@ -44,3 +48,29 @@ a.card.clickable:hover {
 }
 .window:hover { border-color: #2563eb; }
 .window .value { font-size: 22px; font-weight: 600; }
+
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .grid-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+}

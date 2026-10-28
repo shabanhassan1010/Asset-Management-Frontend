@@ -26,7 +26,7 @@
   } @else if (summary(); as data) {
 
     <!-- ===== Stat cards (clickable) ===== -->
-    <div class="grid grid-4">
+    <div class="grid grid-4" >
       <a class="card stat clickable" routerLink="/assets">
         <div class="label">Active assets</div>
         <div class="value mono">{{ data.activeAssets }}</div>
@@ -36,14 +36,21 @@
       <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.Assigned }">
         <div class="label">Assigned</div>
         <div class="value mono">{{ data.assignedAssets }}</div>
-        <div class="hint">{{ data.availableAssets }} available</div>
+        <!-- <div class="hint">{{ data.availableAssets }} available</div> -->
+      </a>
+
+      <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.Available }">
+        <div class="label">Available</div>
+        <div class="value mono">{{ data.availableAssets }}</div>
+        <!-- <div class="hint">{{ data.assignedAssets }} assigned</div> -->
       </a>
 
       <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.UnderMaintenance }">
         <div class="label">Under maintenance</div>
         <div class="value mono">{{ data.underMaintenanceAssets }}</div>
-        <div class="hint">needs attention</div>
+        <div class="hint-warning">needs attention</div>
       </a>
+      
 
       <!-- Not clickable: a money total has no "list" behind it -->
       <div class="card stat">
