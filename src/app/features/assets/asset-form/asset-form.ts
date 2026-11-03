@@ -3,13 +3,13 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes-guard';
 import { extractErrorMessage } from '../../../core/http-error';
 import { ASSET_STATUSES, RETIRED_STATUS_ID } from '../../../core/models/Asset.model';
 import { AssetLookups } from '../../../core/models/Lookup.model';
 import { AssetService } from '../../../core/services/AssetService';
 import { LookupService } from '../../../core/services/LookupService';
 import { ToastService } from '../../../core/services/ToastService';
+import { HasUnsavedChanges } from '../../../core/guards/unsaved-changes-guard';
 
 @Component({
   selector: 'app-asset-form',
@@ -17,7 +17,7 @@ import { ToastService } from '../../../core/services/ToastService';
   templateUrl: './asset-form.html',
   styleUrl: './asset-form.css',
 })
-export class AssetForm  implements OnInit, CanComponentDeactivate {
+export class AssetForm  implements OnInit, HasUnsavedChanges {
   private fb = inject(FormBuilder);
   private assetService = inject(AssetService);
   protected lookupService = inject(LookupService);
@@ -79,10 +79,9 @@ export class AssetForm  implements OnInit, CanComponentDeactivate {
     });
   }
  
-  canDeactivate(): boolean {
-    if (!this.form.dirty || this.successMessage()) return true;
-    return confirm('You have unsaved changes. Leave without saving?');
-  }
+  hasUnsavedChanges(): boolean {
+  return this.form.dirty;
+}
  
   submit(): void {
     if (this.form.invalid) {
