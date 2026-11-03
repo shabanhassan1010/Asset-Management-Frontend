@@ -7,6 +7,7 @@ import { LOOKUP_KINDS, LookupKindConfig, LookupRow } from '../../core/models/loo
 import { LookupAdminService } from '../../core/services/lookup-admin.service';
 import { EmployeesTab } from '../employees-tab/employees-tab';
 import { ToastService } from '../../core/services/ToastService';
+import { ConfirmService } from '../../core/services/confirm.service';
 
 @Component({
   selector: 'app-lookups',
@@ -17,7 +18,27 @@ export class Lookups implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(LookupAdminService);
   private toast = inject(ToastService);
- 
+  private confirm = inject(ConfirmService);                             // NEW
+
+    async deactivate(row: LookupRow): Promise<void> {                     // NEW: async
+    const config = this.activeKind();
+
+    const confirmed = await this.confirm.ask({                          // NEW: بدل confirm()
+      title: `Deactivate "${row.name}"?`,
+      message: 'It disappears from the pickers on new assets, but assets already using it keep working.',
+      confirmText: 'Deactivate',
+      danger: true
+    });
+    if (!confirmed) return;
+
+    this.service.deactivate(config, row.id).subscribe({
+      next: () => {
+        this.toast.success(`"${row.name}" was deactivated.`);
+        this.load();
+      },
+    });
+  }
+
   kinds = LOOKUP_KINDS;
   activeKind = signal<LookupKindConfig>(LOOKUP_KINDS[0]);
  
@@ -141,21 +162,21 @@ export class Lookups implements OnInit {
     });
   }
  
-  deactivate(row: LookupRow): void {
-    const config = this.activeKind();
-    const confirmed = confirm(
-      `Deactivate "${row.name}"?\n\nIt disappears from the pickers on new assets, but assets already using it keep working.`
-    );
-    if (!confirmed) return;
+  // deactivate(row: LookupRow): void {
+  //   const config = this.activeKind();
+  //   const confirmed = confirm(
+  //     `Deactivate "${row.name}"?\n\nIt disappears from the pickers on new assets, but assets already using it keep working.`
+  //   );
+  //   if (!confirmed) return;
  
-    this.service.deactivate(config, row.id).subscribe({
-      next: () => {
-        this.toast.success(`"${row.name}" was deactivated.`);
-        this.load();
-      },
-      // error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not deactivate this row.')),
-    });
-  }
+  //   this.service.deactivate(config, row.id).subscribe({
+  //     next: () => {
+  //       this.toast.success(`"${row.name}" was deactivated.`);
+  //       this.load();
+  //     },
+  //     // error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not deactivate this row.')),
+  //   });
+  // }
  
   usageLabel(row: LookupRow): string {
     const parts: string[] = [];

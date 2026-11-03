@@ -1,0 +1,22 @@
+@if (confirm.current(); as options) {
+  <div class="backdrop" (click)="confirm.close(false)">
+    <div class="dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <h2 class="title">{{ options.title }}</h2>
+      <p class="message">{{ options.message }}</p>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" (click)="confirm.close(false)">
+          {{ options.cancelText ?? 'Cancel' }}
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [class.btn-danger]="options.danger"
+          [class.btn-primary]="!options.danger"
+          (click)="confirm.close(true)">
+          {{ options.confirmText ?? 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -9,6 +9,7 @@ import { EmployeeRow } from '../../core/models/employee.model';
 import { LookupItem } from '../../core/models/Lookup.model';
 import { EmployeeService } from '../../core/services/employee.service';
 import { LookupService } from '../../core/services/LookupService';
+import { ConfirmService } from '../../core/services/confirm.service';
 
 @Component({
   selector: 'app-employees-tab',
@@ -20,6 +21,7 @@ export class EmployeesTab implements OnInit {
   private service = inject(EmployeeService);
   private lookupService = inject(LookupService);
   private destroyRef = inject(DestroyRef);
+  private confirm = inject(ConfirmService);
 
   rows = signal<EmployeeRow[]>([]);
   departments = signal<LookupItem[]>([]);
@@ -35,7 +37,6 @@ export class EmployeesTab implements OnInit {
   statusFilter = signal<boolean | null>(null);
   searchControl = new FormControl('', { nonNullable: true });
 
-  // null = الفورم مقفول، 0 = إضافة جديدة، رقم = تعديل الصف ده.
   editingId = signal<number | null>(null);
   saving = signal(false);
   loadingForm = signal(false);
@@ -48,7 +49,6 @@ export class EmployeesTab implements OnInit {
     departmentId: [0, [Validators.required, Validators.min(1)]],
   });
 
-  /** الأقسام الموقوفة بتفضل في الفلتر عشان تشوف موظفينها، بس مينفعش تنقل موظف ليها. */
   activeDepartments = computed(() => this.departments().filter(d => d.isActive));
 
   hasFilters = computed(
@@ -58,7 +58,6 @@ export class EmployeesTab implements OnInit {
   ngOnInit(): void {
     this.lookupService.getAll().subscribe(lookups => this.departments.set(lookups.departments));
     this.load();
-    // debounce عشان مانضربش الـ API مع كل حرف.
     this.searchControl.valueChanges
       .pipe(debounceTime(350), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.applyFilters());
@@ -192,19 +191,26 @@ export class EmployeesTab implements OnInit {
     });
   }
 
-  toggleStatus(row: EmployeeRow): void {
-    const confirmed = row.isActive
-      ? confirm(
-          `Deactivate "${row.employeeName}"?\n\nThey disappear from the pickers on new assignments, but assets already assigned to them stay as they are.`
-        )
-      : confirm(`Activate "${row.employeeName}"?\n\nThey show up again in the pickers on new assignments.`);
-    if (!confirmed) return;
+  async toggleStatus(row: EmployeeRow): Promise<void> {
+  const confirmed = row.isActive
+    ? await this.confirm.ask({
+        title: `Deactivate "${row.employeeName}"?`,
+        message: 'They disappear from the pickers on new assignments, but assets already assigned to them stay as they are.',
+        confirmText: 'Deactivate',
+        danger: true
+      })
+    : await this.confirm.ask({
+        title: `Activate "${row.employeeName}"?`,
+        message: 'They show up again in the pickers on new assignments.',
+        confirmText: 'Activate'
+      });
 
-    this.errorMessage.set('');
+  if (!confirmed) return;
 
-    this.service.setStatus(row.id, !row.isActive).subscribe({
-      next: () => this.load(),
-      // error: error => this.errorMessage.set(extractErrorMessage(error, 'Could not change the status.')),
-    });
-  }
+  this.errorMessage.set('');
+
+  this.service.setStatus(row.id, !row.isActive).subscribe({
+    next: () => this.load(),
+  });
+}
 }

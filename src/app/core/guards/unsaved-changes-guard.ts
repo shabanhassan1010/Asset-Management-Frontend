@@ -1,13 +1,25 @@
 // src/app/core/guards/unsaved-changes-guard.ts
 import { CanDeactivateFn } from '@angular/router';
+import { ConfirmService } from '../services/confirm.service';
+import { inject } from '@angular/core';
 
-export interface CanComponentDeactivate 
+export interface HasUnsavedChanges 
 {
-  canDeactivate(): boolean;
+  hasUnsavedChanges(): boolean;
 }
 
+export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = component => 
+{
+  if (!component.hasUnsavedChanges()) return true;
 
-export const unsavedChangesGuard: CanDeactivateFn<CanComponentDeactivate> = component => component.canDeactivate();
+  return inject(ConfirmService).ask({
+    title: 'Leave without saving?',
+    message: 'You have unsaved changes. If you leave now, they will be lost.',
+    confirmText: 'Leave',
+    cancelText: 'Stay',
+    danger: true
+  });
+};
 
 
 /*

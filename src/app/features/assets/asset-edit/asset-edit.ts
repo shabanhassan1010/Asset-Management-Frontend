@@ -119,10 +119,9 @@ export class AssetEdit {
   }
  
 
-  canDeactivate(): boolean {
-    if (!this.form.dirty || this.successMessage()) return true;
-    return confirm('You have unsaved changes. Leave without saving?');
-  }
+  hasUnsavedChanges(): boolean {
+  return this.form.dirty;
+}
  
   submit(): void {
     const current = this.asset();
