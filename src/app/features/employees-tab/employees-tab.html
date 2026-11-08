@@ -4,7 +4,6 @@
   <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
 }
 
-<!-- فورم الإضافة/التعديل — بيظهر فوق الجدول زي باقي الشاشة -->
 @if (editingId() !== null) {
   <form class="card" style="margin-bottom:16px" [formGroup]="form" (ngSubmit)="save()">
     <div class="card-head">
@@ -99,9 +98,8 @@
         }
       </select>
 
-      <select class="input" style="width:auto"
-              [value]="statusFilter() === null ? '' : statusFilter()"
-              (change)="onStatusFilter($any($event.target).value)">
+      <select class="input" style="width:auto" [value]="statusFilter() === null ? '' : statusFilter()"
+                                              (change)="onStatusFilter($any($event.target).value)">
         <option value="">All statuses</option>
         <option value="true">Active</option>
         <option value="false">Inactive</option>

@@ -23,20 +23,26 @@ export class EmployeesTab implements OnInit {
   private destroyRef = inject(DestroyRef);
   private confirm = inject(ConfirmService);
 
+  // Data
   rows = signal<EmployeeRow[]>([]);
   departments = signal<LookupItem[]>([]);
   loading = signal(true);
   errorMessage = signal('');
 
+  // Pagination
   pageNumber = signal(1);
   pageSize = signal(10);
   totalCount = signal(0);
   totalPages = signal(0);
 
+  // Filters
   departmentFilter = signal<number | null>(null);
-  statusFilter = signal<boolean | null>(null);
+
+  // Default: Active employees
+  statusFilter = signal<boolean | null>(true);
   searchControl = new FormControl('', { nonNullable: true });
 
+  // Form state
   editingId = signal<number | null>(null);
   saving = signal(false);
   loadingForm = signal(false);
@@ -49,26 +55,30 @@ export class EmployeesTab implements OnInit {
     departmentId: [0, [Validators.required, Validators.min(1)]],
   });
 
-  activeDepartments = computed(() => this.departments().filter(d => d.isActive));
+  activeDepartments = computed(() => this.departments().filter((d) => d.isActive));
 
-  hasFilters = computed(
-    () => !!this.searchControl.value.trim() || this.departmentFilter() !== null || this.statusFilter() !== null
+  hasFilters = computed( () =>
+      !!this.searchControl.value.trim() ||
+      this.departmentFilter() !== null ||
+      this.statusFilter() !== true,
   );
 
   ngOnInit(): void {
-    this.lookupService.getAll().subscribe(lookups => this.departments.set(lookups.departments));
+    this.lookupService.getAll()
+                      .subscribe((lookups) => this.departments.set(lookups.departments));
+
     this.load();
+
     this.searchControl.valueChanges
-      .pipe(debounceTime(350), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.applyFilters());
+        .pipe(debounceTime(350), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.applyFilters());
   }
 
   load(): void {
     this.loading.set(true);
     this.errorMessage.set('');
-
     this.service
-      .list({
+.list({
         pageNumber: this.pageNumber(),
         pageSize: this.pageSize(),
         search: this.searchControl.value,
@@ -76,13 +86,18 @@ export class EmployeesTab implements OnInit {
         isActive: this.statusFilter(),
       })
       .subscribe({
-        next: result => {
+        next: (result) => {
+          if (result.items.length === 0 && this.pageNumber() > 1) {
+          this.pageNumber.update((p) => p - 1);
+          this.load();
+          return;
+        }
           this.rows.set(result.items);
           this.totalCount.set(result.totalCount);
           this.totalPages.set(result.totalPages);
           this.loading.set(false);
         },
-        error: error => {
+        error: (error) => {
           // this.errorMessage.set(extractErrorMessage(error, 'Could not load employees.'));
           this.loading.set(false);
         },
@@ -106,7 +121,7 @@ export class EmployeesTab implements OnInit {
 
   clearFilters(): void {
     this.departmentFilter.set(null);
-    this.statusFilter.set(null);
+    this.statusFilter.set(true);
     this.searchControl.setValue('', { emitEvent: false });
     this.applyFilters();
   }
@@ -130,7 +145,7 @@ export class EmployeesTab implements OnInit {
     this.loadingForm.set(true);
 
     this.service.getById(row.id).subscribe({
-      next: employee => {
+      next: (employee) => {
         this.form.setValue({
           employeeCode: employee.employeeCode,
           fullName: employee.fullName,
@@ -141,7 +156,7 @@ export class EmployeesTab implements OnInit {
         this.form.controls.employeeCode.disable();
         this.loadingForm.set(false);
       },
-      error: error => {
+      error: (error) => {
         this.loadingForm.set(false);
         this.editingId.set(null);
         // this.errorMessage.set(extractErrorMessage(error, 'Could not open this employee.'));
@@ -167,7 +182,7 @@ export class EmployeesTab implements OnInit {
       fullName: raw.fullName.trim(),
       email: raw.email.trim(),
       phone: raw.phone.trim(),
-      departmentId: +raw.departmentId, 
+      departmentId: +raw.departmentId,
     };
 
     const request =
@@ -191,34 +206,35 @@ export class EmployeesTab implements OnInit {
     });
   }
 
-async toggleStatus(row: EmployeeRow): Promise<void> {
-  const confirmed = row.isActive
-    ? await this.confirm.ask({
-        title: `Deactivate "${row.employeeName}"?`,
-        message: 'They disappear from the pickers on new assignments, but assets already assigned to them stay as they are.',
-        confirmText: 'Deactivate',
-        danger: true,
-      })
-    : await this.confirm.ask({
-        title: `Activate "${row.employeeName}"?`,
-        message: 'They show up again in the pickers on new assignments.',
-        confirmText: 'Activate',
-      });
+  async toggleStatus(row: EmployeeRow): Promise<void> {
+    const confirmed = row.isActive
+      ? await this.confirm.ask({
+          title: `Deactivate "${row.employeeName}"?`,
+          message:
+            'They disappear from the pickers on new assignments, but assets already assigned to them stay as they are.',
+          confirmText: 'Deactivate',
+          danger: true,
+        })
+      : await this.confirm.ask({
+          title: `Activate "${row.employeeName}"?`,
+          message: 'They show up again in the pickers on new assignments.',
+          confirmText: 'Activate',
+        });
 
-  if (!confirmed) return;
+    if (!confirmed) return;
 
-  this.errorMessage.set('');
-  const newStatus = !row.isActive;
+    this.errorMessage.set('');
+    const newStatus = !row.isActive;
 
-  this.service.setStatus(row.id, newStatus).subscribe({
+    this.service.setStatus(row.id, newStatus).subscribe({
     next: () => {
-      this.rows.update(list =>
-        list.map(r => (r.id === row.id ? { ...r, isActive: newStatus } : r))
-      );
+      // Ask the server again so the current filter is applied.
+      // This also updates totalCount and totalPages.
+      this.load();
     },
-    error: error => {
+    error: (error) => {
       this.errorMessage.set(extractErrorMessage(error, 'Could not change the status.'));
     },
   });
-}
+  }
 }
