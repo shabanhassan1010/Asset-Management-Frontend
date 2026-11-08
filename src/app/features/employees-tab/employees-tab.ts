@@ -83,7 +83,7 @@ export class EmployeesTab implements OnInit {
           this.loading.set(false);
         },
         error: error => {
-          this.errorMessage.set(extractErrorMessage(error, 'Could not load employees.'));
+          // this.errorMessage.set(extractErrorMessage(error, 'Could not load employees.'));
           this.loading.set(false);
         },
       });
@@ -191,26 +191,34 @@ export class EmployeesTab implements OnInit {
     });
   }
 
-  async toggleStatus(row: EmployeeRow): Promise<void> {
+async toggleStatus(row: EmployeeRow): Promise<void> {
   const confirmed = row.isActive
     ? await this.confirm.ask({
         title: `Deactivate "${row.employeeName}"?`,
         message: 'They disappear from the pickers on new assignments, but assets already assigned to them stay as they are.',
         confirmText: 'Deactivate',
-        danger: true
+        danger: true,
       })
     : await this.confirm.ask({
         title: `Activate "${row.employeeName}"?`,
         message: 'They show up again in the pickers on new assignments.',
-        confirmText: 'Activate'
+        confirmText: 'Activate',
       });
 
   if (!confirmed) return;
 
   this.errorMessage.set('');
+  const newStatus = !row.isActive;
 
-  this.service.setStatus(row.id, !row.isActive).subscribe({
-    next: () => this.load(),
+  this.service.setStatus(row.id, newStatus).subscribe({
+    next: () => {
+      this.rows.update(list =>
+        list.map(r => (r.id === row.id ? { ...r, isActive: newStatus } : r))
+      );
+    },
+    error: error => {
+      this.errorMessage.set(extractErrorMessage(error, 'Could not change the status.'));
+    },
   });
 }
 }

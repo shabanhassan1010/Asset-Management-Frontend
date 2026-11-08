@@ -16,6 +16,7 @@ export interface EmployeeRow {
   departmentId: number;
   departmentName: string;
   isActive: boolean;
+  email: string;
 }
 
 export interface EmployeeDetails extends EmployeeRow {
