@@ -1,4 +1,3 @@
-// src/app/core/services/lookup.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, forkJoin, map, of, shareReplay } from 'rxjs';
@@ -6,17 +5,16 @@ import { AssetLookups, LookupItem } from '../models/Lookup.model';
 import { API } from '../api/api-endpoints';
 
 @Injectable({ providedIn: 'root' })
-export class LookupService 
+export class LookupService
 {
   private http = inject(HttpClient);
- 
+
   failedLookups = signal<string[]>([]);
   private cache$?: Observable<AssetLookups>;
- 
-  getAll(): Observable<AssetLookups> 
+
+  getAll(): Observable<AssetLookups>
   {
     if (!this.cache$) {
-      
       this.cache$ = forkJoin({
         categories:  this.list(API.lookups.categories,  'categoryName'),
         assetTypes:  this.list(API.lookups.assetTypes,  'assetTypeName'),
@@ -27,14 +25,14 @@ export class LookupService
     }
     return this.cache$;
   }
- 
-  clearCache(): void 
+
+  clearCache(): void
   {
     this.cache$ = undefined;
     this.failedLookups.set([]);
   }
- 
-  private list(url: string, nameField: string): Observable<LookupItem[]> 
+
+  private list(url: string, nameField: string): Observable<LookupItem[]>
   {
     return this.http.get<unknown>(url).pipe(
       map(response => {
@@ -42,7 +40,7 @@ export class LookupService
         const rows = (Array.isArray(response)
           ? response
           : body?.['data'] ?? body?.['items'] ?? []) as Record<string, unknown>[];
- 
+
         return rows.map(row => ({
           id: row['id'] as number,
           name: (row[nameField] ?? row['name']) as string,

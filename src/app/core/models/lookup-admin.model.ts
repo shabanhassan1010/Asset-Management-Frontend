@@ -6,7 +6,7 @@ export interface LookupRow {
   secondary: string | null;
   isActive: boolean;
   assetsCount: number;
-  employeesCount: number | null;  
+  employeesCount: number | null;
 }
 
 export interface LookupKindConfig {
