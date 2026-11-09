@@ -1,5 +1,3 @@
-// src/app/core/api-endpoints.ts
-
 import { environment } from '../../../environments/environment';
 
 const base = environment.apiUrl; // https://localhost:7266/api
@@ -36,36 +34,39 @@ export const API = {
   },
 
   employees: {
-  availableForUser: (departmentId: number) =>`${base}/v1/employees/available-for-user?departmentId=${departmentId}`,
-    base:                                    `${base}/v1/employees`,
-    paginated:                               `${base}/v1/employees/paginated`,
-    byId:          (id: number) =>           `${base}/v1/employees/${id}`,
-    status:        (id: number) =>           `${base}/v1/employees/${id}/status`,
-},
+    availableForUser: (departmentId: number) => `${base}/v1/employees/available-for-user?departmentId=${departmentId}`,
+    base:                                      `${base}/v1/employees`,
+    paginated:                                 `${base}/v1/employees/paginated`,
+    byId:          (id: number) =>             `${base}/v1/employees/${id}`,
+    status:        (id: number) =>             `${base}/v1/employees/${id}/status`,
+  },
 
   lookupAdmin: {
     category: {
       list:                 `${base}/v1/categories`,
+      paged:                `${base}/v1/categories/paginated`,
       create:               `${base}/v1/categories`,
       byId: (id: number) => `${base}/v1/categories/${id}`,
     },
     assetType: {
       list:                 `${base}/v1/asset-types`,
+      paged:                `${base}/v1/asset-types/paginated`,
       create:               `${base}/v1/asset-types`,
       byId: (id: number) => `${base}/v1/asset-types/${id}`,
     },
     department: {
       list:                 `${base}/v1/departments`,
+      paged:                `${base}/v1/departments/paginated`,
       create:               `${base}/v1/departments`,
       byId: (id: number) => `${base}/v1/departments/${id}`,
     },
     location: {
-      list:                  `${base}/v1/locations`,
-      create:                `${base}/v1/locations`,
-      byId: (id: number) =>  `${base}/v1/locations/${id}`,
+      list:                 `${base}/v1/locations`,
+      paged:                `${base}/v1/locations/paginated`,
+      create:               `${base}/v1/locations`,
+      byId: (id: number) => `${base}/v1/locations/${id}`,
     },
   },
-
   lookups: {
     categories:  `${base}/v1/categories`,
     assetTypes:  `${base}/v1/asset-types`,
