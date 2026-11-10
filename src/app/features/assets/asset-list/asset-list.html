@@ -138,13 +138,13 @@
                   </td>
                 }
                 <td>
-                  <div class="row" style="gap:4px;flex-wrap:nowrap">
-                    <a class="btn btn-sm btn-ghost" [routerLink]="['/assets', asset.id]">View</a>
+                  <div class="row" style="gap:6px;flex-wrap:nowrap">
+                    <a class="btn btn-sm btn-view" [routerLink]="['/assets', asset.id]"><span aria-hidden="true">◎</span> View</a>
                     @if (isAdmin() && !isRetired(asset)) {
-                      <a class="btn btn-sm btn-ghost" [routerLink]="['/assets', asset.id, 'edit']">Edit</a>
-                      <a class="btn btn-sm btn-ghost" [routerLink]="['/assets', asset.id, 'transfer']">Transfer</a>
-                      <button type="button" class="btn btn-sm btn-ghost btn-danger-ghost"
-                              (click)="openRetire(asset)">Retire</button>
+                      <a class="btn btn-sm btn-edit" [routerLink]="['/assets', asset.id, 'edit']"><span aria-hidden="true">✎</span> Edit</a>
+                      <a class="btn btn-sm btn-transfer" [routerLink]="['/assets', asset.id, 'transfer']"><span aria-hidden="true">⇄</span> Transfer</a>
+                      <button type="button" class="btn btn-sm btn-remove"
+                              (click)="openRetire(asset)"><span aria-hidden="true">⊘</span> Retire</button>
                     }
                   </div>
                 </td>

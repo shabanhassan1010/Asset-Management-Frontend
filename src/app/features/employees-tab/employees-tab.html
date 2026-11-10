@@ -1,3 +1,10 @@
+<!-- Shown first: the user should know what "Deactivate" means BEFORE clicking it -->
+<div class="alert alert-info" style="margin-bottom:16px">
+  <strong>How employee status works.</strong> Employees are never deleted — deactivating flips a flag, so they
+  drop out of the pickers on new assignments while the assets they already hold stay readable. The server
+  refuses to deactivate anyone who still has assets assigned to them.
+</div>
+
 
 @if (editingId() !== null) {
   <form class="card" style="margin-bottom:16px" [formGroup]="form" (ngSubmit)="save()">
@@ -78,32 +85,30 @@
     <span class="hint">{{ totalCount() }} record{{ totalCount() === 1 ? '' : 's' }}</span>
   </div>
 
-  <!-- بحث وفلاتر — الموظفين مش قايمة كاملة زي باقي الـ lookups -->
-  <div class="card-body" style="padding-bottom:0">
-    <div class="row" style="gap:8px;flex-wrap:wrap">
-      <input class="input" type="search" [formControl]="searchControl"
-             placeholder="Search by name or code" style="flex:1;min-width:200px">
+  <!-- Toolbar: same spacing as the other lookup tabs (16px top, 8px above the table header) -->
+  <div class="row" style="gap:8px;padding:16px 18px 8px;flex-wrap:wrap">
+    <input class="input" type="search" [formControl]="searchControl"
+           placeholder="Search by name or code" style="flex:1;min-width:200px">
 
-      <select class="input" style="width:auto"
-              [value]="departmentFilter() ?? ''"
-              (change)="onDepartmentFilter($any($event.target).value)">
-        <option value="">All departments</option>
-        @for (department of departments(); track department.id) {
-          <option [value]="department.id">{{ department.name }}</option>
-        }
-      </select>
-
-      <select class="input" style="width:auto" [value]="statusFilter() === null ? '' : statusFilter()"
-                                              (change)="onStatusFilter($any($event.target).value)">
-        <option value="">All statuses</option>
-        <option value="true">Active</option>
-        <option value="false">Inactive</option>
-      </select>
-
-      @if (hasFilters()) {
-        <button type="button" class="btn btn-sm btn-ghost" (click)="clearFilters()">Clear filters</button>
+    <select class="input" style="width:auto"
+            [value]="departmentFilter() ?? ''"
+            (change)="onDepartmentFilter($any($event.target).value)">
+      <option value="">All departments</option>
+      @for (department of departments(); track department.id) {
+        <option [value]="department.id">{{ department.name }}</option>
       }
-    </div>
+    </select>
+
+    <select class="input" style="width:auto" [value]="statusFilter() === null ? '' : statusFilter()"
+                                            (change)="onStatusFilter($any($event.target).value)">
+      <option value="">All statuses</option>
+      <option value="true">Active</option>
+      <option value="false">Inactive</option>
+    </select>
+
+    @if (hasFilters()) {
+      <button type="button" class="btn btn-sm btn-ghost" (click)="clearFilters()">Clear filters</button>
+    }
   </div>
 
   @if (loading()) {
@@ -129,7 +134,7 @@
             <th>Code</th>
             <th>Department</th>
             <th>Status</th>
-            <th style="width:1%"></th>
+            <th style="width:1%">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -145,9 +150,13 @@
                 </span>
               </td>
               <td>
-                <div class="row" style="gap:4px;flex-wrap:nowrap">
-                  <button type="button" class="btn btn-sm btn-ghost" (click)="startEdit(row)">Edit</button>
-                  <button type="button" class="btn btn-sm btn-ghost" (click)="toggleStatus(row)">
+                <div class="row" style="gap:6px;flex-wrap:nowrap">
+                  <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> Edit</button>
+                  <!-- Red when it turns something off, green when it turns it back on -->
+                  <button type="button" class="btn btn-sm"
+                          [class.btn-remove]="row.isActive" [class.btn-restore]="!row.isActive"
+                          (click)="toggleStatus(row)">
+                    <span aria-hidden="true">{{ row.isActive ? '⊘' : '✓' }}</span>
                     {{ row.isActive ? 'Deactivate' : 'Activate' }}
                   </button>
                 </div>
@@ -171,10 +180,4 @@
       </div>
     }
   }
-</div>
-
-<div class="alert alert-info" style="margin-top:16px">
-  <strong>How employee status works.</strong> Employees are never deleted — deactivating flips a flag, so they
-  drop out of the pickers on new assignments while the assets they already hold stay readable. The server
-  refuses to deactivate anyone who still has assets assigned to them.
 </div>

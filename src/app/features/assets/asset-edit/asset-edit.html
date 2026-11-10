@@ -7,13 +7,14 @@
     <div class="card state">
       <div class="icon">∅</div>
       <h3>Asset not found</h3>
-      <a class="btn" style="margin-top:12px" routerLink="/assets">Back to assets</a>
+      <a class="hint back-link" routerLink="/assets">← Back to assets</a>
+      
     </div>
   } @else if (asset(); as a) {
 
     <div class="page-head">
       <div>
-        <a class="hint" [routerLink]="['/assets']">← Back to asset</a>
+        <a class="hint back-link" routerLink="/assets">← Back to assets</a>
         <h1 style="margin-top:6px">Edit asset</h1>
         <p><span class="mono">{{ a.assetCode }}</span> — {{ a.categoryName }} · {{ a.assetTypeName }}</p>
       </div>

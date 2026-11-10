@@ -126,6 +126,44 @@ tr.dim td { opacity: .55; }
 .badge-user { background: var(--surface-2); color: var(--text-2); }
 .badge-off { background: var(--danger-soft); color: var(--danger); }
 
+
+.tbl thead th {
+  font-weight: 700;
+  color: #1f2937;
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.btn.btn-view,
+.btn.btn-edit,
+.btn.btn-transfer,
+.btn.btn-remove,
+.btn.btn-restore {
+  color: var(--act-color);
+  background: var(--act-bg);
+  border: 1px solid var(--act-border);   /* a visible border = "this is clickable" */
+  font-weight: 600;
+  text-decoration: none;                 /* View/Edit/Transfer are <a> links */
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+ 
+.btn.btn-view:hover:not(:disabled),
+.btn.btn-edit:hover:not(:disabled),
+.btn.btn-transfer:hover:not(:disabled),
+.btn.btn-remove:hover:not(:disabled),
+.btn.btn-restore:hover:not(:disabled) {
+  background: var(--act-hover);
+  border-color: var(--act-color);        /* border darkens on hover */
+}
+ 
+.btn-view     { --act-color: #374151; --act-bg: #ffffff; --act-border: #d1d5db; --act-hover: #f3f4f6; }
+.btn-edit     { --act-color: #1d4ed8; --act-bg: #eff6ff; --act-border: #bfdbfe; --act-hover: #dbeafe; }
+.btn-transfer { --act-color: #6d28d9; --act-bg: #f5f3ff; --act-border: #ddd6fe; --act-hover: #ede9fe; }
+.btn-remove   { --act-color: #b91c1c; --act-bg: #fef2f2; --act-border: #fecaca; --act-hover: #fee2e2; }
+.btn-restore  { --act-color: #047857; --act-bg: #ecfdf5; --act-border: #a7f3d0; --act-hover: #d1fae5; }
+.back-link { font-weight: 700; color: #1f2937; text-decoration: none; }
+.back-link:hover { color: #2563eb; }
+
 /* ---------- states ---------- */
 .state { padding: 56px 24px; text-align: center; color: var(--text-2); }
 .state .icon { font-size: 32px; opacity: .4; margin-bottom: 10px; }

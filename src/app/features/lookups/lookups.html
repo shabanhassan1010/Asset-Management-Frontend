@@ -31,6 +31,13 @@
     <app-employees-tab />
   } @else {
 
+    <!-- Shown first: the user should know what "Deactivate" means BEFORE clicking it -->
+    <div class="alert alert-info" style="margin-bottom:16px">
+      <strong>How deactivation works.</strong> A row that is still referenced by assets is never deleted —
+      it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the
+      assets that already use it.
+    </div>
+
     @if (errorMessage()) {
       <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
     }
@@ -119,8 +126,7 @@
                 <th>{{ activeKind().secondaryLabel }}</th>
                 <th>In use by</th>
                 <th>Status</th>
-                <th style="width:1%; text-align:center">Actions</th>
-                <th style="width:1%"></th>
+                <th style="width:1%">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -135,10 +141,10 @@
                     </span>
                   </td>
                   <td>
-                    <div class="row" style="gap:4px;flex-wrap:nowrap">
-                      <button type="button" class="btn btn-sm btn-ghost" (click)="startEdit(row)">Edit</button>
+                    <div class="row" style="gap:6px;flex-wrap:nowrap">
+                      <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> Edit</button>
                       @if (row.isActive) {
-                        <button type="button" class="btn btn-sm btn-ghost" (click)="deactivate(row)">Deactivate</button>
+                        <button type="button" class="btn btn-sm btn-remove" (click)="deactivate(row)"><span aria-hidden="true">⊘</span> Deactivate</button>
                       }
                     </div>
                   </td>
@@ -157,12 +163,6 @@
           </div>
         }
       }
-    </div>
-
-    <div class="alert alert-info" style="margin-top:16px">
-      <strong>How deactivation works.</strong> A row that is still referenced by assets is never deleted —
-      it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the
-      assets that already use it.
     </div>
 
   }

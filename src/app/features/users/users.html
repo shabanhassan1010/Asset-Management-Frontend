@@ -200,8 +200,10 @@
 
                 <td>
                   <button type="button" class="btn btn-sm"
+                          [class.btn-remove]="user.isActive" [class.btn-restore]="!user.isActive"
                           [disabled]="isSelf(user) || busyUserId() === user.userId"
                           (click)="toggleStatus(user)">
+                    <span aria-hidden="true">{{ user.isActive ? '⊘' : '✓' }}</span>
                     {{ user.isActive ? 'Disable' : 'Enable' }}
                   </button>
                 </td>
