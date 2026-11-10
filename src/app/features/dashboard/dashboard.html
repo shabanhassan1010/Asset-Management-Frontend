@@ -66,7 +66,9 @@
     </div>
 
     <!-- ===== Charts ===== -->
-    <div class="grid grid-2" style="margin-top:16px;align-items:start">
+    <!-- align-items: stretch → each card takes the height of the TALLEST card in the row,
+         so there is no empty gap under the shorter one -->
+    <div class="grid grid-2" style="margin-top:16px;align-items:stretch">
 
       <div class="card">
         <div class="card-head"><h2>By category</h2></div>

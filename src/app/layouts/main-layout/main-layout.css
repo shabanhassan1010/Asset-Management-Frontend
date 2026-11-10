@@ -5,10 +5,35 @@
 }
 
 
+/* ---------- Sidebar ----------
+   overflow: visible (NOT auto) — this is what removes the horizontal scrollbar.
+
+   Why the scrollbar appeared before:
+   the collapse button sits half outside the sidebar (right: -13px).
+   With overflow-y: auto, the browser also turns overflow-x into auto
+   (CSS does not allow "auto" on one axis and "visible" on the other),
+   so those 13px outside the sidebar became a horizontal scrollbar —
+   and the button itself got cut in half.
+
+   With 6 links the sidebar never needs to scroll, so visible is safe. */
 .sidebar {
-  position: relative;            
+  position: sticky;       /* stays in place while the page scrolls */
+  top: 0;
+  height: 100vh;          /* as tall as the screen, not as tall as the page */
+  align-self: flex-start; /* without it, flex stretches it to the page height and sticky stops working */
+  flex-shrink: 0;         /* a wide table must not squeeze the sidebar */
+  overflow: visible;
   transition: width 0.2s ease;
-  overflow-x: visible;           
+}
+
+/* Desktop only: keep the sidebar (and its button + tooltips that stick out
+   to the right) ABOVE the page content. position: sticky creates its own
+   layer, so without this the topbar could cover half of the round button.
+   Not applied on small screens, so it doesn't fight the slide-in menu's own z-index. */
+@media (min-width: 901px) {
+  .sidebar {
+    z-index: 20;
+  }
 }
 
 .shell.collapsed .sidebar {
@@ -18,49 +43,39 @@
   flex: 0 0 68px !important;
 }
 
-
 .shell.collapsed {
   grid-template-columns: 68px 1fr !important;
 }
 
-
+/* Collapsed: keep only the icons */
 .shell.collapsed .brand > *:not(.logo):not(.collapse-btn),
-.shell.collapsed .who > *:not(.avatar),
 .shell.collapsed .side-nav a > span:not(.ico) {
   display: none !important;
 }
 
 .shell.collapsed .brand,
-.shell.collapsed .who,
 .shell.collapsed .side-nav a {
   justify-content: center !important;
   gap: 0 !important;
 }
 
 .side-nav a span {
-  white-space: nowrap;           
+  white-space: nowrap;
 }
 
 .ico,
-.logo,
-.avatar {
-  flex-shrink: 0;                
-}
-
-.who-name {
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.logo {
+  flex-shrink: 0;
 }
 
 
+/* ---------- Collapse button ----------
+   A small circle sitting ON the sidebar's right border, lined up with the logo.
+   Shadow + border make it look like a button, not a stray character. */
 .collapse-btn {
   position: absolute;
-  top: 22px;
-  right: -13px;                  
+  top: 25px;
+  right: -13px;            /* half outside → sits on the border line */
   width: 26px;
   height: 26px;
   display: grid;
@@ -73,27 +88,35 @@
   font-size: 15px;
   line-height: 1;
   cursor: pointer;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
   z-index: 10;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .collapse-btn:hover {
-  background: #f3f4f6;
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+.collapse-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
 
+/* ---------- Tooltips when collapsed ----------
+   The link names are hidden, so hovering an icon shows its name on the right.
+   The text comes from data-label on each <a>. */
 .shell.collapsed .side-nav {
-  overflow: visible;             
+  overflow: visible;
 }
 
-.shell.collapsed .side-nav a,
-.shell.collapsed .brand,
-.shell.collapsed .who {
+.shell.collapsed .side-nav a {
   position: relative;
 }
 
-.shell.collapsed .side-nav a::after,
-.shell.collapsed .brand::after,
-.shell.collapsed .who::after {
+.shell.collapsed .side-nav a::after {
   content: attr(data-label);
   position: absolute;
   left: calc(100% + 12px);
@@ -109,15 +132,14 @@
   white-space: nowrap;
   box-shadow: 0 4px 10px rgb(0 0 0 / 0.15);
   opacity: 0;
-  visibility: hidden;           
+  visibility: hidden;
   transition: opacity 0.12s ease;
   pointer-events: none;
   z-index: 50;
 }
 
-.shell.collapsed .side-nav a::before,
-.shell.collapsed .brand::before,
-.shell.collapsed .who::before {
+/* the small arrow pointing at the icon */
+.shell.collapsed .side-nav a::before {
   content: '';
   position: absolute;
   left: calc(100% + 6px);
@@ -135,23 +157,22 @@
 .shell.collapsed .side-nav a:hover::after,
 .shell.collapsed .side-nav a:hover::before,
 .shell.collapsed .side-nav a:focus-visible::after,
-.shell.collapsed .side-nav a:focus-visible::before,
-.shell.collapsed .brand:hover::after,
-.shell.collapsed .brand:hover::before,
-.shell.collapsed .who:hover::after,
-.shell.collapsed .who:hover::before {
+.shell.collapsed .side-nav a:focus-visible::before {
   opacity: 1;
   visibility: visible;
 }
 
-.shell.collapsed .collapse-btn:hover ~ * {
-  pointer-events: none;
-}
 
-
+/* ---------- Small screens ----------
+   Under 900px the sidebar becomes the slide-in menu (☰), so the collapse
+   button is hidden and the collapsed styles are undone. */
 @media (max-width: 900px) {
   .collapse-btn {
     display: none;
+  }
+
+  .sidebar {
+    overflow-y: auto;      /* the slide-in menu can be taller than a phone screen */
   }
 
   .shell.collapsed .sidebar {
@@ -166,35 +187,17 @@
   }
 
   .shell.collapsed .brand > *,
-  .shell.collapsed .who > *,
   .shell.collapsed .side-nav a > span {
     display: initial !important;
   }
 
   .shell.collapsed .brand,
-  .shell.collapsed .who,
   .shell.collapsed .side-nav a {
     justify-content: flex-start !important;
   }
 
   .shell.collapsed .side-nav a::after,
-  .shell.collapsed .side-nav a::before,
-  .shell.collapsed .brand::after,
-  .shell.collapsed .brand::before,
-  .shell.collapsed .who::after,
-  .shell.collapsed .who::before {
+  .shell.collapsed .side-nav a::before {
     content: none;
   }
-}
-.layout {
-  display: flex;
-}
-
-.sidebar {
-  position: sticky;      /* يفضل لازق في مكانه وإنت بتعمل scroll */
-  top: 0;                /* يلزق في أعلى الشاشة بالظبط */
-  height: 100vh;         /* طوله = طول الشاشة، مش طول الصفحة كلها */
-  align-self: flex-start;/* مهم: من غيره الـ flex بيمطّه لطول الصفحة كلها فالـ sticky مش هيشتغل */
-  flex-shrink: 0;        /* عشان عرضه ميصغرش لما الجدول يكون عريض */
-  overflow-y: auto;      /* لو اللينكات كترت يعمل scroll جواه هو بس */
 }

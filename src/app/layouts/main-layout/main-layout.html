@@ -32,16 +32,6 @@
 
       }
     </nav>
-
-    <div class="who">
-      <div class="avatar">{{ initials() }}</div>
-      <div class="who-text">
-        <div class="who-name">{{ displayName() }}</div>
-        <span class="badge" [class.badge-admin]="isAdmin()" [class.badge-user]="!isAdmin()">
-          {{ roleLabel() }}
-        </span>
-      </div>
-    </div>
   </aside>
 
   <div class="main">

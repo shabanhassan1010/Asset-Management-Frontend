@@ -21,7 +21,6 @@ export class MainLayout {
 
   displayName = this.auth.displayName;
   isAdmin = this.auth.isAdmin;
-  roleLabel = computed(() => (this.isAdmin() ? 'Admin' : 'User'));
 
   navOpen = signal(false);
 
@@ -35,8 +34,6 @@ export class MainLayout {
       { path: '/profile', label: 'My profile', icon: '☺', adminOnly: false },
     ].filter((item) => !item.adminOnly || this.isAdmin()),
   );
-
-  initials = computed(() => this.displayName().slice(0, 2).toUpperCase());
 
   toggleNav() {
     this.navOpen.update((open) => !open);
