@@ -29,12 +29,12 @@ export class AiAssistant {
   // Shown on the empty screen. An empty state is an invitation to act, and these
   // also teach the shapes the assistant understands - which saves the person
   // from guessing and getting "I can only answer questions about assets".
-  readonly suggestions = [
-    'Which assets are currently available?',
-    'How many Dell laptops do we have?',
-    'Show me all laptops assigned to the Presales department',
-    'Which assets are assigned to me?',
-  ];
+  // readonly suggestions = [
+  //   'Which assets are currently available?',
+  //   'How many Dell laptops do we have?',
+  //   'Show me all laptops assigned to the Presales department',
+  //   'Which assets are assigned to me?',
+  // ];
  
   constructor() {
     // effect() re-runs whenever a signal it reads changes. Reading messages()
