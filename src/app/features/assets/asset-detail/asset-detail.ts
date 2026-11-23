@@ -1,21 +1,25 @@
 // src/app/features/assets/asset-detail/asset-detail.ts
 import { Component, OnInit, inject, input, signal } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { AssetService } from '../../../core/services/AssetService';
 import { AssetListItem, AssetTransfer, RETIRED_STATUS_ID } from '../../../core/models/Asset.model';
 import { TransferDetailsDialog } from '../transfer-details-dialog/transfer-details-dialog';
+import { ConfirmService } from '../../../core/services/confirm.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../../shared/pipes/local-name.pipe';
+import { LocalizedDatePipe } from '../../../shared/pipes/localized-date.pipe';
 @Component({
   selector: 'app-asset-detail',
-  standalone: true,                                     
-  imports: [RouterLink, DecimalPipe , DatePipe,TransferDetailsDialog],
+  imports: [RouterLink, DecimalPipe, LocalizedDatePipe, TransferDetailsDialog, TranslatePipe, LocalNamePipe],
   templateUrl: './asset-detail.html',
 })
 export class AssetDetail implements OnInit {
   private assetService = inject(AssetService);
   private auth = inject(Auth);
   private router = inject(Router);
+  private confirm = inject(ConfirmService);
   id = input.required<string>();
 
   isAdmin = this.auth.isAdmin;
@@ -64,13 +68,19 @@ export class AssetDetail implements OnInit {
     return this.asset()?.statusId === RETIRED_STATUS_ID;
   }
 
-  retire(): void {
+  // async: the app's confirm dialog answers with a Promise (translated + themed,
+  // unlike the browser's confirm()).
+  async retire(): Promise<void> {
     const current = this.asset();
     if (!current) return;
 
-    const confirmed = confirm(
-      `Retire ${current.assetCode}?\n\nThe asset stays in the register for history, but it can no longer be edited or transferred.`,
-    );
+    const confirmed = await this.confirm.ask({
+      title: 'Retire {code}?',
+      message: 'The asset stays in the register for history, but it can no longer be edited or transferred.',
+      confirmText: 'Retire',
+      danger: true,
+      params: { code: current.assetCode },
+    });
     if (!confirmed) return;
 
     this.retiring.set(true);

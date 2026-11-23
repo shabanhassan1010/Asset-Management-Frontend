@@ -10,8 +10,10 @@ export interface CurrentUser {
   role: UserRole;
   employeeId: number | null;
   employeeName: string | null;
+  employeeNameAr?: string | null;
   employeeCode: string | null;
   departmentName:string| null;
+  departmentNameAr?: string | null;
   isActive: boolean
   phone: string| null
 }

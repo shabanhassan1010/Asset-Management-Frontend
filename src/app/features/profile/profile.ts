@@ -3,9 +3,11 @@ import { CurrentUser, UserRole } from '../../core/models/auth.model';
 import { Auth } from '../../core/services/auth';
 import { UserService } from '../../core/services/user.service';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../shared/pipes/local-name.pipe';
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [TranslatePipe, LocalNamePipe],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

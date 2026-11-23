@@ -32,14 +32,14 @@
   margin: 0;
   font-size: 1.4rem;
   font-weight: 600;
-  color: #14171a;
+  color: var(--text);
   letter-spacing: -0.01em;
 }
 
 .page__header p {
   margin: 0.15rem 0 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-2);
 }
 
 /* Takes the leftover space so the clear button sits at the far right. */
@@ -54,23 +54,23 @@
   flex: none;
   margin-top: 0.15rem;
   padding: 0.4rem 0.85rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: #fafbfc;
+  background: var(--surface-2);
   font: inherit;
   font-size: 0.8rem;
-  color: #4b5563;
+  color: var(--text-2);
   cursor: pointer;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
 
 .page__clear:hover:not(:disabled) {
-  border-color: #b8c7f2;
-  background: #f4f7fe;
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .page__clear:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -88,8 +88,8 @@
   height: 30px;
   margin-top: 0.15rem;
   border-radius: 8px;
-  background: #eaf0fe;
-  color: #2563eb;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .panel {
@@ -97,9 +97,9 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
   overflow: hidden;
 }
 
@@ -122,14 +122,14 @@
   margin: 0 0 0.4rem;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #14171a;
+  color: var(--text);
 }
 
 .welcome p {
   margin: 0 0 1.15rem;
   font-size: 0.88rem;
   line-height: 1.55;
-  color: #6b7280;
+  color: var(--text-2);
 }
 
 .welcome__suggestions {
@@ -140,24 +140,24 @@
 
 .suggestion {
   padding: 0.55rem 0.9rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: #fafbfc;
+  background: var(--surface-2);
   font: inherit;
   font-size: 0.83rem;
-  color: #374151;
-  text-align: left;
+  color: var(--text-2);
+  text-align: start;
   cursor: pointer;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
 
 .suggestion:hover {
-  border-color: #b8c7f2;
-  background: #f4f7fe;
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .suggestion:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -183,7 +183,7 @@
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: #2563eb;
+  background: var(--accent);
   color: #fff;
   display: flex;
   align-items: center;
@@ -195,8 +195,8 @@
   max-width: 75%;
   padding: 0.65rem 0.9rem;
   border-radius: 12px;
-  background: #f6f7f9;
-  color: #14171a;
+  background: var(--surface-2);
+  color: var(--text);
   font-size: 0.9rem;
   line-height: 1.55;
 }
@@ -208,13 +208,13 @@
 
 .bubble--user {
   max-width: 70%;
-  background: #2563eb;
+  background: var(--accent);
   color: #fff;
 }
 
 .bubble--error {
-  background: #fdf2f2;
-  color: #8a2020;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 /* A results table needs real width, so a bubble carrying one is allowed to
@@ -227,9 +227,9 @@
 .table-wrap {
   margin-top: 0.75rem;
   overflow-x: auto;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .results {
@@ -241,15 +241,15 @@
 .results th,
 .results td {
   padding: 0.5rem 0.7rem;
-  text-align: left;
+  text-align: start;
   white-space: nowrap;
-  border-bottom: 1px solid #eef0f2;
+  border-bottom: 1px solid var(--border);
 }
 
 .results th {
-  background: #fafbfc;
+  background: var(--surface-2);
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text-2);
 }
 
 .results tbody tr:last-child td {
@@ -257,13 +257,13 @@
 }
 
 .results .numeric {
-  text-align: right;
+  text-align: end;
   font-variant-numeric: tabular-nums;
 }
 
 .results .asset-code {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  color: #4b5563;
+  color: var(--text-2);
   background: none;
 }
 
@@ -271,34 +271,34 @@
   padding: 0.15rem 0.55rem;
   border-radius: 999px;
   font-size: 0.73rem;
-  background: #eef0f2;
-  color: #4b5563;
+  background: var(--surface-2);
+  color: var(--text-2);
 }
 
 .status[data-status='Available'] {
-  background: #e7f5ec;
-  color: #216e43;
+  background: var(--success-soft);
+  color: var(--success);
 }
 
 .status[data-status='Assigned'] {
-  background: #e8effb;
-  color: #1e4b9c;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .status[data-status='UnderMaintenance'] {
-  background: #fdf3e2;
-  color: #8a5a10;
+  background: var(--warn-soft);
+  color: var(--warn);
 }
 
 .status[data-status='Retired'] {
-  background: #f1f2f4;
-  color: #6b7280;
+  background: var(--surface-2);
+  color: var(--text-2);
 }
 
 .table-note {
   margin: 0.55rem 0 0;
   font-size: 0.77rem;
-  color: #6b7280;
+  color: var(--text-2);
 }
 
 .typing {
@@ -312,7 +312,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #9aa1a9;
+  background: var(--text-3);
   animation: bounce 1.2s infinite;
 }
 
@@ -349,32 +349,32 @@
   display: flex;
   gap: 0.55rem;
   padding: 0.85rem 1rem;
-  border-top: 1px solid #e5e7eb;
-  background: #fff;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .composer__input {
   flex: 1;
   padding: 0.6rem 0.85rem;
-  border: 1px solid #d7dade;
+  border: 1px solid var(--border);
   border-radius: 9px;
   font: inherit;
   font-size: 0.9rem;
-  color: #14171a;
+  color: var(--text);
 }
 
 .composer__input::placeholder {
-  color: #9aa1a9;
+  color: var(--text-3);
 }
 
 .composer__input:focus-visible {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .composer__input:disabled {
-  background: #f6f7f9;
+  background: var(--surface-2);
 }
 
 .composer__send {
@@ -386,22 +386,22 @@
   justify-content: center;
   border: none;
   border-radius: 9px;
-  background: #2563eb;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
 .composer__send:hover:not(:disabled) {
-  background: #1d4fc4;
+  background: var(--accent-hover);
 }
 
 .composer__send:disabled {
-  background: #d7dde8;
+  background: var(--border);
   cursor: not-allowed;
 }
 
 .composer__send:focus-visible {
-  outline: 2px solid #14171a;
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }

@@ -1,77 +1,86 @@
 <!-- Shown first: the user should know what "Deactivate" means BEFORE clicking it -->
 <div class="alert alert-info" style="margin-bottom:16px">
-  <strong>How employee status works.</strong> Employees are never deleted — deactivating flips a flag, so they
-  drop out of the pickers on new assignments while the assets they already hold stay readable. The server
-  refuses to deactivate anyone who still has assets assigned to them.
+  <strong>{{ 'How employee status works.' | t }}</strong> {{ 'Employees are never deleted — deactivating flips a flag, so they drop out of the pickers on new assignments while the assets they already hold stay readable. The server refuses to deactivate anyone who still has assets assigned to them.' | t }}
 </div>
 
 
 @if (editingId() !== null) {
   <form class="card" style="margin-bottom:16px" [formGroup]="form" (ngSubmit)="save()">
     <div class="card-head">
-      <h2>{{ editingId() === 0 ? 'New' : 'Edit' }} employee</h2>
+      <h2>{{ (editingId() === 0 ? 'New employee' : 'Edit employee') | t }}</h2>
     </div>
 
     <div class="card-body">
       @if (loadingForm()) {
-        <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">Loading employee…</p></div>
+        <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">{{ 'Loading employee…' | t }}</p></div>
       } @else {
         <div class="grid grid-2">
           <div class="field">
-            <label for="employeeCode">Employee code <span class="req">*</span></label>
+            <label for="employeeCode">{{ 'Employee code' | t }} <span class="req">*</span></label>
             <input id="employeeCode" class="input" formControlName="employeeCode" placeholder="EMP-0014"
                    [class.invalid]="form.controls.employeeCode.touched && form.controls.employeeCode.invalid">
             @if (editingId() !== 0) {
-              <span class="hint">The code stays with the employee and cannot be changed.</span>
+              <span class="hint">{{ 'The code stays with the employee and cannot be changed.' | t }}</span>
             }
             @if (form.controls.employeeCode.touched && form.controls.employeeCode.invalid) {
-              <span class="field-error">Employee code is required, 30 characters or fewer.</span>
+              <span class="field-error">{{ 'Employee code is required, 30 characters or fewer.' | t }}</span>
             }
           </div>
 
           <div class="field">
-            <label for="fullName">Full name <span class="req">*</span></label>
+            <label for="fullName">{{ 'Full name' | t }} <span class="req">*</span></label>
             <input id="fullName" class="input" formControlName="fullName" placeholder="Hassan Ali"
                    [class.invalid]="form.controls.fullName.touched && form.controls.fullName.invalid">
             @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
-              <span class="field-error">Full name is required, 200 characters or fewer.</span>
+              <span class="field-error">{{ 'Full name is required, 200 characters or fewer.' | t }}</span>
+            }
+          </div>
+
+          <!-- Optional. dir="rtl" so Arabic is typed right-to-left even when the site is in English. -->
+          <div class="field">
+            <label for="fullNameAr">{{ 'Arabic name' | t }}</label>
+            <input id="fullNameAr" class="input" formControlName="fullNameAr" dir="rtl" lang="ar" placeholder="حسن علي"
+                   [class.invalid]="form.controls.fullNameAr.invalid">
+            <span class="hint">{{ 'Optional. Shown when the site is in Arabic; the English name is used until it is filled in.' | t }}</span>
+            @if (form.controls.fullNameAr.invalid) {
+              <span class="field-error">{{ 'Use {count} characters or fewer.' | t: { count: 200 } }}</span>
             }
           </div>
 
           <div class="field">
-            <label for="email">Email <span class="req">*</span></label>
+            <label for="email">{{ 'Email' | t }} <span class="req">*</span></label>
             <input id="email" type="email" class="input" formControlName="email" placeholder="hassan.ali@example.com"
                    [class.invalid]="form.controls.email.touched && form.controls.email.invalid">
             @if (form.controls.email.touched && form.controls.email.invalid) {
-              <span class="field-error">Enter a valid email. Each employee needs their own.</span>
+              <span class="field-error">{{ 'Enter a valid email. Each employee needs their own.' | t }}</span>
             }
           </div>
 
           <div class="field">
-            <label for="phone">Phone</label>
+            <label for="phone">{{ 'Phone' | t }}</label>
             <input id="phone" class="input" formControlName="phone" placeholder="01212121212">
           </div>
 
           <div class="field">
-            <label for="departmentId">Department <span class="req">*</span></label>
+            <label for="departmentId">{{ 'Department' | t }} <span class="req">*</span></label>
             <select id="departmentId" class="input" formControlName="departmentId"
                     [class.invalid]="form.controls.departmentId.touched && form.controls.departmentId.invalid">
-              <option [value]="0" disabled>Select a department</option>
+              <option [value]="0" disabled>{{ 'Select a department' | t }}</option>
               @for (department of activeDepartments(); track department.id) {
-                <option [value]="department.id">{{ department.name }}</option>
+                <option [value]="department.id">{{ department.name | localName: department.nameAr }}</option>
               }
             </select>
             @if (form.controls.departmentId.touched && form.controls.departmentId.invalid) {
-              <span class="field-error">Pick the department this employee sits in.</span>
+              <span class="field-error">{{ 'Pick the department this employee sits in.' | t }}</span>
             }
           </div>
         </div>
 
         <div class="row">
           <button class="btn btn-primary" type="submit" [disabled]="saving() || form.invalid">
-            @if (saving()) { <span class="spinner"></span> Saving… } @else { Save }
+            @if (saving()) { <span class="spinner"></span> {{ 'Saving…' | t }} } @else { {{ 'Save' | t }} }
           </button>
-          <button class="btn" type="button" (click)="closeForm()">Cancel</button>
+          <button class="btn" type="button" (click)="closeForm()">{{ 'Cancel' | t }}</button>
         </div>
       }
     </div>
@@ -80,48 +89,48 @@
 
 <div class="card">
   <div class="card-head">
-    <h2>Employees</h2>
+    <h2>{{ 'Employees' | t }}</h2>
     <span class="spacer"></span>
-    <span class="hint">{{ totalCount() }} record{{ totalCount() === 1 ? '' : 's' }}</span>
+    <span class="hint">{{ (totalCount() === 1 ? '{count} record' : '{count} records') | t: { count: totalCount() } }}</span>
   </div>
 
   <!-- Toolbar: same spacing as the other lookup tabs (16px top, 8px above the table header) -->
   <div class="row" style="gap:8px;padding:16px 18px 8px;flex-wrap:wrap">
     <input class="input" type="search" [formControl]="searchControl"
-           placeholder="Search by name or code" style="flex:1;min-width:200px">
+           [placeholder]="'Search by name or code' | t" style="flex:1;min-width:200px">
 
     <select class="input" style="width:auto"
             [value]="departmentFilter() ?? ''"
             (change)="onDepartmentFilter($any($event.target).value)">
-      <option value="">All departments</option>
+      <option value="">{{ 'All departments' | t }}</option>
       @for (department of departments(); track department.id) {
-        <option [value]="department.id">{{ department.name }}</option>
+        <option [value]="department.id">{{ department.name | localName: department.nameAr }}</option>
       }
     </select>
 
     <select class="input" style="width:auto" [value]="statusFilter() === null ? '' : statusFilter()"
                                             (change)="onStatusFilter($any($event.target).value)">
-      <option value="">All statuses</option>
-      <option value="true">Active</option>
-      <option value="false">Inactive</option>
+      <option value="">{{ 'All statuses' | t }}</option>
+      <option value="true">{{ 'Active' | t }}</option>
+      <option value="false">{{ 'Inactive' | t }}</option>
     </select>
 
     @if (hasFilters()) {
-      <button type="button" class="btn btn-sm btn-ghost" (click)="clearFilters()">Clear filters</button>
+      <button type="button" class="btn btn-sm btn-ghost" (click)="clearFilters()">{{ 'Clear filters' | t }}</button>
     }
   </div>
 
   @if (loading()) {
-    <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+    <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">{{ 'Loading…' | t }}</p></div>
   } @else if (rows().length === 0) {
     <div class="state">
       <div class="icon">∅</div>
       @if (hasFilters()) {
-        <h3>No matches</h3>
-        <p>No employees match these filters.</p>
+        <h3>{{ 'No matches' | t }}</h3>
+        <p>{{ 'No employees match these filters.' | t }}</p>
       } @else {
-        <h3>Nothing here yet</h3>
-        <p>Add the first employee to start assigning assets.</p>
+        <h3>{{ 'Nothing here yet' | t }}</h3>
+        <p>{{ 'Add the first employee to start assigning assets.' | t }}</p>
       }
     </div>
   } @else {
@@ -129,35 +138,35 @@
       <table class="tbl">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Code</th>
-            <th>Department</th>
-            <th>Status</th>
-            <th style="width:1%">Actions</th>
+            <th>{{ 'Name' | t }}</th>
+            <th>{{ 'Email' | t }}</th>
+            <th>{{ 'Code' | t }}</th>
+            <th>{{ 'Department' | t }}</th>
+            <th>{{ 'Status' | t }}</th>
+            <th style="width:1%">{{ 'Actions' | t }}</th>
           </tr>
         </thead>
         <tbody>
           @for (row of rows(); track row.id) {
             <tr [class.dim]="!row.isActive">
-              <td><strong>{{ row.employeeName }}</strong></td>
+              <td><strong>{{ row.employeeName | localName: row.employeeNameAr }}</strong></td>
               <td  class="hint">{{ row.email }}</td>
               <td class="hint">{{ row.employeeCode }}</td>
-              <td class="hint">{{ row.departmentName }}</td>
+              <td class="hint">{{ row.departmentName | localName: row.departmentNameAr }}</td>
               <td>
                 <span class="badge" [class.badge-available]="row.isActive" [class.badge-retired]="!row.isActive">
-                  {{ row.isActive ? 'Active' : 'Inactive' }}
+                  {{ (row.isActive ? 'Active' : 'Inactive') | t }}
                 </span>
               </td>
               <td>
                 <div class="row" style="gap:6px;flex-wrap:nowrap">
-                  <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> Edit</button>
+                  <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> {{ 'Edit' | t }}</button>
                   <!-- Red when it turns something off, green when it turns it back on -->
                   <button type="button" class="btn btn-sm"
                           [class.btn-remove]="row.isActive" [class.btn-restore]="!row.isActive"
                           (click)="toggleStatus(row)">
                     <span aria-hidden="true">{{ row.isActive ? '⊘' : '✓' }}</span>
-                    {{ row.isActive ? 'Deactivate' : 'Activate' }}
+                    {{ (row.isActive ? 'Deactivate' : 'Activate') | t }}
                   </button>
                 </div>
               </td>
@@ -170,12 +179,12 @@
     @if (totalPages() > 1) {
       <div class="card-body">
         <div class="row" style="gap:8px">
-          <span class="hint">Page {{ pageNumber() }} of {{ totalPages() }}</span>
+          <span class="hint">{{ 'Page {page} of {total}' | t: { page: pageNumber(), total: totalPages() } }}</span>
           <span class="spacer"></span>
           <button type="button" class="btn btn-sm" [disabled]="pageNumber() === 1"
-                  (click)="goToPage(pageNumber() - 1)">Previous</button>
+                  (click)="goToPage(pageNumber() - 1)">{{ 'Previous' | t }}</button>
           <button type="button" class="btn btn-sm" [disabled]="pageNumber() >= totalPages()"
-                  (click)="goToPage(pageNumber() + 1)">Next</button>
+                  (click)="goToPage(pageNumber() + 1)">{{ 'Next' | t }}</button>
         </div>
       </div>
     }

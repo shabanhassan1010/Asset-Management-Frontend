@@ -1,7 +1,7 @@
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,7 +10,7 @@
 }
 
 .dialog {
-  background: var(--surface, #fff);
+  background: var(--surface, var(--surface));
   border-radius: 10px;
   padding: 22px;
   width: 100%;
@@ -45,5 +45,5 @@
 }
 
 .req {
-  color: var(--danger, #dc2626);
+  color: var(--danger);
 }

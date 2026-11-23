@@ -7,12 +7,15 @@ import { LookupAdminService } from '../../core/services/lookup-admin.service';
 import { EmployeesTab } from '../employees-tab/employees-tab';
 import { ToastService } from '../../core/services/ToastService';
 import { ConfirmService } from '../../core/services/confirm.service';
+import { LanguageService } from '../../core/services/language.service';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../shared/pipes/local-name.pipe';
 type StatusFilter = 'all' | 'active' | 'inactive';
 
 @Component({
   selector: 'app-lookups',
-  imports: [ReactiveFormsModule, EmployeesTab],
+  imports: [ReactiveFormsModule, EmployeesTab, TranslatePipe, LocalNamePipe],
   templateUrl: './lookups.html',
 })
 export class Lookups implements OnInit {
@@ -20,8 +23,10 @@ export class Lookups implements OnInit {
   private service = inject(LookupAdminService);
   private toast = inject(ToastService);
   private confirm = inject(ConfirmService);
+  private language = inject(LanguageService);
 
   kinds = LOOKUP_KINDS;
+  isArabic = this.language.isArabic;
   activeKind = signal<LookupKindConfig>(LOOKUP_KINDS[0]);
 
   employeesTab = signal(false);
@@ -45,8 +50,10 @@ export class Lookups implements OnInit {
   search = signal('');
   statusFilter = signal<StatusFilter>('active');
 
+  // The max lengths are set per kind in applyValidators() (category 100, department 150 …).
   form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(150)]],
+    name: [''],
+    nameAr: [''],          // optional: the Arabic name, shown when the site is in Arabic
     secondary: [''],
   });
 
@@ -124,14 +131,14 @@ export class Lookups implements OnInit {
   }
 
   startCreate(): void {
-    this.form.reset({ name: '', secondary: '' });
-    this.applySecondaryValidator();
+    this.form.reset({ name: '', nameAr: '', secondary: '' });
+    this.applyValidators();
     this.editingId.set(0);
   }
 
   startEdit(row: LookupRow): void {
-    this.form.setValue({ name: row.name, secondary: row.secondary ?? '' });
-    this.applySecondaryValidator();
+    this.form.setValue({ name: row.name, nameAr: row.nameAr ?? '', secondary: row.secondary ?? '' });
+    this.applyValidators();
     this.editingId.set(row.id);
   }
 
@@ -139,10 +146,19 @@ export class Lookups implements OnInit {
     this.editingId.set(null);
   }
 
-  private applySecondaryValidator(): void {
-    const control = this.form.controls.secondary;
-    control.setValidators(this.activeKind().secondaryRequired ? [Validators.required] : []);
-    control.updateValueAndValidity();
+  // Each kind has its own rules (Code is required for departments, a category name is max 100 …),
+  // so the validators are set every time the form opens.
+  private applyValidators(): void {
+    const config = this.activeKind();
+    const { name, nameAr, secondary } = this.form.controls;
+
+    name.setValidators([Validators.required, Validators.maxLength(config.nameMaxLength)]);
+    nameAr.setValidators([Validators.maxLength(config.nameMaxLength)]);
+    secondary.setValidators(config.secondaryRequired ? [Validators.required] : []);
+
+    name.updateValueAndValidity();
+    nameAr.updateValueAndValidity();
+    secondary.updateValueAndValidity();
   }
 
   save(): void {
@@ -155,10 +171,12 @@ export class Lookups implements OnInit {
     if (id === null) return;
 
     const config = this.activeKind();
-    const { name, secondary } = this.form.getRawValue();
+    const { name, nameAr, secondary } = this.form.getRawValue();
+    // Empty Arabic name → null, so the API stores NULL (and shows the English name instead).
+    const arabic = nameAr.trim() || null;
     const request = id === 0
-      ? this.service.create(config, name.trim(), secondary.trim() || null)
-      : this.service.update(config, id, name.trim(), secondary.trim() || null);
+      ? this.service.create(config, name.trim(), arabic, secondary.trim() || null)
+      : this.service.update(config, id, name.trim(), arabic, secondary.trim() || null);
 
     this.saving.set(true);
     this.errorMessage.set('');
@@ -166,7 +184,10 @@ export class Lookups implements OnInit {
     request.subscribe({
       next: () => {
         this.saving.set(false);
-        this.toast.success(`"${name.trim()}" was ${id === 0 ? 'added' : 'updated'}.`);
+        this.toast.success(
+          this.language.t(id === 0 ? '"{name}" was added.' : '"{name}" was updated.',
+                          { name: this.language.pick(name.trim(), arabic) }),
+        );
         this.closeForm();
         this.load();
       },
@@ -181,7 +202,8 @@ export class Lookups implements OnInit {
     const config = this.activeKind();
 
     const confirmed = await this.confirm.ask({
-      title: `Deactivate "${row.name}"?`,
+      title: 'Deactivate "{name}"?',
+      params: { name: this.language.pick(row.name, row.nameAr) },
       message: 'It disappears from the pickers on new assets, but assets already using it keep working.',
       confirmText: 'Deactivate',
       danger: true
@@ -190,7 +212,7 @@ export class Lookups implements OnInit {
 
     this.service.deactivate(config, row.id).subscribe({
       next: () => {
-        this.toast.success(`"${row.name}" was deactivated.`);
+        this.toast.success(this.language.t('"{name}" was deactivated.', { name: this.language.pick(row.name, row.nameAr) }));
 
         // The last row on a page (not the first) disappears under the "Active" filter → go back one page
         if (this.rows().length === 1 && this.page() > 1 && this.statusFilter() === 'active') {
@@ -202,11 +224,15 @@ export class Lookups implements OnInit {
   }
 
   usageLabel(row: LookupRow): string {
+    // Called from the template, so it re-runs when the language changes (t() reads the language signal).
+    const t = (text: string, count: number) => this.language.t(text, { count });
+    if (row.assetsCount === 0 && !row.employeesCount) return this.language.t('Not used yet');
+
     const parts: string[] = [];
-    parts.push(`${row.assetsCount} asset${row.assetsCount === 1 ? '' : 's'}`);
+    parts.push(t(row.assetsCount === 1 ? '{count} asset' : '{count} assets', row.assetsCount));
     if (row.employeesCount !== null) {
-      parts.push(`${row.employeesCount} employee${row.employeesCount === 1 ? '' : 's'}`);
+      parts.push(t(row.employeesCount === 1 ? '{count} employee' : '{count} employees', row.employeesCount));
     }
-    return row.assetsCount === 0 && !row.employeesCount ? 'Not used yet' : parts.join(' · ');
+    return parts.join(' · ');
   }
 }

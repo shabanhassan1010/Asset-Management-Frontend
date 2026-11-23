@@ -4,59 +4,59 @@
 
     <header class="panel-header">
       <div>
-        <h2 id="transfer-title">Transfer details</h2>
+        <h2 id="transfer-title">{{ 'Transfer details' | t }}</h2>
         @if (transfer(); as t) {
-          <p class="sub">#{{ t.id }} · {{ t.transferDate | date: 'dd MMM yyyy, hh:mm a' }}</p>
+          <p class="sub">#{{ t.id }} · {{ t.transferDate | appDate: 'dd MMM yyyy, hh:mm a' }}</p>
         }
       </div>
-      <button type="button" class="close-btn" (click)="close()" aria-label="Close">✕</button>
+      <button type="button" class="close-btn" (click)="close()" [attr.aria-label]="'Close' | t">✕</button>
     </header>
 
     @if (loading()) {
-      <p class="loading">Loading…</p>
+      <p class="loading">{{ 'Loading…' | t }}</p>
     } @else if (transfer(); as t) {
 
       <section>
-        <h3>Asset</h3>
+        <h3>{{ 'Asset' | t }}</h3>
         <dl class="info">
-          <dt>Name</dt>          <dd>{{ t.assetName }}</dd>
-          <dt>Asset code</dt>    <dd class="mono">{{ t.assetCode }}</dd>
-          <dt>Serial number</dt> <dd class="mono">{{ t.serialNumber ?? '—' }}</dd>
+          <dt>{{ 'Name' | t }}</dt>          <dd>{{ t.assetName }}</dd>
+          <dt>{{ 'Asset code' | t }}</dt>    <dd class="mono">{{ t.assetCode }}</dd>
+          <dt>{{ 'Serial number' | t }}</dt> <dd class="mono">{{ t.serialNumber ?? '—' }}</dd>
         </dl>
       </section>
 
       <section>
-        <h3>What changed</h3>
+        <h3>{{ 'What changed' | t }}</h3>
         <table class="compare">
           <thead>
-            <tr><th></th><th>From</th><th></th><th>To</th></tr>
+            <tr><th></th><th>{{ 'From' | t }}</th><th></th><th>{{ 'To' | t }}</th></tr>
           </thead>
           <tbody>
             <tr [class.changed]="t.fromDepartmentName !== t.toDepartmentName">
-              <th>Department</th>
-              <td>{{ t.fromDepartmentName ?? '—' }}</td><td class="arrow">→</td>
-              <td class="to">{{ t.toDepartmentName ?? '—' }}</td>
+              <th>{{ 'Department' | t }}</th>
+              <td>{{ (t.fromDepartmentName | localName: t.fromDepartmentNameAr) || '—' }}</td><td class="arrow"><span class="flip-rtl">→</span></td>
+              <td class="to">{{ (t.toDepartmentName | localName: t.toDepartmentNameAr) || '—' }}</td>
             </tr>
             <tr [class.changed]="t.fromEmployeeName !== t.toEmployeeName">
-              <th>Assigned to</th>
-              <td>{{ t.fromEmployeeName ?? '—' }}</td><td class="arrow">→</td>
-              <td class="to">{{ t.toEmployeeName ?? '—' }}</td>
+              <th>{{ 'Assigned to' | t }}</th>
+              <td>{{ (t.fromEmployeeName | localName: t.fromEmployeeNameAr) || '—' }}</td><td class="arrow"><span class="flip-rtl">→</span></td>
+              <td class="to">{{ (t.toEmployeeName | localName: t.toEmployeeNameAr) || '—' }}</td>
             </tr>
             <tr [class.changed]="t.fromLocationName !== t.toLocationName">
-              <th>Location</th>
-              <td>{{ t.fromLocationName ?? '—' }}</td><td class="arrow">→</td>
-              <td class="to">{{ t.toLocationName ?? '—' }}</td>
+              <th>{{ 'Location' | t }}</th>
+              <td>{{ (t.fromLocationName | localName: t.fromLocationNameAr) || '—' }}</td><td class="arrow"><span class="flip-rtl">→</span></td>
+              <td class="to">{{ (t.toLocationName | localName: t.toLocationNameAr) || '—' }}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h3>Audit</h3>
+        <h3>{{ 'Audit' | t }}</h3>
         <dl class="info">
-          <dt>Reason</dt>         <dd>{{ t.reason || '—' }}</dd>
-          <dt>Transferred by</dt> <dd>{{ t.transferredByName ?? '—' }}</dd>
-          <dt>Date</dt>           <dd>{{ t.transferDate | date: 'dd MMM yyyy, hh:mm:ss a' }}</dd>
+          <dt>{{ 'Reason' | t }}</dt>         <dd>{{ (t.reason | t) || '—' }}</dd>
+          <dt>{{ 'Transferred by' | t }}</dt> <dd>{{ t.transferredByName ?? '—' }}</dd>
+          <dt>{{ 'Date' | t }}</dt>           <dd>{{ t.transferDate | appDate: 'dd MMM yyyy, hh:mm:ss a' }}</dd>
         </dl>
       </section>
     }

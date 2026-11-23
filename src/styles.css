@@ -2,7 +2,8 @@
    src/styles.css  —  Global design system (ported 1:1 from the prototype)
    Every feature we build after this reuses these classes, so we write it once.
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Inter has no Arabic letters, so Cairo is loaded for the Arabic UI. */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   --bg: #f6f7f9;
@@ -22,7 +23,82 @@
   --danger-soft: #fdeceb;
   --radius: 10px;
   --shadow: 0 1px 2px rgba(16, 20, 28, .06), 0 4px 16px rgba(16, 20, 28, .05);
+
+  /* Colours that used to be hard-coded in single rules. As variables, dark mode can swap them. */
+  --accent-hover: #2660d8;
+  --danger-hover: #ab2d25;
+  --admin: #6337c9;
+  --admin-soft: #efe8fd;
+  --thead-bg: #f3f4f6;
+  --thead-text: #1f2937;
+  --tooltip-bg: #1f2937;
+  --code-bg: #16191d;
+  --overlay: rgba(15, 23, 42, .45);
+
+  /* Tells the browser to draw native parts (scrollbars, date pickers, checkboxes) in light colours. */
+  color-scheme: light;
 }
+
+/* ==========================================================================
+   Dark mode
+   ThemeService sets <html data-theme="dark">. Only the VARIABLES change here —
+   every rule below already uses them, so the whole app follows automatically.
+   ========================================================================== */
+[data-theme='dark'] {
+  --bg: #0f1216;
+  --surface: #171b21;
+  --surface-2: #20262e;
+  --border: #2c333d;
+  --text: #e7eaee;
+  --text-2: #a6aeba;
+  --text-3: #79828f;
+  --accent: #5b8def;
+  --accent-soft: rgba(91, 141, 239, .16);
+  --success: #3fbf8a;
+  --success-soft: rgba(63, 191, 138, .15);
+  --warn: #e2a53e;
+  --warn-soft: rgba(226, 165, 62, .15);
+  --danger: #f0736c;
+  --danger-soft: rgba(240, 115, 108, .15);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 16px rgba(0, 0, 0, .3);
+
+  --accent-hover: #74a0f3;
+  --danger-hover: #f38f89;
+  --admin: #b69cf6;
+  --admin-soft: rgba(182, 156, 246, .16);
+  --thead-bg: #1c2128;
+  --thead-text: #d5dae1;
+  --tooltip-bg: #e7eaee;
+  --code-bg: #0b0d10;
+  --overlay: rgba(0, 0, 0, .6);
+
+  color-scheme: dark;
+}
+
+/* Table/list action buttons have their own small palettes — darker versions for dark mode. */
+[data-theme='dark'] .btn-view     { --act-color: #d5dae1; --act-bg: #1c2128; --act-border: #3a424d; --act-hover: #262d36; }
+[data-theme='dark'] .btn-edit     { --act-color: #8fb3ff; --act-bg: rgba(91, 141, 239, .12); --act-border: rgba(91, 141, 239, .35); --act-hover: rgba(91, 141, 239, .22); }
+[data-theme='dark'] .btn-transfer { --act-color: #c4b0fb; --act-bg: rgba(167, 139, 250, .12); --act-border: rgba(167, 139, 250, .35); --act-hover: rgba(167, 139, 250, .22); }
+[data-theme='dark'] .btn-remove   { --act-color: #f8a19c; --act-bg: rgba(240, 115, 108, .12); --act-border: rgba(240, 115, 108, .35); --act-hover: rgba(240, 115, 108, .22); }
+[data-theme='dark'] .btn-restore  { --act-color: #6fd6ab; --act-bg: rgba(63, 191, 138, .12); --act-border: rgba(63, 191, 138, .35); --act-hover: rgba(63, 191, 138, .22); }
+
+/* ==========================================================================
+   Arabic (RTL)
+   LanguageService sets <html lang="ar" dir="rtl">. The browser mirrors flex/grid
+   by itself; the rules below only handle what it can't guess.
+   ========================================================================== */
+html[lang='ar'] body { font-family: Cairo, Inter, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+
+/* Arabic has no capital letters and joined letters break when spaced out. */
+html[lang='ar'] h1, html[lang='ar'] h2, html[lang='ar'] h3,
+html[lang='ar'] .stat .label, html[lang='ar'] table.tbl th,
+html[lang='ar'] .hero-title, html[lang='ar'] .brand-sub {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Arrows like "From → To" must point the other way when the text runs right-to-left. */
+[dir='rtl'] .flip-rtl { display: inline-block; transform: scaleX(-1); }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -77,9 +153,9 @@ small { font-size: 12px; }
 .btn:hover:not(:disabled) { background: var(--surface-2); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover:not(:disabled) { background: #2660d8; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
 .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
-.btn-danger:hover:not(:disabled) { background: #ab2d25; }
+.btn-danger:hover:not(:disabled) { background: var(--danger-hover); }
 .btn-ghost { background: transparent; border-color: transparent; color: var(--text-2); }
 .btn-ghost:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
 .btn-sm { height: 30px; padding: 0 11px; font-size: 12.5px; }
@@ -104,7 +180,7 @@ small { font-size: 12px; }
 .table-wrap { overflow-x: auto; }
 table.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 table.tbl th {
-  text-align: left; padding: 11px 14px; color: var(--text-2); font-weight: 600; font-size: 12px;
+  text-align: start; padding: 11px 14px; color: var(--text-2); font-weight: 600; font-size: 12px;
   text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border);
   white-space: nowrap; background: var(--surface);
 }
@@ -115,6 +191,8 @@ table.tbl tbody tr:last-child td { border-bottom: none; }
 table.tbl tbody tr:hover { background: var(--surface-2); }
 tr.dim td { opacity: .55; }
 .mono { font-variant-numeric: tabular-nums; }
+/* Codes like IT-LAP-0001 must not break at the hyphens (narrow columns, Arabic layout). */
+table.tbl td.mono { white-space: nowrap; }
 
 /* ---------- badges ---------- */
 .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
@@ -122,16 +200,16 @@ tr.dim td { opacity: .55; }
 .badge-assigned { background: var(--accent-soft); color: var(--accent); }
 .badge-maint { background: var(--warn-soft); color: var(--warn); }
 .badge-retired { background: var(--surface-2); color: var(--text-3); }
-.badge-admin { background: #efe8fd; color: #6337c9; }
+.badge-admin { background: var(--admin-soft); color: var(--admin); }
 .badge-user { background: var(--surface-2); color: var(--text-2); }
 .badge-off { background: var(--danger-soft); color: var(--danger); }
 
 
 .tbl thead th {
   font-weight: 700;
-  color: #1f2937;
-  background: #f3f4f6;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--thead-text);
+  background: var(--thead-bg);
+  border-bottom: 2px solid var(--border);
 }
 
 .btn.btn-view,
@@ -161,8 +239,8 @@ tr.dim td { opacity: .55; }
 .btn-transfer { --act-color: #6d28d9; --act-bg: #f5f3ff; --act-border: #ddd6fe; --act-hover: #ede9fe; }
 .btn-remove   { --act-color: #b91c1c; --act-bg: #fef2f2; --act-border: #fecaca; --act-hover: #fee2e2; }
 .btn-restore  { --act-color: #047857; --act-bg: #ecfdf5; --act-border: #a7f3d0; --act-hover: #d1fae5; }
-.back-link { font-weight: 700; color: #1f2937; text-decoration: none; }
-.back-link:hover { color: #2563eb; }
+.back-link { font-weight: 700; color: var(--text); text-decoration: none; }
+.back-link:hover { color: var(--accent); }
 
 /* ---------- states ---------- */
 .state { padding: 56px 24px; text-align: center; color: var(--text-2); }
@@ -184,12 +262,12 @@ tr.dim td { opacity: .55; }
 /* ---------- app shell ---------- */
 .auth-shell {
   min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
-  background: radial-gradient(900px 500px at 15% -10%, #e7effd 0, transparent 60%),
-              radial-gradient(700px 400px at 100% 100%, #eef2f7 0, transparent 55%), var(--bg);
+  background: radial-gradient(900px 500px at 15% -10%, var(--accent-soft) 0, transparent 60%),
+              radial-gradient(700px 400px at 100% 100%, var(--surface-2) 0, transparent 55%), var(--bg);
 }
 .shell { display: flex; min-height: 100vh; }
 .sidebar {
-  width: 248px; flex: 0 0 248px; background: var(--surface); border-right: 1px solid var(--border);
+  width: 248px; flex: 0 0 248px; background: var(--surface); border-inline-end: 1px solid var(--border);
   display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
 }
 .brand { display: flex; gap: 11px; align-items: center; padding: 18px; border-bottom: 1px solid var(--border); }
@@ -218,18 +296,19 @@ tr.dim td { opacity: .55; }
 .hero-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:8px}
 .hero-row{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;
   background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;
-  margin-bottom:6px;font-size:12.5px;font-family:inherit;color:var(--text-2);cursor:pointer;text-align:left}
+  margin-bottom:6px;font-size:12.5px;font-family:inherit;color:var(--text-2);cursor:pointer;text-align:start}
 .hero-row:hover{border-color:var(--accent)}
 
 /* ---------- AI assistant (R4) ---------- */
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 13px;
-  font-size:12.5px;font-family:inherit;color:var(--text-2);cursor:pointer;text-align:left;
+  font-size:12.5px;font-family:inherit;color:var(--text-2);cursor:pointer;text-align:start;
   transition:border-color .12s,color .12s}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .thread{display:flex;flex-direction:column;gap:16px;margin-bottom:18px}
 .ask{align-self:flex-end;max-width:min(560px,100%);background:var(--accent);color:#fff;
   padding:10px 14px;border-radius:14px 14px 4px 14px;font-size:13.5px;line-height:1.5}
+[dir='rtl'] .ask{border-radius:14px 14px 14px 4px}
 .answer{align-self:stretch}
 .answer p{margin:0;line-height:1.6}
 .answer-meta{display:flex;gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--border);
@@ -239,7 +318,7 @@ tr.dim td { opacity: .55; }
 .intent summary{padding:11px 18px;cursor:pointer;font-size:12.5px;color:var(--text-2);font-weight:500}
 .intent summary:hover{color:var(--text)}
 .intent-body{padding:0 18px 16px}
-.code{background:#16191d;color:#e8eaed;border-radius:8px;padding:13px 15px;font-size:12.5px;
+.code{background:var(--code-bg);color:#e8eaed;border-radius:8px;padding:13px 15px;font-size:12.5px;
   font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1.6;overflow-x:auto;white-space:pre}
 .composer{position:sticky;bottom:0;background:var(--bg);padding-top:8px;z-index:10}
 .composer-foot{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
@@ -260,7 +339,8 @@ tr.dim td { opacity: .55; }
   .page { padding: 18px 16px 40px; }
   .dl { grid-template-columns: 1fr; gap: 2px 0; }
   .dl dd { margin-bottom: 10px; }
-  .sidebar { position: fixed; left: 0; top: 0; z-index: 60; transform: translateX(-100%); transition: transform .2s; }
+  .sidebar { position: fixed; inset-inline-start: 0; top: 0; z-index: 60; transform: translateX(-100%); transition: transform .2s; }
+  [dir='rtl'] .sidebar { transform: translateX(100%); } /* hidden off the RIGHT edge in Arabic */
   .nav-open .sidebar { transform: none; box-shadow: 0 0 40px rgba(0, 0, 0, .18); }
   .nav-open .scrim { display: block; position: fixed; inset: 0; background: rgba(16, 20, 28, .4); z-index: 50; }
   .menu-btn { display: inline-flex; }

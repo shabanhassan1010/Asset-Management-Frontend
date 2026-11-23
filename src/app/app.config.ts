@@ -5,6 +5,13 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './core/interceptors/error-interceptor';
+import { languageInterceptor } from './core/interceptors/language-interceptor';
+import { registerLocaleData } from '@angular/common';
+import localeAr from '@angular/common/locales/ar';
+
+// Arabic month and day names for LocalizedDatePipe. English ('en-US') is built into Angular.
+// Registered once here, before the app starts, so every date can use it.
+registerLocaleData(localeAr);
 
 // appConfig : Conatain Configuration for my project
 export const appConfig: ApplicationConfig = {
@@ -13,7 +20,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(), // Record global error listeners related to Browser
 
     // provideHttpClient : mange HttpClient in Angular and without it angular can not give me HttpClient using Dependency Injection
-    provideHttpClient(withInterceptors([errorInterceptor ,authInterceptor])),
+    // languageInterceptor first: every request (including the retry after a token refresh)
+    // carries Accept-Language, so the API answers in the user's language.
+    provideHttpClient(withInterceptors([languageInterceptor, errorInterceptor, authInterceptor])),
 
     // routes : choose URl and Components
     // withComponentInputBinding : binding route data/parameters with component inputs

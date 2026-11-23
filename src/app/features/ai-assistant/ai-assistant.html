@@ -7,8 +7,8 @@
     </span>
 
     <div class="page__title">
-      <h1>Asset assistant</h1>
-      <p>Ask questions about your assets.</p>
+      <h1>{{ 'Asset assistant' | t }}</h1>
+      <p>{{ 'Ask questions about your assets.' | t }}</p>
     </div>
 
     <!--
@@ -23,7 +23,7 @@
         (click)="clear()"
         [disabled]="loading()"
       >
-        New chat
+        {{ 'New chat' | t }}
       </button>
     }
   </header>
@@ -32,10 +32,9 @@
     <div class="panel__scroll" #scrollBox>
       @if (messages().length === 0) {
         <div class="welcome">
-          <h2>How can I help you?</h2>
+          <h2>{{ 'How can I help you?' | t }}</h2>
           <p>
-            Ask me about your assets, employees, departments, availability,
-            assignments, or asset statistics.
+            {{ 'Ask me about your assets, employees, departments, availability, assignments, or asset statistics.' | t }}
           </p>
 <!-- 
           <div class="welcome__suggestions">
@@ -72,7 +71,7 @@
               the database and render here as plain text; Angular escapes
               them, so stored markup or script can never execute (R4.7).
             -->
-            <p class="bubble__text" dir="auto">{{ message.content }}</p>
+            <p class="bubble__text" dir="auto">{{ message.content | t }}</p>
 
             @if (message.suggestions?.length) {
               <div class="bubble__chips">
@@ -89,15 +88,15 @@
                 <table class="results">
                   <thead>
                     <tr>
-                      <th scope="col">Code</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Type</th>
-                      <th scope="col">Manufacturer</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Assigned to</th>
-                      <th scope="col">Department</th>
+                      <th scope="col">{{ 'Code' | t }}</th>
+                      <th scope="col">{{ 'Name' | t }}</th>
+                      <th scope="col">{{ 'Type' | t }}</th>
+                      <th scope="col">{{ 'Manufacturer' | t }}</th>
+                      <th scope="col">{{ 'Status' | t }}</th>
+                      <th scope="col">{{ 'Assigned to' | t }}</th>
+                      <th scope="col">{{ 'Department' | t }}</th>
                       @if (showsCost(message.assets!)) {
-                        <th scope="col" class="numeric">Purchase cost</th>
+                        <th scope="col" class="numeric">{{ 'Purchase cost' | t }}</th>
                       }
                     </tr>
                   </thead>
@@ -127,8 +126,7 @@
 
               @if (message.totalCount && message.totalCount > message.assets!.length) {
                 <p class="table-note">
-                  Showing {{ message.assets!.length }} of {{ message.totalCount }}.
-                  Narrow your question to see fewer.
+                  {{ 'Showing {shown} of {total}. Narrow your question to see fewer.' | t: { shown: message.assets!.length, total: message.totalCount } }}
                 </p>
               }
             }
@@ -157,9 +155,9 @@
       <input
         type="text"
         class="composer__input"
-        placeholder="Ask about your assets…"
+        [placeholder]="'Ask about your assets…' | t"
         maxlength="500"
-        aria-label="Ask about your assets"
+        [attr.aria-label]="'Ask about your assets' | t"
         [ngModel]="question()"
         (ngModelChange)="question.set($event)"
         (keyup.enter)="ask()"
@@ -171,7 +169,7 @@
         class="composer__send"
         (click)="ask()"
         [disabled]="loading() || !question().trim()"
-        aria-label="Send question"
+        [attr.aria-label]="'Send question' | t"
       >
         <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
           <path d="M17 3 3 9.5l5.8 1.9L11 17l2-6.5L17 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>

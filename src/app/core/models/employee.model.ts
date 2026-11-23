@@ -13,8 +13,10 @@ export interface EmployeeRow {
   id: number;
   employeeCode: string;
   employeeName: string;
+  employeeNameAr: string | null;
   departmentId: number;
   departmentName: string;
+  departmentNameAr: string | null;
   isActive: boolean;
   email: string;
 }
@@ -23,6 +25,7 @@ export interface EmployeeDetails extends EmployeeRow {
   id: number;
   employeeCode: string;
   fullName: string; //  employeeName
+  fullNameAr: string | null;
   email: string;
   phone: string;
   departmentId: number;
@@ -33,6 +36,7 @@ export interface EmployeeDetails extends EmployeeRow {
 export interface CreateEmployeePayload {
   employeeCode: string;
   fullName: string;
+  fullNameAr: string | null;   // null = no Arabic name
   email: string;
   phone: string;
   departmentId: number;

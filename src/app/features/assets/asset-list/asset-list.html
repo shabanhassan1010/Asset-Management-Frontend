@@ -3,11 +3,11 @@
 
   <div class="page-head">
     <div>
-      <h1>Assets</h1>
-      <p>{{ totalCount() }} record{{ totalCount() === 1 ? '' : 's' }} in the register.</p>
+      <h1>{{ 'Assets' | t }}</h1>
+      <p>{{ (totalCount() === 1 ? '{count} record in the register.' : '{count} records in the register.') | t: { count: totalCount() } }}</p>
     </div>
     @if (isAdmin()) {
-      <a class="btn btn-primary" routerLink="/assets/new">+ New asset</a>
+      <a class="btn btn-primary" routerLink="/assets/new">{{ '+ New asset' | t }}</a>
     }
   </div>
 
@@ -15,54 +15,54 @@
   <div class="card" style="margin-bottom:16px">
     <div class="card-body">
       <div class="filters">
-        <input class="input" placeholder="Search code, name or serial…"
+        <input class="input" [placeholder]="'Search code, name or serial…' | t"
                [value]="filters().search" (input)="onSearch($any($event.target).value)">
 
         <select class="select" [value]="filters().categoryId"
                 (change)="patchFilters({ categoryId: $any($event.target).value })">
-          <option value="">All categories</option>
+          <option value="">{{ 'All categories' | t }}</option>
           @for (item of lookups()?.categories ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
           }
         </select>
 
         <select class="select" [value]="filters().assetTypeId"
                 (change)="patchFilters({ assetTypeId: $any($event.target).value })">
-          <option value="">All types</option>
+          <option value="">{{ 'All types' | t }}</option>
           @for (item of lookups()?.assetTypes ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
           }
         </select>
 
         <select class="select" [value]="filters().statusId"
                 (change)="patchFilters({ statusId: $any($event.target).value })">
-          <option value="">All statuses</option>
+          <option value="">{{ 'All statuses' | t }}</option>
           @for (status of statuses; track status.id) {
-            <option [value]="status.id">{{ status.name }}</option>
+            <option [value]="status.id">{{ status.name | t }}</option>
           }
         </select>
 
         <select class="select" [value]="filters().departmentId"
                 (change)="patchFilters({ departmentId: $any($event.target).value })">
-          <option value="">All departments</option>
+          <option value="">{{ 'All departments' | t }}</option>
           @for (item of lookups()?.departments ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
           }
         </select>
 
         <select class="select" [value]="filters().locationId"
                 (change)="patchFilters({ locationId: $any($event.target).value })">
-          <option value="">All locations</option>
+          <option value="">{{ 'All locations' | t }}</option>
           @for (item of lookups()?.locations ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
           }
         </select>
 
         <select class="select" [value]="filters().employeeId"
                 (change)="patchFilters({ employeeId: $any($event.target).value })">
-          <option value="">Anyone</option>
+          <option value="">{{ 'Anyone' | t }}</option>
           @for (item of lookups()?.employees ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
           }
         </select>
       </div>
@@ -71,11 +71,11 @@
         <label class="row" style="gap:7px;cursor:pointer;font-size:13px">
           <input type="checkbox" [checked]="filters().includeRetired"
                  (change)="patchFilters({ includeRetired: $any($event.target).checked })">
-          Include retired
+          {{ 'Include retired' | t }}
         </label>
         <span class="spacer"></span>
         @if (hasActiveFilters()) {
-          <button type="button" class="btn btn-sm btn-ghost" (click)="resetFilters()">Clear filters</button>
+          <button type="button" class="btn btn-sm btn-ghost" (click)="resetFilters()">{{ 'Clear filters' | t }}</button>
         }
       </div>
     </div>
@@ -86,20 +86,20 @@
     @if (loading()) {
       <div class="state">
         <span class="spinner lg"></span>
-        <p style="margin-top:14px">Loading assets…</p>
+        <p style="margin-top:14px">{{ 'Loading assets…' | t }}</p>
       </div>
     } @else if (errorMessage()) {
       <div class="card-body">
-        <div class="alert alert-danger">{{ errorMessage() }}</div>
-        <button type="button" class="btn" style="margin-top:12px" (click)="load()">Try again</button>
+        <div class="alert alert-danger">{{ errorMessage() | t }}</div>
+        <button type="button" class="btn" style="margin-top:12px" (click)="load()">{{ 'Try again' | t }}</button>
       </div>
     } @else if (items().length === 0) {
       <div class="state">
         <div class="icon">∅</div>
-        <h3>No assets match</h3>
-        <p>Try clearing a filter or widening the search term.</p>
+        <h3>{{ 'No assets match' | t }}</h3>
+        <p>{{ 'Try clearing a filter or widening the search term.' | t }}</p>
         @if (hasActiveFilters()) {
-          <button type="button" class="btn" style="margin-top:12px" (click)="resetFilters()">Clear filters</button>
+          <button type="button" class="btn" style="margin-top:12px" (click)="resetFilters()">{{ 'Clear filters' | t }}</button>
         }
       </div>
     } @else {
@@ -107,19 +107,19 @@
         <table class="tbl">
           <thead>
             <tr>
-              <th class="sortable" (click)="sortBy('assetCode')">Code{{ sortArrow('assetCode') }}</th>
-              <th class="sortable" (click)="sortBy('assetName')">Name{{ sortArrow('assetName') }}</th>
-              <th>Category / Type</th>
-              <th>Status</th>
-              <th>Department</th>
-              <th>Assigned to</th>
-              <th>Location</th>
+              <th class="sortable" (click)="sortBy('assetCode')">{{ 'Code' | t }}{{ sortArrow('assetCode') }}</th>
+              <th class="sortable" (click)="sortBy('assetName')">{{ 'Name' | t }}{{ sortArrow('assetName') }}</th>
+              <th>{{ 'Category / Type' | t }}</th>
+              <th>{{ 'Status' | t }}</th>
+              <th>{{ 'Department' | t }}</th>
+              <th>{{ 'Assigned to' | t }}</th>
+              <th>{{ 'Location' | t }}</th>
               @if (isAdmin()) {
-                <th class="sortable" style="text-align:right" (click)="sortBy('purchaseDate')">
-                  Cost (EGP){{ sortArrow('purchaseDate') }}
+                <th class="sortable" style="text-align:end" (click)="sortBy('purchaseDate')">
+                  {{ 'Cost (EGP)' | t }}{{ sortArrow('purchaseDate') }}
                 </th>
               }
-              <th style="width:1%; text-align:center">Actions</th>
+              <th style="width:1%; text-align:center">{{ 'Actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
@@ -127,24 +127,24 @@
               <tr [class.dim]="isRetired(asset)">
                 <td class="mono"><a [routerLink]="['/assets', asset.id]">{{ asset.assetCode }}</a></td>
                 <td>{{ asset.assetName }}</td>
-                <td class="hint">{{ asset.categoryName }} · {{ asset.assetTypeName }}</td>
-                <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName }}</span></td>
-                <td>{{ asset.departmentName || '—' }}</td>
-                <td>{{ asset.employeeName || '—' }}</td>
-                <td>{{ asset.locationName || '—' }}</td>
+                <td class="hint">{{ asset.categoryName | localName: asset.categoryNameAr }} · {{ asset.assetTypeName | localName: asset.assetTypeNameAr }}</td>
+                <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName | t }}</span></td>
+                <td>{{ (asset.departmentName | localName: asset.departmentNameAr) || '—' }}</td>
+                <td>{{ (asset.employeeName | localName: asset.employeeNameAr) || '—' }}</td>
+                <td>{{ (asset.locationName | localName: asset.locationNameAr) || '—' }}</td>
                 @if (isAdmin()) {
-                  <td class="mono" style="text-align:right">
+                  <td class="mono" style="text-align:end">
                     {{ asset.purchaseCost != null ? (asset.purchaseCost | number:'1.0-0') : '—' }}
                   </td>
                 }
                 <td>
                   <div class="row" style="gap:6px;flex-wrap:nowrap">
-                    <a class="btn btn-sm btn-view" [routerLink]="['/assets', asset.id]"><span aria-hidden="true">◎</span> View</a>
+                    <a class="btn btn-sm btn-view" [routerLink]="['/assets', asset.id]"><span aria-hidden="true">◎</span> {{ 'View' | t }}</a>
                     @if (isAdmin() && !isRetired(asset)) {
-                      <a class="btn btn-sm btn-edit" [routerLink]="['/assets', asset.id, 'edit']"><span aria-hidden="true">✎</span> Edit</a>
-                      <a class="btn btn-sm btn-transfer" [routerLink]="['/assets', asset.id, 'transfer']"><span aria-hidden="true">⇄</span> Transfer</a>
+                      <a class="btn btn-sm btn-edit" [routerLink]="['/assets', asset.id, 'edit']"><span aria-hidden="true">✎</span> {{ 'Edit' | t }}</a>
+                      <a class="btn btn-sm btn-transfer" [routerLink]="['/assets', asset.id, 'transfer']"><span aria-hidden="true">⇄</span> {{ 'Transfer' | t }}</a>
                       <button type="button" class="btn btn-sm btn-remove"
-                              (click)="openRetire(asset)"><span aria-hidden="true">⊘</span> Retire</button>
+                              (click)="openRetire(asset)"><span aria-hidden="true">⊘</span> {{ 'Retire' | t }}</button>
                     }
                   </div>
                 </td>
@@ -156,21 +156,21 @@
 
       <!-- Paginated -->
       <div class="row" style="padding:12px 16px;border-top:1px solid var(--border)">
-        <span class="hint mono">{{ firstRowNumber() }}–{{ lastRowNumber() }} of {{ totalCount() }}</span>
+        <span class="hint mono">{{ '{first}–{last} of {total}' | t: { first: firstRowNumber(), last: lastRowNumber(), total: totalCount() } }}</span>
         <span class="spacer"></span>
 
         <select class="select" style="width:auto" [value]="filters().pageSize"
                 (change)="changePageSize($any($event.target).value)">
           @for (size of [5, 10, 25, 50]; track size) {
-            <option [value]="size">{{ size }} / page</option>
+            <option [value]="size" [selected]="size === filters().pageSize">{{ size }} {{ '/ page' | t }}</option>
           }
         </select>
 
         <button type="button" class="btn btn-sm" [disabled]="filters().pageNumber <= 1"
-                (click)="goToPage(filters().pageNumber - 1)">Prev</button>
-        <span class="hint mono">Page {{ filters().pageNumber }} of {{ lastPage() }}</span>
+                (click)="goToPage(filters().pageNumber - 1)">{{ 'Prev' | t }}</button>
+        <span class="hint mono">{{ 'Page {page} of {total}' | t: { page: filters().pageNumber, total: lastPage() } }}</span>
         <button type="button" class="btn btn-sm" [disabled]="filters().pageNumber >= lastPage()"
-                (click)="goToPage(filters().pageNumber + 1)">Next</button>
+                (click)="goToPage(filters().pageNumber + 1)">{{ 'Next' | t }}</button>
       </div>
     }
   </div>

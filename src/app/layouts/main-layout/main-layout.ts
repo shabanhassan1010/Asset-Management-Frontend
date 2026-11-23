@@ -1,17 +1,19 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Auth } from '../../core/services/auth';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { PreferencesToggle } from '../../shared/components/preferences-toggle/preferences-toggle';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 interface NavItem {
   path: string;
-  label: string;
+  label: string; // English text — translated in the template with the t pipe
   icon: string;
   adminOnly: boolean;
 }
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, PreferencesToggle],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
 })

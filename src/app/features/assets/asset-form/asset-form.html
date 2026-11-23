@@ -3,125 +3,125 @@
 
   <div class="page-head">
     <div>
-      <a class="hint back-link" routerLink="/assets">← Back to assets</a>
-      <h1 style="margin-top:6px">New asset</h1>
-      <p>Fields marked <span class="req">*</span> are required.</p>
+      <a class="hint back-link" routerLink="/assets">{{ '← Back to assets' | t }}</a>
+      <h1 style="margin-top:6px">{{ 'New asset' | t }}</h1>
+      <p>{{ 'Fields marked' | t }} <span class="req">*</span> {{ 'are required.' | t }}</p>
     </div>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()">
 
     @if (errorMessage()) {
-      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() | t }}</div>
     }
 
     @if (lookupService.failedLookups().length > 0) {
         <div class="alert alert-danger" style="margin-bottom:16px">
-          Some dropdown lists could not be loaded. Please refresh the page.
+          {{ 'Some dropdown lists could not be loaded. Please refresh the page.' | t }}
         </div>
       }
       
     <div class="card" style="margin-bottom:16px">
-      <div class="card-head"><h2>Identity</h2></div>
+      <div class="card-head"><h2>{{ 'Identity' | t }}</h2></div>
       <div class="card-body">
         <div class="grid grid-2">
           <div class="field">
-            <label for="assetCode">Asset code <span class="req">*</span></label>
+            <label for="assetCode">{{ 'Asset code' | t }} <span class="req">*</span></label>
             <input id="assetCode" class="input" formControlName="assetCode" placeholder="IT-LAP-0001"
                    [class.invalid]="form.controls.assetCode.touched && form.controls.assetCode.invalid">
             @if (form.controls.assetCode.touched && form.controls.assetCode.hasError('required')) {
-              <span class="field-error">Asset code is required.</span>
+              <span class="field-error">{{ 'Asset code is required.' | t }}</span>
             }
-            <span class="hint">Must be unique across the register.</span>
+            <span class="hint">{{ 'Must be unique across the register.' | t }}</span>
           </div>
 
           <div class="field">
-            <label for="assetName">Asset name <span class="req">*</span></label>
+            <label for="assetName">{{ 'Asset name' | t }} <span class="req">*</span></label>
             <input id="assetName" class="input" formControlName="assetName"
                    [class.invalid]="form.controls.assetName.touched && form.controls.assetName.invalid">
             @if (form.controls.assetName.touched && form.controls.assetName.hasError('required')) {
-              <span class="field-error">Asset name is required.</span>
+              <span class="field-error">{{ 'Asset name is required.' | t }}</span>
             }
           </div>
         </div>
 
         <div class="field">
-          <label for="description">Description</label>
+          <label for="description">{{ 'Description' | t }}</label>
           <textarea id="description" class="textarea" formControlName="description"></textarea>
         </div>
 
         <div class="grid grid-3" style="margin-bottom:0">
           <div class="field" style="margin-bottom:0">
-            <label for="categoryId">Category <span class="req">*</span></label>
+            <label for="categoryId">{{ 'Category' | t }} <span class="req">*</span></label>
             <select id="categoryId" class="select" formControlName="categoryId"
                     [class.invalid]="form.controls.categoryId.touched && form.controls.categoryId.invalid">
-              <option value="">Select…</option>
+              <option value="">{{ 'Select…' | t }}</option>
               @for (item of lookups()?.categories ?? []; track item.id) {
-                <option [value]="item.id">{{ item.name }}</option>
+                <option [value]="item.id">{{ item.name | localName: item.nameAr }}</option>
               }
             </select>
             @if (form.controls.categoryId.touched && form.controls.categoryId.hasError('required')) {
-              <span class="field-error">Category is required.</span>
+              <span class="field-error">{{ 'Category is required.' | t }}</span>
             }
           </div>
 
           <div class="field" style="margin-bottom:0">
-            <label for="assetTypeId">Type <span class="req">*</span></label>
+            <label for="assetTypeId">{{ 'Type' | t }} <span class="req">*</span></label>
             <select id="assetTypeId" class="select" formControlName="assetTypeId"
                     [class.invalid]="form.controls.assetTypeId.touched && form.controls.assetTypeId.invalid">
-              <option value="">Select…</option>
+              <option value="">{{ 'Select…' | t }}</option>
               @for (item of lookups()?.assetTypes ?? []; track item.id) {
-                <option [value]="item.id">{{ item.name }}</option>
+                <option [value]="item.id">{{ item.name | localName: item.nameAr }}</option>
               }
             </select>
             @if (form.controls.assetTypeId.touched && form.controls.assetTypeId.hasError('required')) {
-              <span class="field-error">Type is required.</span>
+              <span class="field-error">{{ 'Type is required.' | t }}</span>
             }
           </div>
 
           <div class="field" style="margin-bottom:0">
-            <label for="status">Status <span class="req">*</span></label>
+            <label for="status">{{ 'Status' | t }} <span class="req">*</span></label>
             <select id="status" class="select" formControlName="status">
               @for (item of statuses; track item.id) {
-                <option [value]="item.id">{{ item.name }}</option>
+                <option [value]="item.id">{{ item.name | t }}</option>
               }
             </select>
-            <span class="hint">Retired is set by the Retire action, not here.</span>
+            <span class="hint">{{ 'Retired is set by the Retire action, not here.' | t }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:16px">
-      <div class="card-head"><h2>Hardware &amp; purchase</h2></div>
+      <div class="card-head"><h2>{{ 'Hardware & purchase' | t }}</h2></div>
       <div class="card-body">
         <div class="grid grid-3">
           <div class="field">
-            <label for="manufacturer">Manufacturer</label>
+            <label for="manufacturer">{{ 'Manufacturer' | t }}</label>
             <input id="manufacturer" class="input" formControlName="manufacturer">
           </div>
           <div class="field">
-            <label for="model">Model</label>
+            <label for="model">{{ 'Model' | t }}</label>
             <input id="model" class="input" formControlName="model">
           </div>
           <div class="field">
-            <label for="serialNumber">Serial number</label>
+            <label for="serialNumber">{{ 'Serial number' | t }}</label>
             <input id="serialNumber" class="input" formControlName="serialNumber">
-            <span class="hint">Must be unique when supplied.</span>
+            <span class="hint">{{ 'Must be unique when supplied.' | t }}</span>
           </div>
         </div>
 
         <div class="grid grid-3" style="margin-bottom:0">
           <div class="field" style="margin-bottom:0">
-            <label for="purchaseDate">Purchase date</label>
+            <label for="purchaseDate">{{ 'Purchase date' | t }}</label>
             <input id="purchaseDate" class="input" type="date" formControlName="purchaseDate">
           </div>
           <div class="field" style="margin-bottom:0">
-            <label for="purchaseCost">Purchase cost (EGP)</label>
+            <label for="purchaseCost">{{ 'Purchase cost (EGP)' | t }}</label>
             <input id="purchaseCost" class="input" type="number" min="0" step="0.01" formControlName="purchaseCost">
           </div>
           <div class="field" style="margin-bottom:0">
-            <label for="warrantyExpiryDate">Warranty expiry</label>
+            <label for="warrantyExpiryDate">{{ 'Warranty expiry' | t }}</label>
             <input id="warrantyExpiryDate" class="input" type="date" formControlName="warrantyExpiryDate">
           </div>
         </div>
@@ -130,43 +130,43 @@
 
     <div class="card" style="margin-bottom:16px">
       <div class="card-head">
-        <h2>Assignment</h2>
+        <h2>{{ 'Assignment' | t }}</h2>
         <span class="spacer"></span>
-        <span class="hint">Leave empty for an unassigned asset</span>
+        <span class="hint">{{ 'Leave empty for an unassigned asset' | t }}</span>
       </div>
       <div class="card-body">
         <div class="grid grid-3" style="margin-bottom:0">
           <div class="field" style="margin-bottom:0">
-            <label for="departmentId">Department</label>
+            <label for="departmentId">{{ 'Department' | t }}</label>
             <select id="departmentId" class="select" formControlName="departmentId">
-              <option value="">Unassigned</option>
+              <option value="">{{ 'Unassigned' | t }}</option>
               @for (item of lookups()?.departments ?? []; track item.id) {
-                <option [value]="item.id">{{ item.name }}</option>
+                <option [value]="item.id">{{ item.name | localName: item.nameAr }}</option>
               }
             </select>
           </div>
 
           <div class="field" style="margin-bottom:0">
-            <label for="assignedEmployeeId">Employee</label>
+            <label for="assignedEmployeeId">{{ 'Employee' | t }}</label>
             <select id="assignedEmployeeId" class="select" formControlName="assignedEmployeeId">
-              <option value="">Unassigned</option>
+              <option value="">{{ 'Unassigned' | t }}</option>
               @for (item of availableEmployees(); track item.id) {
-                <option [value]="item.id">{{ item.name }}</option>
+                <option [value]="item.id">{{ item.name | localName: item.nameAr }}</option>
               }
             </select>
             @if (!form.controls.departmentId.value) {
-              <span class="hint">Pick a department first.</span>
+              <span class="hint">{{ 'Pick a department first.' | t }}</span>
             } @else if (availableEmployees().length === 0) {
-              <span class="hint">No employees in this department.</span>
+              <span class="hint">{{ 'No employees in this department.' | t }}</span>
             }
           </div>
 
           <div class="field" style="margin-bottom:0">
-            <label for="locationId">Location</label>
+            <label for="locationId">{{ 'Location' | t }}</label>
             <select id="locationId" class="select" formControlName="locationId">
-              <option value="">Unassigned</option>
+              <option value="">{{ 'Unassigned' | t }}</option>
               @for (item of lookups()?.locations ?? []; track item.id) {
-                <option [value]="item.id">{{ item.name }}</option>
+                <option [value]="item.id">{{ item.name | localName: item.nameAr }}</option>
               }
             </select>
           </div>
@@ -177,9 +177,9 @@
     <div class="row">
       <button class="btn btn-primary" type="submit"
               [disabled]="submitting() || !!successMessage() || form.invalid">
-        @if (submitting()) { <span class="spinner"></span> Creating… } @else { Create asset }
+        @if (submitting()) { <span class="spinner"></span> {{ 'Creating…' | t }} } @else { {{ 'Create asset' | t }} }
       </button>
-      <a class="btn" routerLink="/assets">Cancel</a>
+      <a class="btn" routerLink="/assets">{{ 'Cancel' | t }}</a>
     </div>
   </form>
 

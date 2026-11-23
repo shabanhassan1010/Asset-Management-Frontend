@@ -1,10 +1,12 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { AssetService } from '../../../core/services/AssetService';
 import { ToastService } from '../../../core/services/ToastService';
+import { LanguageService } from '../../../core/services/language.service';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-retire-asset',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './retire-asset.html',
   styleUrl: './retire-asset.css',
 })
@@ -12,6 +14,7 @@ export class RetireAsset {
 
   private assetService = inject(AssetService);
   private toast = inject(ToastService);
+  private language = inject(LanguageService);
   assetId = input.required<number>();
   assetCode = input.required<string>();
   assetName = input.required<string>();
@@ -38,7 +41,7 @@ export class RetireAsset {
       .subscribe({
         next: () => {
           this.submitting.set(false);
-                    this.toast.success(`"${this.assetCode()}" was retired.`);
+          this.toast.success(this.language.t('"{code}" was retired.', { code: this.assetCode() }));
           this.retired.emit();
         },
         error: (err) => {

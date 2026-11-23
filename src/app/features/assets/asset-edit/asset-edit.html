@@ -2,110 +2,110 @@
 <div class="page">
 
   @if (loading()) {
-    <div class="card state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+    <div class="card state"><span class="spinner lg"></span><p style="margin-top:14px">{{ 'Loading…' | t }}</p></div>
   } @else if (!asset()) {
     <div class="card state">
       <div class="icon">∅</div>
-      <h3>Asset not found</h3>
-      <a class="hint back-link" routerLink="/assets">← Back to assets</a>
+      <h3>{{ 'Asset not found' | t }}</h3>
+      <a class="hint back-link" routerLink="/assets">{{ '← Back to assets' | t }}</a>
       
     </div>
   } @else if (asset(); as a) {
 
     <div class="page-head">
       <div>
-        <a class="hint back-link" routerLink="/assets">← Back to assets</a>
-        <h1 style="margin-top:6px">Edit asset</h1>
-        <p><span class="mono">{{ a.assetCode }}</span> — {{ a.categoryName }} · {{ a.assetTypeName }}</p>
+        <a class="hint back-link" routerLink="/assets">{{ '← Back to assets' | t }}</a>
+        <h1 style="margin-top:6px">{{ 'Edit asset' | t }}</h1>
+        <p><span class="mono">{{ a.assetCode }}</span> — {{ a.categoryName | localName: a.categoryNameAr }} · {{ a.assetTypeName | localName: a.assetTypeNameAr }}</p>
       </div>
     </div>
 
     @if (isRetired()) {
       <div class="alert alert-warn" style="margin-bottom:16px">
-        This asset is retired and cannot be edited. It stays in the register for history only.
+        {{ 'This asset is retired and cannot be edited. It stays in the register for history only.' | t }}
       </div>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()">
 
       @if (errorMessage()) {
-        <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+        <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() | t }}</div>
       }
 
       @if (lookupService.failedLookups().length > 0) {
         <div class="alert alert-danger" style="margin-bottom:16px">
-          Some dropdown lists could not be loaded. Please refresh the page.
+          {{ 'Some dropdown lists could not be loaded. Please refresh the page.' | t }}
         </div>
       }
       
       <!-- ============ Identity ============ -->
       <div class="card" style="margin-bottom:16px">
-        <div class="card-head"><h2>Identity</h2></div>
+        <div class="card-head"><h2>{{ 'Identity' | t }}</h2></div>
         <div class="card-body">
           <div class="grid grid-2">
             <div class="field">
-              <label for="assetCode">Asset code <span class="req">*</span></label>
+              <label for="assetCode">{{ 'Asset code' | t }} <span class="req">*</span></label>
               <input id="assetCode" class="input" formControlName="assetCode"
                      [class.invalid]="form.controls.assetCode.touched && form.controls.assetCode.invalid">
               @if (form.controls.assetCode.touched && form.controls.assetCode.hasError('required')) {
-                <span class="field-error">Asset code is required.</span>
+                <span class="field-error">{{ 'Asset code is required.' | t }}</span>
               }
-              <span class="hint">Must be unique across the register.</span>
+              <span class="hint">{{ 'Must be unique across the register.' | t }}</span>
             </div>
 
             <div class="field">
-              <label for="categoryId">Category <span class="req">*</span></label>
+              <label for="categoryId">{{ 'Category' | t }} <span class="req">*</span></label>
               <select id="categoryId" class="select" formControlName="categoryId"
                       [class.invalid]="form.controls.categoryId.touched && form.controls.categoryId.invalid">
-                <option value="">Select a category</option>
+                <option value="">{{ 'Select a category' | t }}</option>
                 @for (item of lookups()?.categories ?? []; track item.id) {
-                  <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+                  <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
                 }
               </select>
               @if (form.controls.categoryId.touched && form.controls.categoryId.hasError('required')) {
-                <span class="field-error">Category is required.</span>
+                <span class="field-error">{{ 'Category is required.' | t }}</span>
               }
             </div>
           </div>
 
           <div class="field">
-            <label for="assetName">Asset name <span class="req">*</span></label>
+            <label for="assetName">{{ 'Asset name' | t }} <span class="req">*</span></label>
             <input id="assetName" class="input" formControlName="assetName"
                    [class.invalid]="form.controls.assetName.touched && form.controls.assetName.invalid">
             @if (form.controls.assetName.touched && form.controls.assetName.hasError('required')) {
-              <span class="field-error">Asset name is required.</span>
+              <span class="field-error">{{ 'Asset name is required.' | t }}</span>
             }
           </div>
 
           <div class="field">
-            <label for="description">Description</label>
+            <label for="description">{{ 'Description' | t }}</label>
             <textarea id="description" class="textarea" formControlName="description"></textarea>
           </div>
 
           <div class="grid grid-2" style="margin-bottom:0">
             <div class="field" style="margin-bottom:0">
-              <label for="assetTypeId">Asset type <span class="req">*</span></label>
+              <label for="assetTypeId">{{ 'Asset type' | t }} <span class="req">*</span></label>
               <select id="assetTypeId" class="select" formControlName="assetTypeId"
                       [class.invalid]="form.controls.assetTypeId.touched && form.controls.assetTypeId.invalid">
-                <option value="">Select a type</option>
+                <option value="">{{ 'Select a type' | t }}</option>
                 @for (item of lookups()?.assetTypes ?? []; track item.id) {
-                  <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+                  <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
                 }
               </select>
               @if (form.controls.assetTypeId.touched && form.controls.assetTypeId.hasError('required')) {
-                <span class="field-error">Asset type is required.</span>
+                <span class="field-error">{{ 'Asset type is required.' | t }}</span>
               }
             </div>
 
             <div class="field" style="margin-bottom:0">
-              <label for="status">Status <span class="req">*</span></label>
+              <label for="status">{{ 'Status' | t }} <span class="req">*</span></label>
               <select id="status" class="select" formControlName="status"
                       [class.invalid]="form.controls.status.touched && form.controls.status.invalid">
                 @for (item of editableStatuses; track item.id) {
-                  <option [value]="item.id">{{ item.name }}</option>
+                  <option [value]="item.id">{{ item.name | t }}</option>
                 }
               </select>
-              <span class="hint">Retired is set by the Retire action, not here.</span>
+              <span class="hint">{{ 'Retired is set by the Retire action, not here.' | t }}</span>
             </div>
           </div>
         </div>
@@ -113,35 +113,35 @@
 
       <!-- ============ Manufacturer ============ -->
       <div class="card" style="margin-bottom:16px">
-        <div class="card-head"><h2>Manufacturer details</h2></div>
+        <div class="card-head"><h2>{{ 'Manufacturer details' | t }}</h2></div>
         <div class="card-body">
           <div class="grid grid-3">
             <div class="field">
-              <label for="manufacturer">Manufacturer</label>
+              <label for="manufacturer">{{ 'Manufacturer' | t }}</label>
               <input id="manufacturer" class="input" formControlName="manufacturer">
             </div>
             <div class="field">
-              <label for="model">Model</label>
+              <label for="model">{{ 'Model' | t }}</label>
               <input id="model" class="input" formControlName="model">
             </div>
             <div class="field">
-              <label for="serialNumber">Serial number</label>
+              <label for="serialNumber">{{ 'Serial number' | t }}</label>
               <input id="serialNumber" class="input" formControlName="serialNumber">
-              <span class="hint">Must be unique when supplied.</span>
+              <span class="hint">{{ 'Must be unique when supplied.' | t }}</span>
             </div>
           </div>
 
           <div class="grid grid-3" style="margin-bottom:0">
             <div class="field" style="margin-bottom:0">
-              <label for="purchaseDate">Purchase date</label>
+              <label for="purchaseDate">{{ 'Purchase date' | t }}</label>
               <input id="purchaseDate" class="input" type="date" formControlName="purchaseDate">
             </div>
             <div class="field" style="margin-bottom:0">
-              <label for="purchaseCost">Purchase cost (EGP)</label>
+              <label for="purchaseCost">{{ 'Purchase cost (EGP)' | t }}</label>
               <input id="purchaseCost" class="input" type="number" min="0" step="0.01" formControlName="purchaseCost">
             </div>
             <div class="field" style="margin-bottom:0">
-              <label for="warrantyExpiryDate">Warranty expires</label>
+              <label for="warrantyExpiryDate">{{ 'Warranty expires' | t }}</label>
               <input id="warrantyExpiryDate" class="input" type="date" formControlName="warrantyExpiryDate">
             </div>
           </div>
@@ -151,43 +151,43 @@
       <!-- ============ Placement ============ -->
       <div class="card" style="margin-bottom:16px">
         <div class="card-head">
-          <h2>Placement</h2>
+          <h2>{{ 'Placement' | t }}</h2>
           <span class="spacer"></span>
-          <span class="hint">Leave empty for an unassigned asset</span>
+          <span class="hint">{{ 'Leave empty for an unassigned asset' | t }}</span>
         </div>
         <div class="card-body">
           <div class="grid grid-3" style="margin-bottom:0">
             <div class="field" style="margin-bottom:0">
-              <label for="departmentId">Department</label>
+              <label for="departmentId">{{ 'Department' | t }}</label>
               <select id="departmentId" class="select" formControlName="departmentId">
-                <option value="">Unassigned</option>
+                <option value="">{{ 'Unassigned' | t }}</option>
                 @for (item of lookups()?.departments ?? []; track item.id) {
-                  <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+                  <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
                 }
               </select>
             </div>
 
             <div class="field" style="margin-bottom:0">
-              <label for="assignedEmployeeId">Assigned to</label>
+              <label for="assignedEmployeeId">{{ 'Assigned to' | t }}</label>
               <select id="assignedEmployeeId" class="select" formControlName="assignedEmployeeId">
-                <option value="">Unassigned</option>
+                <option value="">{{ 'Unassigned' | t }}</option>
                 @for (item of availableEmployees(); track item.id) {
-                  <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+                  <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
                 }
               </select>
               @if (!form.controls.departmentId.value) {
-                <span class="hint">Pick a department first.</span>
+                <span class="hint">{{ 'Pick a department first.' | t }}</span>
               } @else if (availableEmployees().length === 0) {
-                <span class="hint">No employees in this department.</span>
+                <span class="hint">{{ 'No employees in this department.' | t }}</span>
               }
             </div>
 
             <div class="field" style="margin-bottom:0">
-              <label for="locationId">Location</label>
+              <label for="locationId">{{ 'Location' | t }}</label>
               <select id="locationId" class="select" formControlName="locationId">
-                <option value="">Unassigned</option>
+                <option value="">{{ 'Unassigned' | t }}</option>
                 @for (item of lookups()?.locations ?? []; track item.id) {
-                  <option [value]="item.id">{{ item.name }}{{ item.isActive ? '' : ' (inactive)' }}</option>
+                  <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
                 }
               </select>
             </div>
@@ -198,21 +198,21 @@
       <!-- ============ Cross-field warnings ============ -->
       @if (form.touched && form.hasError('assignedNeedsEmployee')) {
         <div class="alert alert-warn" style="margin-bottom:12px">
-          Status is <strong>Assigned</strong> but no employee is selected. Pick an employee or change the status.
+          {{ 'Status is' | t }} <strong>{{ 'Assigned' | t }}</strong> {{ 'but no employee is selected. Pick an employee or change the status.' | t }}
         </div>
       }
       @if (form.touched && form.hasError('availableHasEmployee')) {
         <div class="alert alert-warn" style="margin-bottom:12px">
-          Status is <strong>Available</strong> but an employee is assigned. Clear the employee or change the status.
+          {{ 'Status is' | t }} <strong>{{ 'Available' | t }}</strong> {{ 'but an employee is assigned. Clear the employee or change the status.' | t }}
         </div>
       }
 
       <div class="row">
         <button class="btn btn-primary" type="submit"
                 [disabled]="submitting() || isRetired() || !!successMessage() || form.invalid">
-          @if (submitting()) { <span class="spinner"></span> Saving… } @else { Save changes }
+          @if (submitting()) { <span class="spinner"></span> {{ 'Saving…' | t }} } @else { {{ 'Save changes' | t }} }
         </button>
-        <a class="btn" [routerLink]="['/assets']">Cancel</a>
+        <a class="btn" [routerLink]="['/assets']">{{ 'Cancel' | t }}</a>
       </div>
     </form>
 

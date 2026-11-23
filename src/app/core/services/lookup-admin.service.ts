@@ -35,15 +35,15 @@ export class LookupAdminService
       })));
   }
 
-  create(config: LookupKindConfig, name: string, secondary: string | null): Observable<unknown>
+  create(config: LookupKindConfig, name: string, nameAr: string | null, secondary: string | null): Observable<unknown>
   {
-    return this.http.post(this.routes(config.kind).create, this.toPayload(config, name, secondary))
+    return this.http.post(this.routes(config.kind).create, this.toPayload(config, name, nameAr, secondary))
                     .pipe(tap(() => this.lookupService.clearCache()));
   }
 
-  update(config: LookupKindConfig, id: number, name: string, secondary: string | null): Observable<unknown>
+  update(config: LookupKindConfig, id: number, name: string, nameAr: string | null, secondary: string | null): Observable<unknown>
   {
-    return this.http.put(this.routes(config.kind).byId(id), { id, ...this.toPayload(config, name, secondary) })
+    return this.http.put(this.routes(config.kind).byId(id), { id, ...this.toPayload(config, name, nameAr, secondary) })
                     .pipe(tap(() => this.lookupService.clearCache()));
   }
 
@@ -58,6 +58,7 @@ export class LookupAdminService
     return {
       id: row['id'] as number,
       name: (row[config.nameField] ?? '') as string,
+      nameAr: (row[config.nameArField] ?? null) as string | null,
       secondary: (row[config.secondaryField] ?? null) as string | null,
       isActive: (row['isActive'] ?? true) as boolean,
       assetsCount: (row['assetsCount'] ?? 0) as number,
@@ -65,10 +66,11 @@ export class LookupAdminService
     };
   }
 
-  private toPayload(config: LookupKindConfig, name: string, secondary: string | null)
+  private toPayload(config: LookupKindConfig, name: string, nameAr: string | null, secondary: string | null)
   {
     return {
       [config.nameField]: name,
+      [config.nameArField]: nameAr,
       [config.secondaryField]: secondary,
     };
   }

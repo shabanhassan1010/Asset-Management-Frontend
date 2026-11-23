@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ToastService } from '../../core/services/ToastService';
 
+import { TranslatePipe } from '../pipes/translate.pipe';
 // This component only DISPLAYS the toasts. It holds no state of its own —
 // the list lives in ToastService, so any part of the app can add a toast
 // without needing a reference to this component.
@@ -8,7 +9,7 @@ import { ToastService } from '../../core/services/ToastService';
 
 @Component({
   selector: 'app-toast',
-  imports: [], // no other component/pipe/directive is used in the template
+  imports: [TranslatePipe], // no other component/pipe/directive is used in the template
   templateUrl: './toast.html',
   styleUrl: './toast.css',
 })

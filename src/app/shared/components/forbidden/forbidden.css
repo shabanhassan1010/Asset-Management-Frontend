@@ -14,11 +14,11 @@
   padding: 12px 24px;
   min-width: 160px;
 
-  background: #2563eb;
+  background: var(--accent);
   color: #ffffff;
 
   border-radius: 10px;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--accent);
 
   font-size: 15px;
   font-weight: 600;
@@ -39,8 +39,8 @@
 }
 
 .home-btn:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 
   transform: translateY(-2px);
 

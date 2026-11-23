@@ -6,9 +6,9 @@
        so removing one toast does not re-create the others. -->
   @for (toast of toasts(); track toast.id) {
     <div class="toast toast-{{ toast.type }}" role="alert">
-      <span class="toast-text">{{ toast.text }}</span>
+      <span class="toast-text">{{ toast.text | t }}</span>
 
-      <button type="button" class="toast-close" (click)="dismiss(toast.id)" aria-label="Close">
+      <button type="button" class="toast-close" (click)="dismiss(toast.id)" [attr.aria-label]="'Close' | t">
         &times;
       </button>
     </div>

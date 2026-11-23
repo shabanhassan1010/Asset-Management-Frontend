@@ -1,11 +1,13 @@
-import { DatePipe } from '@angular/common';
 import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { AssetService } from '../../../core/services/AssetService';
 import { TransferDetails } from '../../../core/models/transfer-details.model';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../../shared/pipes/local-name.pipe';
+import { LocalizedDatePipe } from '../../../shared/pipes/localized-date.pipe';
 @Component({
   selector: 'app-transfer-details-dialog',
-  imports: [DatePipe],
+  imports: [LocalizedDatePipe, TranslatePipe, LocalNamePipe],
   templateUrl: './transfer-details-dialog.html',
   styleUrl: './transfer-details-dialog.css',
 })

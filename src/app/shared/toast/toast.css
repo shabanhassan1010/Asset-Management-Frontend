@@ -1,7 +1,7 @@
-/* Fixed stack in the bottom-right corner, above everything else. */
+/* Fixed stack in the bottom corner on the reading-end side (right in English, left in Arabic). */
 .toast-stack {
   position: fixed;
-  right: 20px;
+  inset-inline-end: 20px;
   bottom: 20px;
   z-index: 1000;
 
@@ -26,7 +26,7 @@
   padding: 12px 14px;
 
   border: 1px solid var(--border);
-  border-left-width: 4px;
+  border-inline-start-width: 4px;
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
@@ -37,11 +37,11 @@
   animation: toast-in 0.18s ease-out;
 }
 
-/* The colour of the left bar is the only difference between the three types,
+/* The colour of the side bar is the only difference between the three types,
    and it reuses the variables already defined in styles.css. */
-.toast-success { border-left-color: var(--success); background: var(--success-soft); }
-.toast-error   { border-left-color: var(--danger);  background: var(--danger-soft); }
-.toast-info    { border-left-color: var(--accent);  background: var(--accent-soft); }
+.toast-success { border-inline-start-color: var(--success); background: var(--success-soft); }
+.toast-error   { border-inline-start-color: var(--danger);  background: var(--danger-soft); }
+.toast-info    { border-inline-start-color: var(--accent);  background: var(--accent-soft); }
 
 .toast-text {
   flex: 1;

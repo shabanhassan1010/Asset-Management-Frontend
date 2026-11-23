@@ -3,12 +3,12 @@
 
   <div class="page-head">
     <div>
-      <h1>{{ isAdmin() ? 'Admin dashboard' : 'Dashboard' }}</h1>
+      <h1>{{ (isAdmin() ? 'Admin dashboard' : 'Dashboard') | t }}</h1>
     </div>
     <div class="row">
-      <a class="btn" routerLink="/assets">Browse assets</a>
+      <a class="btn" routerLink="/assets">{{ 'Browse assets' | t }}</a>
       @if (isAdmin()) {
-        <a class="btn btn-primary" routerLink="/assets/new">+ New asset</a>
+        <a class="btn btn-primary" routerLink="/assets/new">{{ '+ New asset' | t }}</a>
       }
     </div>
   </div>
@@ -16,51 +16,51 @@
   @if (loading()) {
     <div class="card state">
       <span class="spinner lg"></span>
-      <p>Loading your dashboard…</p>
+      <p>{{ 'Loading your dashboard…' | t }}</p>
     </div>
   } @else if (errorMessage()) {
     <div class="card card-body">
-      <div class="alert alert-danger">{{ errorMessage() }}</div>
-      <button type="button" class="btn" style="margin-top:12px" (click)="load()">Try again</button>
+      <div class="alert alert-danger">{{ errorMessage() | t }}</div>
+      <button type="button" class="btn" style="margin-top:12px" (click)="load()">{{ 'Try again' | t }}</button>
     </div>
   } @else if (summary(); as data) {
 
     <!-- ===== Stat cards (clickable) ===== -->
     <div class="grid grid-4" >
       <a class="card stat clickable" routerLink="/assets">
-        <div class="label">Active assets</div>
+        <div class="label">{{ 'Active assets' | t }}</div>
         <div class="value mono">{{ data.activeAssets }}</div>
-        <div class="hint">{{ data.retiredAssets }} retired</div>
+        <div class="hint">{{ '{count} retired' | t: { count: data.retiredAssets } }}</div>
       </a>
 
       <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.Assigned }">
-        <div class="label">Assigned</div>
+        <div class="label">{{ 'Assigned' | t }}</div>
         <div class="value mono">{{ data.assignedAssets }}</div>
         <!-- <div class="hint">{{ data.availableAssets }} available</div> -->
       </a>
 
       <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.Available }">
-        <div class="label">Available</div>
+        <div class="label">{{ 'Available' | t }}</div>
         <div class="value mono">{{ data.availableAssets }}</div>
         <!-- <div class="hint">{{ data.assignedAssets }} assigned</div> -->
       </a>
 
       <a class="card stat clickable" routerLink="/assets" [queryParams]="{ statusId: status.UnderMaintenance }">
-        <div class="label">Under maintenance</div>
+        <div class="label">{{ 'Under maintenance' | t }}</div>
         <div class="value mono">{{ data.underMaintenanceAssets }}</div>
-        <div class="hint-warning">needs attention</div>
+        <div class="hint-warning">{{ 'needs attention' | t }}</div>
       </a>
       
 
       <!-- Not clickable: a money total has no "list" behind it -->
       <div class="card stat">
-        <div class="label">Portfolio value</div>
+        <div class="label">{{ 'Portfolio value' | t }}</div>
         @if (data.portfolioValue != null) {
           <div class="value mono">{{ data.portfolioValue | number:'1.0-0' }}</div>
-          <div class="hint">EGP · Admin only</div>
+          <div class="hint">{{ 'EGP · Admin only' | t }}</div>
         } @else {
-          <div class="value locked" style="font-size:17px">Restricted</div>
-          <div class="hint">Cost data is not sent to your role</div>
+          <div class="value locked" style="font-size:17px">{{ 'Restricted' | t }}</div>
+          <div class="hint">{{ 'Cost data is not sent to your role' | t }}</div>
         }
       </div>
     </div>
@@ -71,24 +71,24 @@
     <div class="grid grid-2" style="margin-top:16px;align-items:stretch">
 
       <div class="card">
-        <div class="card-head"><h2>By category</h2></div>
+        <div class="card-head"><h2>{{ 'By category' | t }}</h2></div>
         <div class="card-body">
           @for (row of data.assetsByCategory; track row.categoryId) {
             <a class="bar-row" routerLink="/assets" [queryParams]="{ categoryId: row.categoryId }">
               <div class="bar-label">
-                <span>{{ row.categoryName }}</span>
+                <span>{{ row.categoryName | localName: row.categoryNameAr }}</span>
                 <span class="hint mono">{{ row.count }}</span>
               </div>
               <div class="bar"><div class="fill" [style.width]="barWidth(row.count, maxCategoryCount())"></div></div>
             </a>
           } @empty {
-            <p class="hint" style="margin:0">No assets yet.</p>
+            <p class="hint" style="margin:0">{{ 'No assets yet.' | t }}</p>
           }
         </div>
       </div>
 
       <div class="card">
-        <div class="card-head"><h2>By department</h2></div>
+        <div class="card-head"><h2>{{ 'By department' | t }}</h2></div>
         <div class="card-body">
           @for (row of data.assetsByDepartment; track row.departmentName) {
             <!-- routerLink = null → Angular removes the href, so "No department" is not clickable -->
@@ -96,13 +96,13 @@
                [routerLink]="row.departmentId != null ? '/assets' : null"
                [queryParams]="{ departmentId: row.departmentId }">
               <div class="bar-label">
-                <span>{{ row.departmentName }}</span>
+                <span>{{ (row.departmentName | localName: row.departmentNameAr) | t }}</span>
                 <span class="hint mono">{{ row.count }}</span>
               </div>
               <div class="bar"><div class="fill" [style.width]="barWidth(row.count, maxDepartmentCount())"></div></div>
             </a>
           } @empty {
-            <p class="hint" style="margin:0">No assets yet.</p>
+            <p class="hint" style="margin:0">{{ 'No assets yet.' | t }}</p>
           }
         </div>
       </div>
@@ -112,9 +112,9 @@
     <!-- ===== Warranties ===== -->
     <div class="card" style="margin-top:16px">
       <div class="card-head">
-        <h2>Warranties expiring</h2>
+        <h2>{{ 'Warranties expiring' | t }}</h2>
         <span class="spacer"></span>
-        <span class="hint">Retired assets and assets with no warranty date are not counted</span>
+        <span class="hint">{{ 'Retired assets and assets with no warranty date are not counted' | t }}</span>
       </div>
 
       <div class="card-body">
@@ -122,7 +122,7 @@
           @for (w of data.warrantyWindows; track w.days) {
             <a class="window" routerLink="/assets" [queryParams]="{ warrantyWithinDays: w.days }">
               <div class="value mono">{{ w.count }}</div>
-              <div class="hint">within {{ w.days }} days</div>
+              <div class="hint">{{ 'within {days} days' | t: { days: w.days } }}</div>
             </a>
           }
         </div>
@@ -132,7 +132,7 @@
         <div class="table-wrap">
           <table class="tbl">
             <thead>
-              <tr><th>Soonest to expire</th><th>Status</th><th>Expires</th></tr>
+              <tr><th>{{ 'Soonest to expire' | t }}</th><th>{{ 'Status' | t }}</th><th>{{ 'Expires' | t }}</th></tr>
             </thead>
             <tbody>
               @for (asset of data.expiringWarranties; track asset.assetId) {
@@ -141,7 +141,7 @@
                     <a [routerLink]="['/assets', asset.assetId]">{{ asset.assetCode }}</a>
                     — {{ asset.assetName }}
                   </td>
-                  <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName }}</span></td>
+                  <td><span [class]="statusBadgeClass(asset.statusId)">{{ asset.statusName | t }}</span></td>
                   <td class="mono">{{ asset.warrantyExpiryDate }}</td>
                 </tr>
               }
@@ -149,7 +149,7 @@
           </table>
         </div>
       } @else {
-        <div class="card-body" style="padding-top:0"><p class="hint" style="margin:0">Nothing expiring in the next 90 days.</p></div>
+        <div class="card-body" style="padding-top:0"><p class="hint" style="margin:0">{{ 'Nothing expiring in the next 90 days.' | t }}</p></div>
       }
     </div>
   }

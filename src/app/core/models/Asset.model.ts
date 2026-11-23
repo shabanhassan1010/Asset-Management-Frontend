@@ -14,8 +14,10 @@ export interface AssetListItem {
 
   categoryId: number;
   categoryName: string;
+  categoryNameAr?: string | null;
   assetTypeId: number;
   assetTypeName: string;
+  assetTypeNameAr?: string | null;
 
   statusId: number;
   statusName: string;
@@ -29,10 +31,13 @@ export interface AssetListItem {
 
   departmentId?: number | null;
   departmentName?: string | null;
+  departmentNameAr?: string | null;
   employeeId?: number | null;
   employeeName?: string | null;
+  employeeNameAr?: string | null;
   locationId?: number | null;
   locationName?: string | null;
+  locationNameAr?: string | null;
 
   purchaseCost?: number | null;
 
@@ -87,12 +92,18 @@ export interface AssetTransfer {
   transferredByUserId: string | null;
 
   fromEmployeeName: string | null;
+  fromEmployeeNameAr?: string | null;
   fromDepartmentName: string | null;
+  fromDepartmentNameAr?: string | null;
   fromLocationName: string | null;
+  fromLocationNameAr?: string | null;
 
   toEmployeeName: string | null;
+  toEmployeeNameAr?: string | null;
   toDepartmentName: string | null;
+  toDepartmentNameAr?: string | null;
   toLocationName: string | null;
+  toLocationNameAr?: string | null;
 }
 
 

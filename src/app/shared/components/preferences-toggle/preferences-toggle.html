@@ -1,0 +1,14 @@
+<div class="prefs">
+  <!-- The label names the language you switch TO, written in that language,
+       so someone who can't read the current one can still find it. -->
+  <button type="button" class="btn btn-sm btn-ghost lang-btn" (click)="language.toggle()"
+          [attr.aria-label]="'Change language' | t">
+    {{ language.isArabic() ? 'English' : 'العربية' }}
+  </button>
+
+  <button type="button" class="btn btn-sm btn-ghost theme-btn" (click)="theme.toggle()"
+          [attr.aria-label]="(theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode') | t"
+          [attr.title]="(theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode') | t">
+    <span aria-hidden="true">{{ theme.isDark() ? '☀' : '☾' }}</span>
+  </button>
+</div>
