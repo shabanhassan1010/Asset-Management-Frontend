@@ -3,15 +3,15 @@
 
   <div class="page-head">
     <div>
-      <h1>My profile</h1>
-      <p>Your account as the server sees it right now.</p>
+      <h1>{{ 'My profile' | t }}</h1>
+      <p>{{ 'Your account as the server sees it right now.' | t }}</p>
     </div>
   </div>
 
   @if (loading()) {
-    <div class="card state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+    <div class="card state"><span class="spinner lg"></span><p style="margin-top:14px">{{ 'Loading…' | t }}</p></div>
   } @else if (errorMessage()) {
-    <div class="card card-body"><div class="alert alert-danger">{{ errorMessage() }}</div></div>
+    <div class="card card-body"><div class="alert alert-danger">{{ errorMessage() | t }}</div></div>
   } @else if (profile(); as me) {
 
     <div class="card" >
@@ -20,54 +20,54 @@
         <div class="profile-avatar">{{ initials(me.userName) }}</div>
         <div class="profile-name">
           <h2>{{ me.userName }}</h2>
-          <span class="sub">{{ me.email || 'No email on file' }}</span>
+          <span class="sub">{{ me.email || ('No email on file' | t) }}</span>
         </div>
         <span class="spacer"></span>
         <span class="badge" [class.badge-admin]="isAdmin()" [class.badge-user]="!isAdmin()">
-          {{ isAdmin() ? 'Admin' : 'User' }}
+          {{ (isAdmin() ? 'Admin' : 'User') | t }}
         </span>
       </div>
 
       <div class="card-body">
 
         <div class="profile-section">
-          <h3 class="profile-section-title">Account</h3>
+          <h3 class="profile-section-title">{{ 'Account' | t }}</h3>
           <dl class="dl dl-divided">
-            <dt>Role</dt><dd>{{ isAdmin() ? 'Admin' : 'User' }}</dd>
-            <dt>Account status</dt>
+            <dt>{{ 'Role' | t }}</dt><dd>{{ (isAdmin() ? 'Admin' : 'User') | t }}</dd>
+            <dt>{{ 'Account status' | t }}</dt>
             <dd>
               @if (isAccountActive()) {
-                <span class="badge badge-available">Active</span>
+                <span class="badge badge-available">{{ 'Active' | t }}</span>
               } @else {
-                <span class="badge badge-off">Inactive</span>
+                <span class="badge badge-off">{{ 'Inactive' | t }}</span>
               }
             </dd>
           </dl>
         </div>
 
         <div class="profile-section">
-          <h3 class="profile-section-title">Linked employee</h3>
+          <h3 class="profile-section-title">{{ 'Linked employee' | t }}</h3>
           @if (me.employeeName) {
             <dl class="dl dl-divided">
-              <dt>Name</dt>
+              <dt>{{ 'Name' | t }}</dt>
               <dd>
-                {{ me.employeeName }}
+                {{ me.employeeName | localName: me.employeeNameAr }}
               </dd>
-              <dt>code</dt>
+              <dt>{{ 'Code' | t }}</dt>
               <dd>
                 {{ me.employeeCode || '—' }}
               </dd>
-              <dt>Department</dt>
+              <dt>{{ 'Department' | t }}</dt>
               <dd>
-                {{ me.departmentName || '—' }}
+                {{ (me.departmentName | localName: me.departmentNameAr) || '—' }}
               </dd>
-              <dt>Phone</dt>
+              <dt>{{ 'Phone' | t }}</dt>
               <dd>
                 {{ me.phone || '—' }}
               </dd>
             </dl>
           } @else {
-            <p class="locked">No employee record linked</p>
+            <p class="locked">{{ 'No employee record linked' | t }}</p>
           }
         </div>
 
@@ -75,7 +75,7 @@
     </div>
 
     <div class="alert alert-info">
-      Roles and account status are managed by an administrator. If something here looks wrong, ask one of them to change it.
+      {{ 'Roles and account status are managed by an administrator. If something here looks wrong, ask one of them to change it.' | t }}
     </div>
 
   }

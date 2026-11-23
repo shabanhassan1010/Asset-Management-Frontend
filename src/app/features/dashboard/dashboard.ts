@@ -5,9 +5,11 @@ import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { DashboardService } from '../../core/services/DashboardService';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../shared/pipes/local-name.pipe';
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink, DecimalPipe, TranslatePipe, LocalNamePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

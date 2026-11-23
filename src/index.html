@@ -6,6 +6,22 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!--
+    Runs BEFORE Angular loads. Without it the page would first paint white and
+    left-to-right, then jump to dark / Arabic a moment later (a visible "flash").
+    It reads the same localStorage keys that ThemeService and LanguageService write.
+  -->
+  <script>
+    (function () {
+      var html = document.documentElement;
+      var theme = localStorage.getItem('theme')
+        || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var language = localStorage.getItem('language') === 'ar' ? 'ar' : 'en';
+      html.setAttribute('data-theme', theme);
+      html.lang = language;
+      html.dir = language === 'ar' ? 'rtl' : 'ltr';
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>

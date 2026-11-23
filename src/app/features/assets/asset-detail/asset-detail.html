@@ -4,33 +4,33 @@
   @if (loading()) {
     <div class="card state">
       <span class="spinner lg"></span>
-      <p style="margin-top:14px">Loading asset…</p>
+      <p style="margin-top:14px">{{ 'Loading asset…' | t }}</p>
     </div>
   } @else if (!asset()) {
     <div class="card state">
       <div class="icon">∅</div>
-      <h3>Asset not found</h3>
-      <p>{{ errorMessage() }}</p>
-      <a class="btn" style="margin-top:12px" routerLink="/assets">Back to assets</a>
+      <h3>{{ 'Asset not found' | t }}</h3>
+      <p>{{ errorMessage() | t }}</p>
+      <a class="btn" style="margin-top:12px" routerLink="/assets">{{ 'Back to assets' | t }}</a>
     </div>
   } @else if (asset(); as a) {
 
     <div class="page-head">
       <div>
-<a class="hint back-link" routerLink="/assets">← Back to assets</a>
+<a class="hint back-link" routerLink="/assets">{{ '← Back to assets' | t }}</a>
         <h1 style="margin-top:6px">{{ a.assetName }}</h1>
         <p class="row" style="gap:8px">
           <span class="mono">{{ a.assetCode }}</span>
-          <span [class]="statusBadgeClass(a.statusId)">{{ a.statusName }}</span>
+          <span [class]="statusBadgeClass(a.statusId)">{{ a.statusName | t }}</span>
         </p>
       </div>
 
       @if (isAdmin() && !isRetired()) {
         <div class="row">
-          <a class="btn" [routerLink]="['/assets', a.id, 'edit']">Edit</a>
-          <a class="btn btn-primary" [routerLink]="['/assets', a.id, 'transfer']">Transfer</a>
+          <a class="btn" [routerLink]="['/assets', a.id, 'edit']">{{ 'Edit' | t }}</a>
+          <a class="btn btn-primary" [routerLink]="['/assets', a.id, 'transfer']">{{ 'Transfer' | t }}</a>
           <button type="button" class="btn btn-danger" [disabled]="retiring()" (click)="retire()">
-            @if (retiring()) { <span class="spinner"></span> Retiring… } @else { Retire }
+            @if (retiring()) { <span class="spinner"></span> {{ 'Retiring…' | t }} } @else { {{ 'Retire' | t }} }
           </button>
         </div>
       }
@@ -38,45 +38,45 @@
 
     @if (isRetired()) {
       <div class="alert alert-warn" style="margin-bottom:16px">
-        This asset is retired. It stays in the register for history but can no longer be edited or transferred.
+        {{ 'This asset is retired. It stays in the register for history but can no longer be edited or transferred.' | t }}
       </div>
     }
 
     @if (errorMessage()) {
-      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() | t }}</div>
     }
 
     <div class="grid grid-2" style="align-items:start">
 
       <div class="card">
-        <div class="card-head"><h2>Details</h2></div>
+        <div class="card-head"><h2>{{ 'Details' | t }}</h2></div>
         <div class="card-body">
           <dl class="dl">
-            <dt>Category / Type</dt><dd>{{ a.categoryName }} · {{ a.assetTypeName }}</dd>
-            <dt>Manufacturer</dt><dd>{{ a.manufacturer || '—' }}</dd>
-            <dt>Model</dt><dd>{{ a.model || '—' }}</dd>
-            <dt>Serial number</dt><dd class="mono">{{ a.serialNumber || '—' }}</dd>
-            <dt>Description</dt><dd>{{ a.description || '—' }}</dd>
-            <dt>Purchase date</dt><dd class="mono">{{ a.purchaseDate ? (a.purchaseDate | date:'dd MMM yyyy') : '—' }}</dd>
-            <dt>Warranty expires</dt><dd class="mono">{{ a.warrantyExpiryDate ? (a.warrantyExpiryDate | date:'dd MMM yyyy') : '—' }}</dd>
+            <dt>{{ 'Category / Type' | t }}</dt><dd>{{ a.categoryName | localName: a.categoryNameAr }} · {{ a.assetTypeName | localName: a.assetTypeNameAr }}</dd>
+            <dt>{{ 'Manufacturer' | t }}</dt><dd>{{ a.manufacturer || '—' }}</dd>
+            <dt>{{ 'Model' | t }}</dt><dd>{{ a.model || '—' }}</dd>
+            <dt>{{ 'Serial number' | t }}</dt><dd class="mono">{{ a.serialNumber || '—' }}</dd>
+            <dt>{{ 'Description' | t }}</dt><dd>{{ a.description || '—' }}</dd>
+            <dt>{{ 'Purchase date' | t }}</dt><dd class="mono">{{ a.purchaseDate ? (a.purchaseDate | appDate:'dd MMM yyyy') : '—' }}</dd>
+            <dt>{{ 'Warranty expires' | t }}</dt><dd class="mono">{{ a.warrantyExpiryDate ? (a.warrantyExpiryDate | appDate:'dd MMM yyyy') : '—' }}</dd>
 
-            <dt>Purchase cost</dt>
+            <dt>{{ 'Purchase cost' | t }}</dt>
             @if (a.purchaseCost != null) {
-              <dd class="mono">{{ a.purchaseCost | number:'1.2-2' }} EGP</dd>
+              <dd class="mono">{{ a.purchaseCost | number:'1.2-2' }} {{ 'EGP' | t }}</dd>
             } @else {
-              <dd class="locked">Not available for your role</dd>
+              <dd class="locked">{{ 'Not available for your role' | t }}</dd>
             }
           </dl>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-head"><h2>Current placement</h2></div>
+        <div class="card-head"><h2>{{ 'Current placement' | t }}</h2></div>
         <div class="card-body">
           <dl class="dl">
-            <dt>Department</dt><dd>{{ a.departmentName || '—' }}</dd>
-            <dt>Assigned to</dt><dd>{{ a.employeeName || '—' }}</dd>
-            <dt>Location</dt><dd>{{ a.locationName || '—' }}</dd>
+            <dt>{{ 'Department' | t }}</dt><dd>{{ (a.departmentName | localName: a.departmentNameAr) || '—' }}</dd>
+            <dt>{{ 'Assigned to' | t }}</dt><dd>{{ (a.employeeName | localName: a.employeeNameAr) || '—' }}</dd>
+            <dt>{{ 'Location' | t }}</dt><dd>{{ (a.locationName | localName: a.locationNameAr) || '—' }}</dd>
           </dl>
         </div>
       </div>
@@ -85,27 +85,27 @@
 
     <div class="card" style="margin-top:16px">
       <div class="card-head">
-        <h2>Transfer history</h2>
+        <h2>{{ 'Transfer history' | t }}</h2>
         <span class="spacer"></span>
-        <span class="hint">{{ transfers().length }} record{{ transfers().length === 1 ? '' : 's' }}</span>
+        <span class="hint">{{ (transfers().length === 1 ? '{count} record' : '{count} records') | t: { count: transfers().length } }}</span>
       </div>
 
       @if (transfers().length === 0) {
         <div class="card-body">
-          <p class="hint" style="margin:0">This asset has never been transferred.</p>
+          <p class="hint" style="margin:0">{{ 'This asset has never been transferred.' | t }}</p>
         </div>
       } @else {
         <div class="table-wrap">
           <table class="tbl">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Department</th>
-                <th>Assigned to</th>
-                <th>Location</th>
-                <th>Reason</th>
+                <th>{{ 'Date' | t }}</th>
+                <th>{{ 'Department' | t }}</th>
+                <th>{{ 'Assigned to' | t }}</th>
+                <th>{{ 'Location' | t }}</th>
+                <th>{{ 'Reason' | t }}</th>
                 @if (isAdmin()) {
-                  <th class="actions">Actions</th>
+                  <th class="actions">{{ 'Actions' | t }}</th>
                 }
               </tr>
             </thead>
@@ -116,15 +116,15 @@
                     [attr.tabindex]="isAdmin() ? 0 : null"
                     (click)="openTransfer(row.id)"
                     (keydown.enter)="openTransfer(row.id)">
-                  <td class="mono">{{  row.transferDate | date:'dd MMM yyyy, hh:mm a'}}</td>
-                  <td class="hint">{{ row.fromDepartmentName || '—' }} → <strong>{{ row.toDepartmentName || '—' }}</strong></td>
-                  <td class="hint">{{ row.fromEmployeeName || '—' }} → <strong>{{ row.toEmployeeName || '—' }}</strong></td>
-                  <td class="hint">{{ row.fromLocationName || '—' }} → <strong>{{ row.toLocationName || '—' }}</strong></td>
-                  <td>{{ row.reason || '—' }}</td>
+                  <td class="mono">{{  row.transferDate | appDate:'dd MMM yyyy, hh:mm a'}}</td>
+                  <td class="hint">{{ (row.fromDepartmentName | localName: row.fromDepartmentNameAr) || '—' }} <span class="flip-rtl">→</span> <strong>{{ (row.toDepartmentName | localName: row.toDepartmentNameAr) || '—' }}</strong></td>
+                  <td class="hint">{{ (row.fromEmployeeName | localName: row.fromEmployeeNameAr) || '—' }} <span class="flip-rtl">→</span> <strong>{{ (row.toEmployeeName | localName: row.toEmployeeNameAr) || '—' }}</strong></td>
+                  <td class="hint">{{ (row.fromLocationName | localName: row.fromLocationNameAr) || '—' }} <span class="flip-rtl">→</span> <strong>{{ (row.toLocationName | localName: row.toLocationNameAr) || '—' }}</strong></td>
+                  <td>{{ (row.reason | t) || '—' }}</td>
                   @if (isAdmin()) 
                   {
                   <td class="actions">
-                    <button type="button" class="btn btn-sm btn-view" (click)="openTransfer(row.id)"><span aria-hidden="true">◎</span> View</button>
+                    <button type="button" class="btn btn-sm btn-view" (click)="openTransfer(row.id)"><span aria-hidden="true">◎</span> {{ 'View' | t }}</button>
                   </td>
                   }
                 </tr>

@@ -1,67 +1,137 @@
 <div class="login-shell">
 
-  <div class="login-panel">
-    <div class="card login-card" style="width:100%;max-width:460px;overflow:hidden">
-
-      <div class="login-accent"></div>
-
-      <div style="padding:30px 28px 4px;text-align:center">
-        <div class="logo" style="width:46px;height:46px;border-radius:12px;margin:0 auto 14px">AM</div>
-        <h1>Sign in</h1>
-        <p style="color:var(--text-2);margin:6px 0 0;font-size:13px">Asset Management System</p>
+  <!-- ===== Brand side (hidden on small screens) ===== -->
+  <aside class="login-brand" aria-hidden="true">
+    <div class="brand-top">
+      <div class="brand-logo">AM</div>
+      <div>
+        <div class="brand-title">{{ 'Asset Manager' | t }}</div>
+        <div class="brand-caption">{{ 'Asset Management System' | t }}</div>
       </div>
+    </div>
 
-      <form style="padding:22px 28px 26px" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="brand-body">
+      <h2 class="brand-headline">{{ 'Every asset, tracked from purchase to retirement.' | t }}</h2>
+      <p class="brand-lead">{{ 'One place to register, assign, transfer and retire company assets.' | t }}</p>
 
-        @if (errorMessage()) {
-          <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
-        }
+      <ul class="brand-features">
+        <li>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>
+          </span>
+          <span>
+            <strong>{{ 'One live register' | t }}</strong>
+            <small>{{ 'Status, owner, department and warranty for every asset.' | t }}</small>
+          </span>
+        </li>
+        <li>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>
+          </span>
+          <span>
+            <strong>{{ 'Transfers with full history' | t }}</strong>
+            <small>{{ 'See who had an asset, where, and when.' | t }}</small>
+          </span>
+        </li>
+        <li>
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+          </span>
+          <span>
+            <strong>{{ 'Ask AI in English or Arabic' | t }}</strong>
+            <small>{{ '"Which laptops are free?" — answered from your data.' | t }}</small>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="brand-footer">© {{ year }} {{ 'Asset Manager' | t }}</div>
+  </aside>
+
+  <!-- ===== Form side ===== -->
+  <main class="login-main">
+    <div class="login-prefs"><app-preferences-toggle /></div>
+
+    <div class="login-box">
+      <!-- The brand side is hidden on phones, so the logo shows here instead -->
+      <div class="mobile-logo logo">AM</div>
+
+      <h1 class="login-title">{{ 'Welcome back' | t }}</h1>
+      <p class="login-subtitle">{{ 'Sign in to continue to the Asset Management System.' | t }}</p>
+
+      @if (errorMessage()) {
+        <div class="alert alert-danger login-error" role="alert">
+          <svg viewBox="0 0 24 24" class="error-icon"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+          <span>{{ errorMessage() | t }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
         <div class="field">
-          <label for="userName">Username <span class="req">*</span></label>
-          <input id="userName" class="input" formControlName="userName" placeholder="admin" autocomplete="username"
-                 autofocus
-                 [class.invalid]="form.controls.userName.touched && form.controls.userName.invalid">
+          <label for="userName">{{ 'Username' | t }}</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" class="input-icon"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></svg>
+            <input id="userName" class="input input-lg" formControlName="userName"
+                   [placeholder]="'Enter your username' | t" autocomplete="username" autofocus
+                   [class.invalid]="form.controls.userName.touched && form.controls.userName.invalid">
+          </div>
           @if (form.controls.userName.touched && form.controls.userName.hasError('required')) {
-            <span class="field-error">Username is required.</span>
+            <span class="field-error">{{ 'Username is required.' | t }}</span>
           }
         </div>
 
         <div class="field">
-          <label for="password">Password <span class="req">*</span></label>
-          <div class="password-field">
-            <input id="password" class="input" [type]="showPassword() ? 'text' : 'password'"
-                   formControlName="password" autocomplete="current-password"
+          <label for="password">{{ 'Password' | t }}</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" class="input-icon"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <input id="password" class="input input-lg has-toggle" [type]="showPassword() ? 'text' : 'password'"
+                   formControlName="password" [placeholder]="'Enter your password' | t" autocomplete="current-password"
+                   (keyup)="checkCapsLock($event)" (blur)="capsLockOn.set(false)"
                    [class.invalid]="form.controls.password.touched && form.controls.password.invalid">
             <button type="button" class="password-toggle"
                     (click)="showPassword.set(!showPassword())"
-                    [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
-              {{ showPassword() ? 'Hide' : 'Show' }}
+                    [attr.aria-label]="(showPassword() ? 'Hide password' : 'Show password') | t"
+                    [attr.aria-pressed]="showPassword()">
+              @if (showPassword()) {
+                <svg viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4.5 9.5 6-.5.8-1.6 2.3-3.2 3.6M6.3 7.6C4.5 8.9 3.2 10.7 2.5 12c1 1.5 4.5 6 9.5 6 1.5 0 2.9-.4 4.1-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+              } @else {
+                <svg viewBox="0 0 24 24"><path d="M2.5 12C3.5 10.5 7 6 12 6s8.5 4.5 9.5 6c-1 1.5-4.5 6-9.5 6s-8.5-4.5-9.5-6z"/><circle cx="12" cy="12" r="3"/></svg>
+              }
             </button>
           </div>
+          @if (capsLockOn()) {
+            <span class="caps-warning">{{ 'Caps Lock is on.' | t }}</span>
+          }
           @if (form.controls.password.touched && form.controls.password.hasError('required')) {
-            <span class="field-error">Password is required.</span>
+            <span class="field-error">{{ 'Password is required.' | t }}</span>
           }
         </div>
 
-        <button class="btn btn-primary btn-block" type="submit" [disabled]="submitting()">
-          @if (submitting()) { <span class="spinner"></span> Signing in… } @else { Sign in }
+        <button class="btn btn-primary btn-block btn-lg" type="submit" [disabled]="submitting()">
+          @if (submitting()) { <span class="spinner"></span> {{ 'Signing in…' | t }} } @else { {{ 'Sign in' | t }} }
         </button>
       </form>
 
-      <div class="hero">
-        <div class="hero-title">Demo accounts — click to fill</div>
-        <div class="hero-rows">
+      <!-- Demo accounts: a click fills the form, it does not sign in -->
+      <div class="demo">
+        <div class="demo-divider"><span>{{ 'Demo accounts — click to fill' | t }}</span></div>
+        <div class="demo-grid">
           @for (account of demoAccounts; track account.userName) {
-            <button type="button" class="hero-row" (click)="fill(account)">
-              <span><strong>{{ account.userName }}</strong> / {{ account.password }}</span>
-              <span [class]="account.badgeClass">{{ account.role }}</span>
+            <button type="button" class="demo-account" (click)="fill(account)">
+              <span class="demo-avatar" [class.is-admin]="account.role === 'Admin'">{{ account.userName.charAt(0).toUpperCase() }}</span>
+              <span class="demo-text">
+                <strong>{{ account.userName }}</strong>
+                <small dir="ltr">{{ account.password }}</small>
+              </span>
+              <span [class]="account.badgeClass">{{ account.role | t }}</span>
             </button>
           }
         </div>
       </div>
 
+      <p class="login-help">{{ "Can't sign in? Ask an administrator to check your account." | t }}</p>
     </div>
-  </div>
+  </main>
 
 </div>

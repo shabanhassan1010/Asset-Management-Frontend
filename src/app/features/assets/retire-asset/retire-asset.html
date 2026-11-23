@@ -3,19 +3,18 @@
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="retireTitle"
        (click)="$event.stopPropagation()">
 
-    <h2 id="retireTitle">Retire asset</h2>
+    <h2 id="retireTitle">{{ 'Retire asset' | t }}</h2>
 
     <p class="dialog-lead">
       <strong class="mono">{{ assetCode() }}</strong> — {{ assetName() }}
     </p>
 
     <p class="hint">
-      A retired asset stays in the register for history, but it can no longer be
-      edited or transferred.
+      {{ 'A retired asset stays in the register for history, but it can no longer be edited or transferred.' | t }}
     </p>
 
     <label class="field">
-      <span>Reason <span class="req">*</span></span>
+      <span>{{ 'Reason' | t }} <span class="req">*</span></span>
       <textarea class="input" rows="3" maxlength="500"
                 [value]="reason()"
                 (input)="reason.set($any($event.target).value)"
@@ -24,21 +23,21 @@
     </label>
 
     @if (errorMessage()) {
-      <div class="alert alert-danger">{{ errorMessage() }}</div>
+      <div class="alert alert-danger">{{ errorMessage() | t }}</div>
     }
 
     <div class="row" style="justify-content:flex-end;gap:8px;margin-top:16px">
       <button type="button" class="btn btn-ghost" (click)="cancel()" [disabled]="submitting()">
-        {{ staleRecord() ? 'Close' : 'Cancel' }}
+        {{ (staleRecord() ? 'Close' : 'Cancel') | t }}
       </button>
 
       @if (!staleRecord()) {
         <button type="button" class="btn btn-danger" (click)="confirm()"
                 [disabled]="submitting() || !reason().trim()">
           @if (submitting()) {
-            <span class="spinner"></span> Retiring…
+            <span class="spinner"></span> {{ 'Retiring…' | t }}
           } @else {
-            Retire asset
+            {{ 'Retire asset' | t }}
           }
         </button>
       }

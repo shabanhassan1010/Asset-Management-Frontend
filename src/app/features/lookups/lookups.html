@@ -2,11 +2,11 @@
 
   <div class="page-head">
     <div>
-      <h1>Lookup data</h1>
-      <p>Categories, departments, locations and employees used across the asset register. Admin only.</p>
+      <h1>{{ 'Lookup data' | t }}</h1>
+      <p>{{ 'Categories, departments, locations and employees used across the asset register. Admin only.' | t }}</p>
     </div>
     <button type="button" class="btn btn-primary" (click)="startNew()">
-      + New {{ employeesTab() ? 'employee' : activeKind().singular }}
+      {{ '+ New {item}' | t: { item: ((employeesTab() ? 'employee' : activeKind().singular) | t) } }}
     </button>
   </div>
 
@@ -16,14 +16,14 @@
               class="btn btn-sm"
               [class.btn-primary]="!employeesTab() && activeKind().kind === kind.kind"
               (click)="selectKind(kind)">
-        {{ kind.title }}
+        {{ kind.title | t }}
       </button>
     }
     <button type="button"
             class="btn btn-sm"
             [class.btn-primary]="employeesTab()"
             (click)="selectEmployees()">
-      Employees
+      {{ 'Employees' | t }}
     </button>
   </div>
 
@@ -33,49 +33,61 @@
 
     <!-- Shown first: the user should know what "Deactivate" means BEFORE clicking it -->
     <div class="alert alert-info" style="margin-bottom:16px">
-      <strong>How deactivation works.</strong> A row that is still referenced by assets is never deleted —
-      it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the
-      assets that already use it.
+      <strong>{{ 'How deactivation works.' | t }}</strong> {{ 'A row that is still referenced by assets is never deleted — it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the assets that already use it.' | t }}
     </div>
 
     @if (errorMessage()) {
-      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() }}</div>
+      <div class="alert alert-danger" style="margin-bottom:16px">{{ errorMessage() | t }}</div>
     }
 
     @if (editingId() !== null) {
       <form class="card" style="margin-bottom:16px" [formGroup]="form" (ngSubmit)="save()">
         <div class="card-head">
-          <h2>{{ editingId() === 0 ? 'New' : 'Edit' }} {{ activeKind().singular }}</h2>
+          <h2>{{ (editingId() === 0 ? 'New {item}' : 'Edit {item}') | t: { item: (activeKind().singular | t) } }}</h2>
         </div>
         <div class="card-body">
           <div class="grid grid-2">
             <div class="field">
-              <label for="name">{{ activeKind().nameLabel }} <span class="req">*</span></label>
+              <label for="name">{{ activeKind().nameLabel | t }} <span class="req">*</span></label>
               <input id="name" class="input" formControlName="name"
                      [class.invalid]="form.controls.name.touched && form.controls.name.invalid">
               @if (form.controls.name.touched && form.controls.name.hasError('required')) {
-                <span class="field-error">{{ activeKind().nameLabel }} is required.</span>
+                <span class="field-error">{{ '{field} is required.' | t: { field: (activeKind().nameLabel | t) } }}</span>
+              }
+              @if (form.controls.name.hasError('maxlength')) {
+                <span class="field-error">{{ 'Use {count} characters or fewer.' | t: { count: activeKind().nameMaxLength } }}</span>
+              }
+            </div>
+
+            <!-- Optional. dir="rtl" so Arabic is typed right-to-left even when the site is in English. -->
+            <div class="field">
+              <label for="nameAr">{{ 'Arabic name' | t }}</label>
+              <input id="nameAr" class="input" formControlName="nameAr" dir="rtl" lang="ar"
+                     [class.invalid]="form.controls.nameAr.invalid">
+              <span class="hint">{{ 'Optional. Shown when the site is in Arabic; the English name is used until it is filled in.' | t }}</span>
+              @if (form.controls.nameAr.hasError('maxlength')) {
+                <span class="field-error">{{ 'Use {count} characters or fewer.' | t: { count: activeKind().nameMaxLength } }}</span>
               }
             </div>
 
             <div class="field">
               <label for="secondary">
-                {{ activeKind().secondaryLabel }}
+                {{ activeKind().secondaryLabel | t }}
                 @if (activeKind().secondaryRequired) { <span class="req">*</span> }
               </label>
               <input id="secondary" class="input" formControlName="secondary"
                      [class.invalid]="form.controls.secondary.touched && form.controls.secondary.invalid">
               @if (form.controls.secondary.touched && form.controls.secondary.hasError('required')) {
-                <span class="field-error">{{ activeKind().secondaryLabel }} is required.</span>
+                <span class="field-error">{{ '{field} is required.' | t: { field: (activeKind().secondaryLabel | t) } }}</span>
               }
             </div>
           </div>
 
           <div class="row">
             <button class="btn btn-primary" type="submit" [disabled]="saving() || form.invalid">
-              @if (saving()) { <span class="spinner"></span> Saving… } @else { Save }
+              @if (saving()) { <span class="spinner"></span> {{ 'Saving…' | t }} } @else { {{ 'Save' | t }} }
             </button>
-            <button class="btn" type="button" (click)="closeForm()">Cancel</button>
+            <button class="btn" type="button" (click)="closeForm()">{{ 'Cancel' | t }}</button>
           </div>
         </div>
       </form>
@@ -83,38 +95,38 @@
 
     <div class="card">
       <div class="card-head">
-        <h2>{{ activeKind().title }}</h2>
+        <h2>{{ activeKind().title | t }}</h2>
         <span class="spacer"></span>
-        <span class="hint">{{ totalCount() }} record{{ totalCount() === 1 ? '' : 's' }}</span>
+        <span class="hint">{{ (totalCount() === 1 ? '{count} record' : '{count} records') | t: { count: totalCount() } }}</span>
       </div>
 
       <!-- Toolbar: always visible, so the user can clear a search that found nothing -->
       <div class="row" style="gap:8px;padding:16px 18px 8px;flex-wrap:nowrap">
         <input type="search" class="input" style="flex:1"
-               [placeholder]="'Search by ' + activeKind().nameLabel.toLowerCase()"
+               [placeholder]="'Search by {field}' | t: { field: (activeKind().nameLabel | t).toLowerCase() }"
                [value]="search()"
                (input)="onSearchInput($any($event.target).value)">
 
         <select class="input" style="width:160px"
                 [value]="statusFilter()"
                 (change)="setStatusFilter($any($event.target).value)">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="all">All statuses</option>
+          <option value="active">{{ 'Active' | t }}</option>
+          <option value="inactive">{{ 'Inactive' | t }}</option>
+          <option value="all">{{ 'All statuses' | t }}</option>
         </select>
       </div>
 
       @if (loading()) {
-        <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">Loading…</p></div>
+        <div class="state"><span class="spinner lg"></span><p style="margin-top:14px">{{ 'Loading…' | t }}</p></div>
       } @else if (rows().length === 0) {
         <div class="state">
           <div class="icon">∅</div>
           @if (isFiltering()) {
-            <h3>No results match your search</h3>
-            <p>Try a different name or change the status filter.</p>
+            <h3>{{ 'No results match your search' | t }}</h3>
+            <p>{{ 'Try a different name or change the status filter.' | t }}</p>
           } @else {
-            <h3>Nothing here yet</h3>
-            <p>Add the first {{ activeKind().singular }} to start using it on assets.</p>
+            <h3>{{ 'Nothing here yet' | t }}</h3>
+            <p>{{ 'Add the first {item} to start using it on assets.' | t: { item: (activeKind().singular | t) } }}</p>
           }
         </div>
       } @else {
@@ -122,29 +134,37 @@
           <table class="tbl">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>{{ activeKind().secondaryLabel }}</th>
-                <th>In use by</th>
-                <th>Status</th>
-                <th style="width:1%">Actions</th>
+                <th>{{ 'Name' | t }}</th>
+                <th>{{ activeKind().secondaryLabel | t }}</th>
+                <th>{{ 'In use by' | t }}</th>
+                <th>{{ 'Status' | t }}</th>
+                <th style="width:1%">{{ 'Actions' | t }}</th>
               </tr>
             </thead>
             <tbody>
               @for (row of rows(); track row.id) {
                 <tr [class.dim]="!row.isActive">
-                  <td><strong>{{ row.name }}</strong></td>
+                  <td>
+                    <strong>{{ row.name | localName: row.nameAr }}</strong>
+                    <!-- Admins see the other language too, so a missing translation is easy to spot -->
+                    @if (row.nameAr) {
+                      <div class="hint">{{ isArabic() ? row.name : row.nameAr }}</div>
+                    } @else {
+                      <div class="hint">{{ 'No Arabic name yet' | t }}</div>
+                    }
+                  </td>
                   <td class="hint">{{ row.secondary || '—' }}</td>
                   <td class="hint">{{ usageLabel(row) }}</td>
                   <td>
                     <span class="badge" [class.badge-available]="row.isActive" [class.badge-retired]="!row.isActive">
-                      {{ row.isActive ? 'Active' : 'Inactive' }}
+                      {{ (row.isActive ? 'Active' : 'Inactive') | t }}
                     </span>
                   </td>
                   <td>
                     <div class="row" style="gap:6px;flex-wrap:nowrap">
-                      <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> Edit</button>
+                      <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> {{ 'Edit' | t }}</button>
                       @if (row.isActive) {
-                        <button type="button" class="btn btn-sm btn-remove" (click)="deactivate(row)"><span aria-hidden="true">⊘</span> Deactivate</button>
+                        <button type="button" class="btn btn-sm btn-remove" (click)="deactivate(row)"><span aria-hidden="true">⊘</span> {{ 'Deactivate' | t }}</button>
                       }
                     </div>
                   </td>
@@ -156,10 +176,10 @@
 
         @if (totalPages() > 1) {
           <div class="row" style="padding:12px 18px;gap:8px">
-            <span class="hint">Page {{ page() }} of {{ totalPages() }}</span>
+            <span class="hint">{{ 'Page {page} of {total}' | t: { page: page(), total: totalPages() } }}</span>
             <span class="spacer"></span>
-            <button type="button" class="btn btn-sm" (click)="goToPage(page() - 1)" [disabled]="page() === 1">Previous</button>
-            <button type="button" class="btn btn-sm" (click)="goToPage(page() + 1)" [disabled]="page() === totalPages()">Next</button>
+            <button type="button" class="btn btn-sm" (click)="goToPage(page() - 1)" [disabled]="page() === 1">{{ 'Previous' | t }}</button>
+            <button type="button" class="btn btn-sm" (click)="goToPage(page() + 1)" [disabled]="page() === totalPages()">{{ 'Next' | t }}</button>
           </div>
         }
       }

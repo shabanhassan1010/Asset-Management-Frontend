@@ -11,9 +11,11 @@ import { AssetLookups } from '../../../core/models/Lookup.model';
 import { extractErrorMessage } from '../../../core/http-error';
 import { ToastService } from '../../../core/services/ToastService';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../../shared/pipes/local-name.pipe';
 @Component({
   selector: 'app-asset-transfer',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, LocalNamePipe],
   templateUrl: './asset-transfer.html',
 })
 export class AssetTransfer implements OnInit {

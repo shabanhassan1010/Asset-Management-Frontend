@@ -9,9 +9,10 @@ import { Auth } from '../../core/services/auth';
 import { FormsModule } from '@angular/forms';
 import { AIService } from '../../core/services/AIService';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-ai-assistant',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './ai-assistant.html',
   styleUrl: './ai-assistant.css',
 })

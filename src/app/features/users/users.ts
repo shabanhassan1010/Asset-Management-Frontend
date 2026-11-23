@@ -2,7 +2,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
 import { Auth } from '../../core/services/auth';
 import { extractErrorMessage } from '../../core/http-error';
 import { UserRole } from '../../core/models/auth.model';
@@ -16,10 +15,15 @@ import {
 } from '../../core/models/user.model';
 import { LookupService } from '../../core/services/LookupService';
 import { ToastService } from '../../core/services/ToastService';
+import { ConfirmService } from '../../core/services/confirm.service';
+import { LanguageService } from '../../core/services/language.service';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../shared/pipes/local-name.pipe';
+import { LocalizedDatePipe } from '../../shared/pipes/localized-date.pipe';
 @Component({
   selector: 'app-users',
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, LocalizedDatePipe, TranslatePipe, LocalNamePipe],
   templateUrl: './users.html',
 })
 export class Users implements OnInit {
@@ -28,6 +32,8 @@ export class Users implements OnInit {
   private lookupService = inject(LookupService);
   private auth = inject(Auth);
   private toast = inject(ToastService);
+  private confirm = inject(ConfirmService);
+  private language = inject(LanguageService);
 
   users = signal<UserListItem[]>([]);
   totalCount = signal(0);
@@ -131,7 +137,12 @@ export class Users implements OnInit {
     this.userService.changeRole(user.userId, role).subscribe({
       next: () => {
         this.busyUserId.set(null);
-        this.successMessage.set(`${user.userName} is now ${this.roleLabel(role)}.`);
+        this.successMessage.set(
+          this.language.t('{name} is now {role}.', {
+            name: user.userName,
+            role: this.language.t(this.roleLabel(role)),
+          }),
+        );
         this.load();
       },
       error: (error: HttpErrorResponse) => {
@@ -142,13 +153,19 @@ export class Users implements OnInit {
     });
   }
 
-  toggleStatus(user: UserListItem): void {
+  // async because the confirm dialog answers with a Promise (the app's dialog,
+  // not the browser's confirm(), so it can be translated and themed).
+  async toggleStatus(user: UserListItem): Promise<void> {
     const next = !user.isActive;
 
     if (!next) {
-      const confirmed = confirm(
-        `Disable ${user.userName}?\n\nTheir sessions end immediately and they cannot sign in again until re-enabled.`,
-      );
+      const confirmed = await this.confirm.ask({
+        title: 'Disable {name}?',
+        message: 'Their sessions end immediately and they cannot sign in again until re-enabled.',
+        confirmText: 'Disable',
+        danger: true,
+        params: { name: user.userName },
+      });
       if (!confirmed) return;
     }
 
@@ -158,9 +175,11 @@ export class Users implements OnInit {
     this.userService.changeStatus(user.userId, next).subscribe({
       next: () => {
         this.busyUserId.set(null);
-        const message = next ? 'enabled' : 'disabled';
-        this.toast.success(`${user.userName} was ${message}.`);
-        this.successMessage.set(`${user.userName} was ${message}.`);
+        const message = this.language.t(next ? '{name} was enabled.' : '{name} was disabled.', {
+          name: user.userName,
+        });
+        this.toast.success(message);
+        this.successMessage.set(message);
         this.load();
       },
       error: (error: HttpErrorResponse) => {
@@ -244,7 +263,7 @@ export class Users implements OnInit {
         next: (created) => {
           this.creating.set(false);
           this.showCreateForm.set(false);
-          const message = `${created.userName} was created.`;
+          const message = this.language.t('{name} was created.', { name: created.userName });
           this.toast.success(message);
           this.successMessage.set(message);
           this.load();

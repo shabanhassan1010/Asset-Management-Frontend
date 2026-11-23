@@ -11,9 +11,11 @@ import { AssetLookups } from '../../../core/models/Lookup.model';
 import { LookupService } from '../../../core/services/LookupService';
 import { RetireAsset } from '../retire-asset/retire-asset';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../../shared/pipes/local-name.pipe';
 @Component({
   selector: 'app-asset-list',
-  imports: [RouterLink, DecimalPipe, RetireAsset],
+  imports: [RouterLink, DecimalPipe, RetireAsset, TranslatePipe, LocalNamePipe],
   templateUrl: './asset-list.html',
   styleUrl: './asset-list.css',
 })

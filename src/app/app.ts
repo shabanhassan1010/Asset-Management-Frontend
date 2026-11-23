@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ToastService } from './core/services/ToastService';
 import { Toast } from './shared/toast/toast';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component/confirm-dialog.component';
+import { LanguageService } from './core/services/language.service';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +12,8 @@ import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confi
   styleUrl: './app.css'
 })
 export class App {
-  // protected readonly title = signal('task');
-  protected title = 'task';
-    private toastService = inject(ToastService);
-
-  constructor() {
-    // TEMPORARY test — fires once when the app starts.
-    this.toastService.info('TOAST TEST');
-  }
+  // Injected here so both services start with the app, on every page (even 404).
+  // Their constructors run the effects that keep <html lang/dir/data-theme> in sync.
+  private language = inject(LanguageService);
+  private theme = inject(ThemeService);
 }

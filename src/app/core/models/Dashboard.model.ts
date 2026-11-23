@@ -1,12 +1,14 @@
 export interface CategoryCount {
   categoryId: number;
   categoryName: string;
+  categoryNameAr: string | null;
   count: number;
 }
 
 export interface DepartmentCount {   
   departmentId: number | null;       
   departmentName: string;
+  departmentNameAr: string | null;
   count: number;
 }
 

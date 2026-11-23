@@ -10,10 +10,14 @@ import { LookupItem } from '../../core/models/Lookup.model';
 import { EmployeeService } from '../../core/services/employee.service';
 import { LookupService } from '../../core/services/LookupService';
 import { ConfirmService } from '../../core/services/confirm.service';
+import { ToastService } from '../../core/services/ToastService';
+import { LanguageService } from '../../core/services/language.service';
 
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../shared/pipes/local-name.pipe';
 @Component({
   selector: 'app-employees-tab',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe, LocalNamePipe],
   templateUrl: './employees-tab.html',
 })
 export class EmployeesTab implements OnInit {
@@ -22,6 +26,8 @@ export class EmployeesTab implements OnInit {
   private lookupService = inject(LookupService);
   private destroyRef = inject(DestroyRef);
   private confirm = inject(ConfirmService);
+  private language = inject(LanguageService);
+  private toast = inject(ToastService);
 
   // Data
   rows = signal<EmployeeRow[]>([]);
@@ -50,6 +56,7 @@ export class EmployeesTab implements OnInit {
   form = this.fb.nonNullable.group({
     employeeCode: ['', [Validators.required, Validators.maxLength(30)]],
     fullName: ['', [Validators.required, Validators.maxLength(200)]],
+    fullNameAr: ['', [Validators.maxLength(200)]],      // optional
     email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
     phone: ['', [Validators.maxLength(30)]],
     departmentId: [0, [Validators.required, Validators.min(1)]],
@@ -134,7 +141,7 @@ export class EmployeesTab implements OnInit {
 
   startCreate(): void {
     this.errorMessage.set('');
-    this.form.reset({ employeeCode: '', fullName: '', email: '', phone: '', departmentId: 0 });
+    this.form.reset({ employeeCode: '', fullName: '', fullNameAr: '', email: '', phone: '', departmentId: 0 });
     this.form.controls.employeeCode.enable();
     this.editingId.set(0);
   }
@@ -149,6 +156,7 @@ export class EmployeesTab implements OnInit {
         this.form.setValue({
           employeeCode: employee.employeeCode,
           fullName: employee.fullName,
+          fullNameAr: employee.fullNameAr ?? '',
           email: employee.email ?? '',
           phone: employee.phone ?? '',
           departmentId: employee.departmentId,
@@ -180,6 +188,7 @@ export class EmployeesTab implements OnInit {
     const raw = this.form.getRawValue();
     const shared = {
       fullName: raw.fullName.trim(),
+      fullNameAr: raw.fullNameAr.trim() || null,    // empty → null, so the API stores NULL
       email: raw.email.trim(),
       phone: raw.phone.trim(),
       departmentId: +raw.departmentId,
@@ -196,6 +205,12 @@ export class EmployeesTab implements OnInit {
     request.subscribe({
       next: () => {
         this.saving.set(false);
+        // Success toast here; error toasts come from errorInterceptor, so the error branch doesn't add one.
+        // Same wording as the other lookup tabs. The name follows the site language (Arabic name when it exists).
+        this.toast.success(
+          this.language.t(id === 0 ? '"{name}" was added.' : '"{name}" was updated.',
+                          { name: this.language.pick(shared.fullName, shared.fullNameAr) }),
+        );
         this.closeForm();
         this.load();
       },
@@ -209,14 +224,16 @@ export class EmployeesTab implements OnInit {
   async toggleStatus(row: EmployeeRow): Promise<void> {
     const confirmed = row.isActive
       ? await this.confirm.ask({
-          title: `Deactivate "${row.employeeName}"?`,
+          title: 'Deactivate "{name}"?',
+          params: { name: this.language.pick(row.employeeName, row.employeeNameAr) },
           message:
             'They disappear from the pickers on new assignments, but assets already assigned to them stay as they are.',
           confirmText: 'Deactivate',
           danger: true,
         })
       : await this.confirm.ask({
-          title: `Activate "${row.employeeName}"?`,
+          title: 'Activate "{name}"?',
+          params: { name: this.language.pick(row.employeeName, row.employeeNameAr) },
           message: 'They show up again in the pickers on new assignments.',
           confirmText: 'Activate',
         });
@@ -228,6 +245,10 @@ export class EmployeesTab implements OnInit {
 
     this.service.setStatus(row.id, newStatus).subscribe({
     next: () => {
+      this.toast.success(
+        this.language.t(newStatus ? '"{name}" was activated.' : '"{name}" was deactivated.',
+                        { name: this.language.pick(row.employeeName, row.employeeNameAr) }),
+      );
       // Ask the server again so the current filter is applied.
       // This also updates totalCount and totalPages.
       this.load();

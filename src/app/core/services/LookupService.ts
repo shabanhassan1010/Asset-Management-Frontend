@@ -44,6 +44,8 @@ export class LookupService
         return rows.map(row => ({
           id: row['id'] as number,
           name: (row[nameField] ?? row['name']) as string,
+          // categoryName → categoryNameAr, employeeName → employeeNameAr …
+          nameAr: (row[nameField + 'Ar'] ?? null) as string | null,
           isActive: (row['isActive'] ?? true) as boolean,
           departmentId: (row['departmentId'] ?? null) as number | null,
         }));

@@ -49,4 +49,5 @@ export const DEFAULT_USER_FILTERS: UserFilters = {
 export interface AvailableEmployee {
   id: number;
   employeeName: string;
+  employeeNameAr?: string | null;
 }

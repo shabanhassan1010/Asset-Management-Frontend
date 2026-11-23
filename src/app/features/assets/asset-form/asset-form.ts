@@ -11,9 +11,11 @@ import { LookupService } from '../../../core/services/LookupService';
 import { ToastService } from '../../../core/services/ToastService';
 import { HasUnsavedChanges } from '../../../core/guards/unsaved-changes-guard';
 
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { LocalNamePipe } from '../../../shared/pipes/local-name.pipe';
 @Component({
   selector: 'app-asset-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, LocalNamePipe],
   templateUrl: './asset-form.html',
   styleUrl: './asset-form.css',
 })

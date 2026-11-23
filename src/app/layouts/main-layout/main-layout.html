@@ -5,7 +5,7 @@
     <div class="brand">
       <div class="logo">AM</div>
       <div class="brand-text">
-        <div class="brand-name">Asset Manager</div>
+        <div class="brand-name">{{ 'Asset Manager' | t }}</div>
         <!-- <div class="brand-sub">KINANA</div> -->
       </div>
 
@@ -13,7 +13,7 @@
         type="button"
         class="collapse-btn"
         (click)="toggleCollapsed()"
-        [attr.aria-label]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+        [attr.aria-label]="(collapsed() ? 'Expand sidebar' : 'Collapse sidebar') | t"
         [attr.aria-expanded]="!collapsed()">
         {{ collapsed() ? '›' : '‹' }}
       </button>
@@ -22,9 +22,9 @@
     <nav class="side-nav">
       @for (item of navItems(); track item.path) {
         
-          <a [routerLink]="item.path" routerLinkActive="active" (click)="closeNav()" [attr.data-label]="item.label">
+          <a [routerLink]="item.path" routerLinkActive="active" (click)="closeNav()" [attr.data-label]="item.label | t">
           <span class="ico">{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
+          <span>{{ item.label | t }}</span>
           <!-- @if (item.adminOnly) {
             <span class="badge badge-admin" style="margin-left:auto">Admin</span>
           } -->
@@ -40,10 +40,11 @@
         type="button"
         class="btn btn-ghost menu-btn"
         (click)="toggleNav()"
-        [attr.aria-label]="navOpen() ? 'Close menu' : 'Open menu'">☰</button>
+        [attr.aria-label]="(navOpen() ? 'Close menu' : 'Open menu') | t">☰</button>
       <span class="spacer"></span>
-      <span class="welcome-text">Welcome back, {{ displayName() }}</span>
-      <button type="button" class="btn btn-sm" (click)="signOut()">Sign out</button>
+      <span class="welcome-text">{{ 'Welcome back, {name}' | t: { name: displayName() } }}</span>
+      <app-preferences-toggle />
+      <button type="button" class="btn btn-sm" (click)="signOut()">{{ 'Sign out' | t }}</button>
 
 
     </header>
