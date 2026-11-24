@@ -16,14 +16,12 @@
       } @else {
         <div class="grid grid-2">
           <div class="field">
-            <label for="employeeCode">{{ 'Employee code' | t }} <span class="req">*</span></label>
-            <input id="employeeCode" class="input" formControlName="employeeCode" placeholder="EMP-0014"
-                   [class.invalid]="form.controls.employeeCode.touched && form.controls.employeeCode.invalid">
-            @if (editingId() !== 0) {
+            <label for="employeeCode">{{ 'Employee code' | t }}</label>
+            <input id="employeeCode" class="input" formControlName="employeeCode" placeholder="EMP-001">
+            @if (editingId() === 0) {
+              <span class="hint">{{ 'Generated automatically: the last employee code + 1.' | t }}</span>
+            } @else {
               <span class="hint">{{ 'The code stays with the employee and cannot be changed.' | t }}</span>
-            }
-            @if (form.controls.employeeCode.touched && form.controls.employeeCode.invalid) {
-              <span class="field-error">{{ 'Employee code is required, 30 characters or fewer.' | t }}</span>
             }
           </div>
 
@@ -189,4 +187,4 @@
       </div>
     }
   }
-</div>
+</div>

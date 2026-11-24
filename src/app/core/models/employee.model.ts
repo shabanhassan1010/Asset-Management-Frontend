@@ -33,8 +33,8 @@ export interface EmployeeDetails extends EmployeeRow {
   isActive: boolean;
 }
 
+// No employeeCode: the server generates it (EMP-001, EMP-002, …).
 export interface CreateEmployeePayload {
-  employeeCode: string;
   fullName: string;
   fullNameAr: string | null;   // null = no Arabic name
   email: string;
@@ -44,8 +44,8 @@ export interface CreateEmployeePayload {
 
 
 
-// Code not Accpet Update
-export type UpdateEmployeePayload = Omit<CreateEmployeePayload, 'employeeCode'>;
+// Same fields as create: the code is never sent, it can't be typed or changed.
+export type UpdateEmployeePayload = CreateEmployeePayload;
 
 export interface EmployeeQuery {
   pageNumber: number;

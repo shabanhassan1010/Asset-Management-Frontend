@@ -43,6 +43,14 @@ export class EmployeeService
                     .pipe(map(response => response.data));
   }
 
+  // The code the next new employee will get (e.g. "EMP-009"). Only shown in the form:
+  // the server works it out again when the employee is saved.
+  getNextCode(): Observable<string>
+  {
+    return this.http.get<ApiResponse<string>>(API.employees.nextCode)
+                    .pipe(map(response => response.data));
+  }
+
   create(payload: CreateEmployeePayload): Observable<unknown> 
   {
     return this.http.post(API.employees.base, payload).pipe(tap(() => this.lookupService.clearCache()));
@@ -58,4 +66,4 @@ export class EmployeeService
     return this.http.patch(API.employees.status(id), { isActive }).pipe(tap(() => this.lookupService.clearCache()));
   }
 
-}
+}

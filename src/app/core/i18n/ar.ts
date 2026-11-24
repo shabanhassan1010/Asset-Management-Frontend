@@ -328,6 +328,7 @@ export const AR: Record<string, string> = {
   'Employee code': 'كود الموظف',
   'Employee code is required, 30 characters or fewer.': 'كود الموظف مطلوب، بحد أقصى 30 حرفاً.',
   'The code stays with the employee and cannot be changed.': 'الكود يبقى مع الموظف ولا يمكن تغييره.',
+  'Generated automatically: the last employee code + 1.': 'يتم إنشاؤه تلقائياً: آخر كود موظف + 1.',
   'Full name': 'الاسم الكامل',
   'Full name is required, 200 characters or fewer.': 'الاسم الكامل مطلوب، بحد أقصى 200 حرف.',
   'Enter a valid email. Each employee needs their own.': 'أدخل بريداً إلكترونياً صحيحاً. لكل موظف بريده الخاص.',
