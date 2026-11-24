@@ -54,7 +54,9 @@ export class EmployeesTab implements OnInit {
   loadingForm = signal(false);
 
   form = this.fb.nonNullable.group({
-    employeeCode: ['', [Validators.required, Validators.maxLength(30)]],
+    // Always disabled: the server generates the code. A disabled control is skipped by
+    // form.valid and form.value, so it needs no validators.
+    employeeCode: [{ value: '', disabled: true }],
     fullName: ['', [Validators.required, Validators.maxLength(200)]],
     fullNameAr: ['', [Validators.maxLength(200)]],      // optional
     email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
@@ -142,8 +144,17 @@ export class EmployeesTab implements OnInit {
   startCreate(): void {
     this.errorMessage.set('');
     this.form.reset({ employeeCode: '', fullName: '', fullNameAr: '', email: '', phone: '', departmentId: 0 });
-    this.form.controls.employeeCode.enable();
     this.editingId.set(0);
+
+    // Show the code this employee will get. If the call fails the field just stays empty —
+    // Save still works, because the server makes the code anyway.
+    this.service.getNextCode().subscribe({
+      next: (code) => {
+        // The admin may have switched to "Edit" before the answer came back: don't overwrite that form.
+        if (this.editingId() === 0) this.form.controls.employeeCode.setValue(code);
+      },
+      error: () => {},
+    });
   }
 
   startEdit(row: EmployeeRow): void {
@@ -161,7 +172,6 @@ export class EmployeesTab implements OnInit {
           phone: employee.phone ?? '',
           departmentId: employee.departmentId,
         });
-        this.form.controls.employeeCode.disable();
         this.loadingForm.set(false);
       },
       error: (error) => {
@@ -196,7 +206,7 @@ export class EmployeesTab implements OnInit {
 
     const request =
       id === 0
-        ? this.service.create({ employeeCode: raw.employeeCode.trim(), ...shared })
+        ? this.service.create(shared)   // no code: the server generates it
         : this.service.update(id, shared);
 
     this.saving.set(true);

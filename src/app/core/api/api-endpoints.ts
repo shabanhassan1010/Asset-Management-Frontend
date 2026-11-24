@@ -37,6 +37,7 @@ export const API = {
     availableForUser: (departmentId: number) => `${base}/v1/employees/available-for-user?departmentId=${departmentId}`,
     base:                                      `${base}/v1/employees`,
     paginated:                                 `${base}/v1/employees/paginated`,
+    nextCode:                                  `${base}/v1/employees/next-code`,
     byId:          (id: number) =>             `${base}/v1/employees/${id}`,
     status:        (id: number) =>             `${base}/v1/employees/${id}/status`,
   },
@@ -74,4 +75,4 @@ export const API = {
     locations:   `${base}/v1/locations`,
     employees:   `${base}/v1/employees`,
   },
-};
+};
