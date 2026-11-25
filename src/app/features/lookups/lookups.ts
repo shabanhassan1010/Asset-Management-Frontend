@@ -223,6 +223,32 @@ export class Lookups implements OnInit {
     });
   }
 
+  async activate(row: LookupRow): Promise<void> {
+    const config = this.activeKind();
+    const name = this.language.pick(row.name, row.nameAr);
+
+    const confirmed = await this.confirm.ask({
+      title: 'Activate "{name}"?',
+      params: { name },
+      message: 'It shows up again in the pickers on new assets.',
+      confirmText: 'Activate',
+    });
+    if (!confirmed) return;
+
+    this.service.activate(config, row.id).subscribe({
+      next: () => {
+        this.toast.success(this.language.t('"{name}" was activated.', { name }));
+
+        // The last row on a page disappears under the "Inactive" filter → go back one page
+        if (this.rows().length === 1 && this.page() > 1 && this.statusFilter() === 'inactive') {
+          this.page.update(p => p - 1);
+        }
+        this.load();
+      },
+      // Errors (e.g. 409 "another active row has the same name") are shown by the error interceptor.
+    });
+  }
+
   usageLabel(row: LookupRow): string {
     // Called from the template, so it re-runs when the language changes (t() reads the language signal).
     const t = (text: string, count: number) => this.language.t(text, { count });

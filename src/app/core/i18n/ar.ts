@@ -339,6 +339,8 @@ export const AR: Record<string, string> = {
   'Add the first employee to start assigning assets.': 'أضف أول موظف لتبدأ إسناد الأصول.',
   'No matches': 'لا توجد نتائج',
   'Activate "{name}"?': 'تفعيل "{name}"؟',
+  'It shows up again in the pickers on new assets.': 'سيظهر مرة أخرى في القوائم عند إضافة أصول جديدة.',
+  'Use Activate to turn it back on.': 'استخدم «تفعيل» لإعادته مرة أخرى.',
   'They disappear from the pickers on new assignments, but assets already assigned to them stay as they are.':
     'سيختفي من القوائم عند الإسنادات الجديدة، لكن الأصول المُسنَدة إليه بالفعل ستبقى كما هي.',
   'They show up again in the pickers on new assignments.': 'سيظهر مرة أخرى في القوائم عند الإسنادات الجديدة.',

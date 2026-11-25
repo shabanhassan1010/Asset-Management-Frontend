@@ -53,6 +53,13 @@ export class LookupAdminService
                     .pipe(tap(() => this.lookupService.clearCache()));
   }
 
+  // Turns a deactivated row back on. PATCH because only IsActive changes.
+  // clearCache(): the row must show up again in the asset form dropdowns.
+  activate(config: LookupKindConfig, id: number): Observable<unknown>
+  {
+    return this.http.patch(this.routes(config.kind).activate(id), {})
+                    .pipe(tap(() => this.lookupService.clearCache()));
+  }
   private toRow(row: Record<string, unknown>, config: LookupKindConfig): LookupRow
   {
     return {
