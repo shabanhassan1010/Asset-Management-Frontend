@@ -48,24 +48,28 @@ export const API = {
       paged:                `${base}/v1/categories/paginated`,
       create:               `${base}/v1/categories`,
       byId: (id: number) => `${base}/v1/categories/${id}`,
+      activate: (id: number) => `${base}/v1/categories/${id}/activate`,
     },
     assetType: {
       list:                 `${base}/v1/asset-types`,
       paged:                `${base}/v1/asset-types/paginated`,
       create:               `${base}/v1/asset-types`,
       byId: (id: number) => `${base}/v1/asset-types/${id}`,
+      activate: (id: number) => `${base}/v1/asset-types/${id}/activate`,
     },
     department: {
       list:                 `${base}/v1/departments`,
       paged:                `${base}/v1/departments/paginated`,
       create:               `${base}/v1/departments`,
       byId: (id: number) => `${base}/v1/departments/${id}`,
+      activate: (id: number) => `${base}/v1/departments/${id}/activate`,
     },
     location: {
       list:                 `${base}/v1/locations`,
       paged:                `${base}/v1/locations/paginated`,
       create:               `${base}/v1/locations`,
       byId: (id: number) => `${base}/v1/locations/${id}`,
+      activate: (id: number) => `${base}/v1/locations/${id}/activate`,
     },
   },
   lookups: {
@@ -75,4 +79,4 @@ export const API = {
     locations:   `${base}/v1/locations`,
     employees:   `${base}/v1/employees`,
   },
-};
+};

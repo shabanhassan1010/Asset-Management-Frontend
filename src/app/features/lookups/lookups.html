@@ -33,7 +33,7 @@
 
     <!-- Shown first: the user should know what "Deactivate" means BEFORE clicking it -->
     <div class="alert alert-info" style="margin-bottom:16px">
-      <strong>{{ 'How deactivation works.' | t }}</strong> {{ 'A row that is still referenced by assets is never deleted — it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the assets that already use it.' | t }}
+      <strong>{{ 'How deactivation works.' | t }}</strong> {{ 'A row that is still referenced by assets is never deleted — it is deactivated instead: it disappears from the pickers on new assets, but stays readable on the assets that already use it.' | t }} {{ 'Use Activate to turn it back on.' | t }}
     </div>
 
     @if (errorMessage()) {
@@ -163,8 +163,11 @@
                   <td>
                     <div class="row" style="gap:6px;flex-wrap:nowrap">
                       <button type="button" class="btn btn-sm btn-edit" (click)="startEdit(row)"><span aria-hidden="true">✎</span> {{ 'Edit' | t }}</button>
+                      <!-- Red when it turns something off, green when it turns it back on (same as the Employees tab) -->
                       @if (row.isActive) {
                         <button type="button" class="btn btn-sm btn-remove" (click)="deactivate(row)"><span aria-hidden="true">⊘</span> {{ 'Deactivate' | t }}</button>
+                      } @else {
+                        <button type="button" class="btn btn-sm btn-restore" (click)="activate(row)"><span aria-hidden="true">✓</span> {{ 'Activate' | t }}</button>
                       }
                     </div>
                   </td>
