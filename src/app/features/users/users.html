@@ -129,19 +129,19 @@
 
   <div class="card" style="margin-bottom:16px">
     <div class="card-body">
-      <div class="filters">
-        <input class="input" [placeholder]="'Search username or email…' | t"
+      <div class="toolbar">
+        <input type="search" class="input search" [placeholder]="'Search username or email…' | t"
                [value]="filters().search"
                (input)="patchFilters({ search: $any($event.target).value })">
 
-        <select class="select" (change)="patchFilters({ role: $any($event.target).value ? +$any($event.target).value : null })">
+        <select class="select" [class.is-set]="filters().role != null" (change)="patchFilters({ role: $any($event.target).value ? +$any($event.target).value : null })">
           <option value="">{{ 'All roles' | t }}</option>
           @for (item of roles; track item.id) {
             <option [value]="item.id">{{ item.name | t }}</option>
           }
         </select>
 
-        <select class="select" (change)="patchFilters({ isActive: $any($event.target).value === '' ? null : $any($event.target).value === 'true' })">
+        <select class="select" [class.is-set]="filters().isActive != null" (change)="patchFilters({ isActive: $any($event.target).value === '' ? null : $any($event.target).value === 'true' })">
           <option value="">{{ 'All statuses' | t }}</option>
           <option value="true">{{ 'Active' | t }}</option>
           <option value="false">{{ 'Disabled' | t }}</option>

@@ -101,13 +101,13 @@
       </div>
 
       <!-- Toolbar: always visible, so the user can clear a search that found nothing -->
-      <div class="row" style="gap:8px;padding:16px 18px 8px;flex-wrap:nowrap">
-        <input type="search" class="input" style="flex:1"
+      <div class="toolbar" style="padding:16px 18px 8px">
+        <input type="search" class="input search"
                [placeholder]="'Search by {field}' | t: { field: (activeKind().nameLabel | t).toLowerCase() }"
                [value]="search()"
                (input)="onSearchInput($any($event.target).value)">
 
-        <select class="input" style="width:160px"
+        <select class="select" [class.is-set]="statusFilter() !== 'active'"
                 [value]="statusFilter()"
                 (change)="setStatusFilter($any($event.target).value)">
           <option value="active">{{ 'Active' | t }}</option>

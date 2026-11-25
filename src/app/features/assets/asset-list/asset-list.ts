@@ -13,6 +13,10 @@ import { RetireAsset } from '../retire-asset/retire-asset';
 
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { LocalNamePipe } from '../../../shared/pipes/local-name.pipe';
+// The page sizes offered in the footer, and where the chosen one is saved.
+export const PAGE_SIZES = [5, 10, 25, 50];
+const PAGE_SIZE_KEY = 'ams.assets.pageSize';
+
 @Component({
   selector: 'app-asset-list',
   imports: [RouterLink, DecimalPipe, RetireAsset, TranslatePipe, LocalNamePipe],
@@ -28,8 +32,10 @@ export class AssetList implements OnInit {
 
   isAdmin = this.auth.isAdmin;
   statuses = ASSET_STATUSES;
+  pageSizes = PAGE_SIZES;
 
-  filters = signal<AssetFilters>({ ...DEFAULT_FILTERS });
+  // The page size the user picked last time (saved in the browser), so it stays until they change it.
+  filters = signal<AssetFilters>({ ...DEFAULT_FILTERS, pageSize: this.savedPageSize() });
 
   items = signal<AssetListItem[]>([]);
   totalCount = signal(0);
@@ -113,6 +119,7 @@ export class AssetList implements OnInit {
 
   changePageSize(size: string): void {
     this.patchFilters({ pageSize: +size });
+    this.savePageSize(+size);
   }
 
   sortBy(column: string): void {
@@ -138,7 +145,8 @@ export class AssetList implements OnInit {
       this.router.navigate(['/assets']);
     } else {
       // Same URL → Angular ignores the navigation, so reset by hand
-      this.filters.set({ ...DEFAULT_FILTERS });
+      // "Clear filters" clears the filters, not the page size the user chose.
+      this.filters.set({ ...DEFAULT_FILTERS, pageSize: this.savedPageSize() });
       this.load();
     }
   }
@@ -179,10 +187,31 @@ export class AssetList implements OnInit {
   private readFiltersFromUrl(params: ParamMap): AssetFilters {
     return {
       ...DEFAULT_FILTERS,
+      pageSize: this.savedPageSize(),     // the URL has no page size, so keep the saved one
       categoryId: params.get('categoryId') ?? '',
       departmentId: params.get('departmentId') ?? '',
       statusId: params.get('statusId') ?? '',
       warrantyWithinDays: params.get('warrantyWithinDays') ?? '',
     };
+  }
+
+  // ---- Remembered page size ----
+  // localStorage keeps it after closing the page or the browser (per browser, not per account).
+  // try/catch: localStorage can throw (private mode, storage disabled) — then we just use the default.
+  private savedPageSize(): number {
+    try {
+      const saved = Number(localStorage.getItem(PAGE_SIZE_KEY));
+      return PAGE_SIZES.includes(saved) ? saved : DEFAULT_FILTERS.pageSize;   // ignore anything not in the list
+    } catch {
+      return DEFAULT_FILTERS.pageSize;
+    }
+  }
+
+  private savePageSize(size: number): void {
+    try {
+      localStorage.setItem(PAGE_SIZE_KEY, String(size));
+    } catch {
+      // Not saved: the size still works for this visit.
+    }
   }
 }

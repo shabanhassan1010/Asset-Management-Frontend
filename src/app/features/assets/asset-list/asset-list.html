@@ -14,69 +14,90 @@
   <!-- Filters -->
   <div class="card" style="margin-bottom:16px">
     <div class="card-body">
-      <div class="filters">
-        <input class="input" [placeholder]="'Search code, name or serial…' | t"
+      <!-- Row 1: search (grows) + "Include retired" + "Clear filters" -->
+      <div class="toolbar">
+        <input type="search" class="input search" [placeholder]="'Search code, name or serial…' | t"
                [value]="filters().search" (input)="onSearch($any($event.target).value)">
 
-        <select class="select" [value]="filters().categoryId"
-                (change)="patchFilters({ categoryId: $any($event.target).value })">
-          <option value="">{{ 'All categories' | t }}</option>
-          @for (item of lookups()?.categories ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
-          }
-        </select>
-
-        <select class="select" [value]="filters().assetTypeId"
-                (change)="patchFilters({ assetTypeId: $any($event.target).value })">
-          <option value="">{{ 'All types' | t }}</option>
-          @for (item of lookups()?.assetTypes ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
-          }
-        </select>
-
-        <select class="select" [value]="filters().statusId"
-                (change)="patchFilters({ statusId: $any($event.target).value })">
-          <option value="">{{ 'All statuses' | t }}</option>
-          @for (status of statuses; track status.id) {
-            <option [value]="status.id">{{ status.name | t }}</option>
-          }
-        </select>
-
-        <select class="select" [value]="filters().departmentId"
-                (change)="patchFilters({ departmentId: $any($event.target).value })">
-          <option value="">{{ 'All departments' | t }}</option>
-          @for (item of lookups()?.departments ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
-          }
-        </select>
-
-        <select class="select" [value]="filters().locationId"
-                (change)="patchFilters({ locationId: $any($event.target).value })">
-          <option value="">{{ 'All locations' | t }}</option>
-          @for (item of lookups()?.locations ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
-          }
-        </select>
-
-        <select class="select" [value]="filters().employeeId"
-                (change)="patchFilters({ employeeId: $any($event.target).value })">
-          <option value="">{{ 'Anyone' | t }}</option>
-          @for (item of lookups()?.employees ?? []; track item.id) {
-            <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="row" style="margin-top:12px">
-        <label class="row" style="gap:7px;cursor:pointer;font-size:13px">
+        <label class="check">
           <input type="checkbox" [checked]="filters().includeRetired"
                  (change)="patchFilters({ includeRetired: $any($event.target).checked })">
           {{ 'Include retired' | t }}
         </label>
-        <span class="spacer"></span>
+
         @if (hasActiveFilters()) {
           <button type="button" class="btn btn-sm btn-ghost" (click)="resetFilters()">{{ 'Clear filters' | t }}</button>
         }
+      </div>
+
+      <!-- Row 2: six dropdowns, all the same width, each with a label.
+           [class.is-set]: a dropdown that is filtering the list gets the accent colour. -->
+      <div class="filter-grid">
+        <div>
+          <label for="f-category">{{ 'Category' | t }}</label>
+          <select id="f-category" class="select" [class.is-set]="filters().categoryId" [value]="filters().categoryId"
+                  (change)="patchFilters({ categoryId: $any($event.target).value })">
+            <option value="">{{ 'All categories' | t }}</option>
+            @for (item of lookups()?.categories ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="f-type">{{ 'Type' | t }}</label>
+          <select id="f-type" class="select" [class.is-set]="filters().assetTypeId" [value]="filters().assetTypeId"
+                  (change)="patchFilters({ assetTypeId: $any($event.target).value })">
+            <option value="">{{ 'All types' | t }}</option>
+            @for (item of lookups()?.assetTypes ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="f-status">{{ 'Status' | t }}</label>
+          <select id="f-status" class="select" [class.is-set]="filters().statusId" [value]="filters().statusId"
+                  (change)="patchFilters({ statusId: $any($event.target).value })">
+            <option value="">{{ 'All statuses' | t }}</option>
+            @for (status of statuses; track status.id) {
+              <option [value]="status.id">{{ status.name | t }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="f-department">{{ 'Department' | t }}</label>
+          <select id="f-department" class="select" [class.is-set]="filters().departmentId" [value]="filters().departmentId"
+                  (change)="patchFilters({ departmentId: $any($event.target).value })">
+            <option value="">{{ 'All departments' | t }}</option>
+            @for (item of lookups()?.departments ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="f-location">{{ 'Location' | t }}</label>
+          <select id="f-location" class="select" [class.is-set]="filters().locationId" [value]="filters().locationId"
+                  (change)="patchFilters({ locationId: $any($event.target).value })">
+            <option value="">{{ 'All locations' | t }}</option>
+            @for (item of lookups()?.locations ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="f-employee">{{ 'Assigned to' | t }}</label>
+          <select id="f-employee" class="select" [class.is-set]="filters().employeeId" [value]="filters().employeeId"
+                  (change)="patchFilters({ employeeId: $any($event.target).value })">
+            <option value="">{{ 'Anyone' | t }}</option>
+            @for (item of lookups()?.employees ?? []; track item.id) {
+              <option [value]="item.id">{{ item.name | localName: item.nameAr }}{{ (item.isActive ? '' : ' (inactive)') | t }}</option>
+            }
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -161,7 +182,7 @@
 
         <select class="select" style="width:auto" [value]="filters().pageSize"
                 (change)="changePageSize($any($event.target).value)">
-          @for (size of [5, 10, 25, 50]; track size) {
+          @for (size of pageSizes; track size) {
             <option [value]="size" [selected]="size === filters().pageSize">{{ size }} {{ '/ page' | t }}</option>
           }
         </select>

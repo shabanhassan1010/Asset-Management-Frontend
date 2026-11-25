@@ -36,17 +36,18 @@
 
   <div class="main">
     <header class="topbar">
-      <button
-        type="button"
-        class="btn btn-ghost menu-btn"
-        (click)="toggleNav()"
-        [attr.aria-label]="(navOpen() ? 'Close menu' : 'Open menu') | t">☰</button>
-      <span class="spacer"></span>
-      <span class="welcome-text">{{ 'Welcome back, {name}' | t: { name: displayName() } }}</span>
-      <app-preferences-toggle />
-      <button type="button" class="btn btn-sm" (click)="signOut()">{{ 'Sign out' | t }}</button>
-
-
+      <!-- Same width and side padding as the page below, so the buttons line up with the page content -->
+      <div class="topbar-inner">
+        <button
+          type="button"
+          class="btn btn-ghost menu-btn"
+          (click)="toggleNav()"
+          [attr.aria-label]="(navOpen() ? 'Close menu' : 'Open menu') | t">☰</button>
+        <span class="spacer"></span>
+        <span class="welcome-text">{{ 'Welcome back, {name}' | t: { name: displayName() } }}</span>
+        <app-preferences-toggle />
+        <button type="button" class="btn btn-sm" (click)="signOut()">{{ 'Sign out' | t }}</button>
+      </div>
     </header>
 
     <router-outlet />
